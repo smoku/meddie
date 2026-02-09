@@ -1,0 +1,127 @@
+## This file is a PO Template file.
+##
+## "msgid"s here are often extracted from source code.
+## Add new messages manually only if they're dynamic
+## messages that can't be statically extracted.
+##
+## Run "mix gettext.extract" to bring this file up to
+## date. Leave "msgstr"s empty as changing them here has no
+## effect: edit them in PO (.po) files instead.
+#
+msgid ""
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:187
+#, elixir-autogen, elixir-format
+msgid "A link to confirm your email change has been sent to the new address."
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:9
+#: lib/meddie_web/live/user_live/settings.ex:11
+#: lib/meddie_web/live/user_live/settings.ex:122
+#, elixir-autogen, elixir-format
+msgid "Account Settings"
+msgstr ""
+
+#: lib/meddie_web/components/core_components.ex:368
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:197
+#: lib/meddie_web/components/layouts.ex:209
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:50
+#, elixir-autogen, elixir-format
+msgid "Change email"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:90
+#, elixir-autogen, elixir-format
+msgid "Change password"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:49
+#: lib/meddie_web/live/user_live/settings.ex:89
+#, elixir-autogen, elixir-format
+msgid "Changing..."
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:86
+#, elixir-autogen, elixir-format
+msgid "Confirm new password"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:40
+#: lib/meddie_web/live/user_live/settings.ex:45
+#, elixir-autogen, elixir-format
+msgid "Email"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:108
+#, elixir-autogen, elixir-format
+msgid "Email change link is invalid or it has expired."
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:105
+#, elixir-autogen, elixir-format
+msgid "Email changed successfully."
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:27
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:23
+#, elixir-autogen, elixir-format
+msgid "Name"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:79
+#, elixir-autogen, elixir-format
+msgid "New password"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:59
+#, elixir-autogen, elixir-format
+msgid "Password"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:16
+#, elixir-autogen, elixir-format
+msgid "Profile"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:149
+#, elixir-autogen, elixir-format
+msgid "Profile updated successfully."
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:31
+#, elixir-autogen, elixir-format
+msgid "Save"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/settings.ex:30
+#, elixir-autogen, elixir-format
+msgid "Saving..."
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:204
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:192
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr ""
+
+#: lib/meddie_web/components/core_components.ex:74
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr ""

@@ -1,0 +1,127 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: pl\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10||n%100>=20) ? 1 : 2);\n"
+
+#: lib/meddie_web/live/user_live/settings.ex:187
+#, elixir-autogen, elixir-format
+msgid "A link to confirm your email change has been sent to the new address."
+msgstr "Link do potwierdzenia zmiany adresu e-mail został wysłany na nowy adres."
+
+#: lib/meddie_web/live/user_live/settings.ex:9
+#: lib/meddie_web/live/user_live/settings.ex:11
+#: lib/meddie_web/live/user_live/settings.ex:122
+#, elixir-autogen, elixir-format
+msgid "Account Settings"
+msgstr "Ustawienia konta"
+
+#: lib/meddie_web/components/core_components.ex:368
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr "Akcje"
+
+#: lib/meddie_web/components/layouts.ex:197
+#: lib/meddie_web/components/layouts.ex:209
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr "Próba ponownego połączenia"
+
+#: lib/meddie_web/live/user_live/settings.ex:50
+#, elixir-autogen, elixir-format
+msgid "Change email"
+msgstr "Zmień e-mail"
+
+#: lib/meddie_web/live/user_live/settings.ex:90
+#, elixir-autogen, elixir-format
+msgid "Change password"
+msgstr "Zmień hasło"
+
+#: lib/meddie_web/live/user_live/settings.ex:49
+#: lib/meddie_web/live/user_live/settings.ex:89
+#, elixir-autogen, elixir-format
+msgid "Changing..."
+msgstr "Zmienianie..."
+
+#: lib/meddie_web/live/user_live/settings.ex:86
+#, elixir-autogen, elixir-format
+msgid "Confirm new password"
+msgstr "Potwierdź nowe hasło"
+
+#: lib/meddie_web/live/user_live/settings.ex:40
+#: lib/meddie_web/live/user_live/settings.ex:45
+#, elixir-autogen, elixir-format
+msgid "Email"
+msgstr "E-mail"
+
+#: lib/meddie_web/live/user_live/settings.ex:108
+#, elixir-autogen, elixir-format
+msgid "Email change link is invalid or it has expired."
+msgstr "Link do zmiany e-maila jest nieprawidłowy lub wygasł."
+
+#: lib/meddie_web/live/user_live/settings.ex:105
+#, elixir-autogen, elixir-format
+msgid "Email changed successfully."
+msgstr "Adres e-mail został zmieniony."
+
+#: lib/meddie_web/live/user_live/settings.ex:27
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr "Język"
+
+#: lib/meddie_web/live/user_live/settings.ex:23
+#, elixir-autogen, elixir-format
+msgid "Name"
+msgstr "Imię"
+
+#: lib/meddie_web/live/user_live/settings.ex:79
+#, elixir-autogen, elixir-format
+msgid "New password"
+msgstr "Nowe hasło"
+
+#: lib/meddie_web/live/user_live/settings.ex:59
+#, elixir-autogen, elixir-format
+msgid "Password"
+msgstr "Hasło"
+
+#: lib/meddie_web/live/user_live/settings.ex:16
+#, elixir-autogen, elixir-format
+msgid "Profile"
+msgstr "Profil"
+
+#: lib/meddie_web/live/user_live/settings.ex:149
+#, elixir-autogen, elixir-format
+msgid "Profile updated successfully."
+msgstr "Profil został zaktualizowany."
+
+#: lib/meddie_web/live/user_live/settings.ex:31
+#, elixir-autogen, elixir-format
+msgid "Save"
+msgstr "Zapisz"
+
+#: lib/meddie_web/live/user_live/settings.ex:30
+#, elixir-autogen, elixir-format
+msgid "Saving..."
+msgstr "Zapisywanie..."
+
+#: lib/meddie_web/components/layouts.ex:204
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr "Coś poszło nie tak!"
+
+#: lib/meddie_web/components/layouts.ex:192
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr "Nie można połączyć się z internetem"
+
+#: lib/meddie_web/components/core_components.ex:74
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr "zamknij"
