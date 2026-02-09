@@ -9,7 +9,10 @@ defmodule MeddieWeb.InvitationController do
     case Invitations.get_valid_invitation_by_token(token) do
       nil ->
         conn
-        |> put_flash(:error, "This invitation is invalid or has expired. Please ask for a new one.")
+        |> put_flash(
+          :error,
+          "This invitation is invalid or has expired. Please ask for a new one."
+        )
         |> redirect(to: ~p"/users/log-in")
 
       invitation ->
@@ -27,7 +30,10 @@ defmodule MeddieWeb.InvitationController do
             # Existing user — prompt to log in, then auto-accept
             conn
             |> put_session(:pending_invitation_token, token)
-            |> put_flash(:info, "You already have an account. Please log in to accept this invitation.")
+            |> put_flash(
+              :info,
+              "You already have an account. Please log in to accept this invitation."
+            )
             |> redirect(to: ~p"/users/log-in")
         end
     end
@@ -41,7 +47,9 @@ defmodule MeddieWeb.InvitationController do
         |> redirect(to: ~p"/users/log-in")
 
       invitation ->
-        case Accounts.register_user_via_invitation(Map.put(user_params, "email", invitation.email)) do
+        case Accounts.register_user_via_invitation(
+               Map.put(user_params, "email", invitation.email)
+             ) do
           {:ok, user} ->
             {:ok, _} = Invitations.accept_invitation(invitation, user)
 

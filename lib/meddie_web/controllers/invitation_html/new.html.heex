@@ -6,7 +6,12 @@
     </p>
   </div>
 
-  <.form for={@form} action={~p"/invitations/#{@token}/accept"} id="invitation-form" class="mt-8 space-y-4">
+  <.form
+    for={@form}
+    action={~p"/invitations/#{@token}/accept"}
+    id="invitation-form"
+    class="mt-8 space-y-4"
+  >
     <.input field={@form[:name]} type="text" label="Name" required autofocus />
 
     <div>
@@ -23,7 +28,12 @@
     <.input field={@form[:password]} type="password" label="Password" required />
     <p class="mt-1 text-xs text-base-content/50">At least 12 characters</p>
 
-    <.input field={@form[:password_confirmation]} type="password" label="Confirm password" required />
+    <.input
+      field={@form[:password_confirmation]}
+      type="password"
+      label="Confirm password"
+      required
+    />
 
     <.button class="btn btn-primary w-full">
       Create account

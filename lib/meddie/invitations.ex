@@ -58,25 +58,32 @@ defmodule Meddie.Invitations do
 
       existing_user ->
         # Existing user — create membership immediately
-        existing_membership = Repo.get_by(Membership, user_id: existing_user.id, space_id: space.id)
+        existing_membership =
+          Repo.get_by(Membership, user_id: existing_user.id, space_id: space.id)
 
         if existing_membership do
           {:error, :already_member}
         else
           Ecto.Multi.new()
-          |> Ecto.Multi.insert(:membership, Membership.changeset(%Membership{}, %{
-            user_id: existing_user.id,
-            space_id: space.id,
-            role: "member"
-          }))
-          |> Ecto.Multi.insert(:invitation, Invitation.changeset(%Invitation{}, %{
-            email: email,
-            space_id: space.id,
-            invited_by_id: user.id,
-            token: generate_token(),
-            expires_at: DateTime.utc_now(:second),
-            accepted_at: DateTime.utc_now(:second)
-          }))
+          |> Ecto.Multi.insert(
+            :membership,
+            Membership.changeset(%Membership{}, %{
+              user_id: existing_user.id,
+              space_id: space.id,
+              role: "member"
+            })
+          )
+          |> Ecto.Multi.insert(
+            :invitation,
+            Invitation.changeset(%Invitation{}, %{
+              email: email,
+              space_id: space.id,
+              invited_by_id: user.id,
+              token: generate_token(),
+              expires_at: DateTime.utc_now(:second),
+              accepted_at: DateTime.utc_now(:second)
+            })
+          )
           |> Repo.transaction()
           |> case do
             {:ok, %{invitation: invitation}} -> {:ok, invitation}
@@ -109,16 +116,21 @@ defmodule Meddie.Invitations do
   a membership if it's a space invitation.
   """
   def accept_invitation(%Invitation{} = invitation, user) do
-    multi = Ecto.Multi.new()
-    |> Ecto.Multi.update(:invitation, Invitation.accept_changeset(invitation))
+    multi =
+      Ecto.Multi.new()
+      |> Ecto.Multi.update(:invitation, Invitation.accept_changeset(invitation))
 
     multi =
       if invitation.space_id do
-        Ecto.Multi.insert(multi, :membership, Membership.changeset(%Membership{}, %{
-          user_id: user.id,
-          space_id: invitation.space_id,
-          role: "member"
-        }))
+        Ecto.Multi.insert(
+          multi,
+          :membership,
+          Membership.changeset(%Membership{}, %{
+            user_id: user.id,
+            space_id: invitation.space_id,
+            role: "member"
+          })
+        )
       else
         multi
       end
@@ -179,7 +191,11 @@ defmodule Meddie.Invitations do
       end
 
     if Repo.exists?(query) do
-      Ecto.Changeset.add_error(changeset, :email, "an invitation has already been sent to this email")
+      Ecto.Changeset.add_error(
+        changeset,
+        :email,
+        "an invitation has already been sent to this email"
+      )
     else
       changeset
     end

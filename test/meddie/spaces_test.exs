@@ -123,11 +123,15 @@ defmodule Meddie.SpacesTest do
       %{scope: admin_scope, space: space} = user_with_space_fixture()
 
       member = user_fixture()
-      {:ok, _} = Repo.insert(Membership.changeset(%Membership{}, %{
-        user_id: member.id,
-        space_id: space.id,
-        role: "member"
-      }))
+
+      {:ok, _} =
+        Repo.insert(
+          Membership.changeset(%Membership{}, %{
+            user_id: member.id,
+            space_id: space.id,
+            role: "member"
+          })
+        )
 
       membership = Spaces.get_membership(member, space)
       assert {:ok, _} = Spaces.remove_member(admin_scope, membership.id)
@@ -145,11 +149,15 @@ defmodule Meddie.SpacesTest do
       %{scope: scope, space: space} = user_with_space_fixture()
 
       second_admin = user_fixture()
-      {:ok, _} = Repo.insert(Membership.changeset(%Membership{}, %{
-        user_id: second_admin.id,
-        space_id: space.id,
-        role: "admin"
-      }))
+
+      {:ok, _} =
+        Repo.insert(
+          Membership.changeset(%Membership{}, %{
+            user_id: second_admin.id,
+            space_id: space.id,
+            role: "admin"
+          })
+        )
 
       second_membership = Spaces.get_membership(second_admin, space)
       assert {:ok, _} = Spaces.remove_member(scope, second_membership.id)

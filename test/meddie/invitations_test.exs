@@ -39,7 +39,10 @@ defmodule Meddie.InvitationsTest do
       scope = Scope.for_user(user)
 
       {:ok, _} = Invitations.create_platform_invitation(scope, "dup@example.com")
-      assert {:error, changeset} = Invitations.create_platform_invitation(scope, "dup@example.com")
+
+      assert {:error, changeset} =
+               Invitations.create_platform_invitation(scope, "dup@example.com")
+
       assert "an invitation has already been sent to this email" in errors_on(changeset).email
     end
 

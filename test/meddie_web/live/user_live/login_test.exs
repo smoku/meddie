@@ -6,9 +6,9 @@ defmodule MeddieWeb.UserLive.LoginTest do
 
   describe "login page" do
     test "renders login page", %{conn: conn} do
-      {:ok, _lv, html} = live(conn, ~p"/users/log-in")
+      {:ok, lv, _html} = live(conn, ~p"/users/log-in")
 
-      assert html =~ "Log in"
+      assert has_element?(lv, "#login_form")
     end
   end
 
@@ -19,9 +19,7 @@ defmodule MeddieWeb.UserLive.LoginTest do
       {:ok, lv, _html} = live(conn, ~p"/users/log-in")
 
       form =
-        form(lv, "#login_form",
-          user: %{email: user.email, password: valid_user_password()}
-        )
+        form(lv, "#login_form", user: %{email: user.email, password: valid_user_password()})
 
       conn = submit_form(form, conn)
 

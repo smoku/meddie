@@ -35,5 +35,4 @@ defmodule Meddie.Accounts.UserNotifier do
     ==============================
     """)
   end
-
 end

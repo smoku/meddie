@@ -7,7 +7,12 @@ defmodule MeddieWeb.SettingsLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.sidebar flash={@flash} current_scope={@current_scope} user_spaces={@user_spaces} page_title="Settings">
+    <Layouts.sidebar
+      flash={@flash}
+      current_scope={@current_scope}
+      user_spaces={@user_spaces}
+      page_title="Settings"
+    >
       <div class="max-w-4xl space-y-8">
         <%!-- Space Settings (admin only) --%>
         <section :if={@is_admin}>
@@ -73,7 +78,6 @@ defmodule MeddieWeb.SettingsLive.Index do
             </div>
           </div>
         </section>
-
       </div>
     </Layouts.sidebar>
     """
@@ -101,7 +105,12 @@ defmodule MeddieWeb.SettingsLive.Index do
         {:noreply, socket |> put_flash(:info, "Member removed.") |> assign(members: members)}
 
       {:error, :last_admin} ->
-        {:noreply, put_flash(socket, :error, "You are the only admin. Transfer admin role to another member before leaving.")}
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           "You are the only admin. Transfer admin role to another member before leaving."
+         )}
     end
   end
 
@@ -126,5 +135,4 @@ defmodule MeddieWeb.SettingsLive.Index do
         {:noreply, put_flash(socket, :error, message)}
     end
   end
-
 end

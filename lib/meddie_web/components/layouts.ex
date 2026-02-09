@@ -89,7 +89,10 @@ defmodule MeddieWeb.Layouts do
                 {@current_scope.space.name}
                 <.icon name="hero-chevron-up-down-micro" class="size-4 opacity-60" />
               </div>
-              <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-56 z-50">
+              <ul
+                tabindex="0"
+                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-56 z-50"
+              >
                 <li :for={space <- @user_spaces}>
                   <.link
                     href={~p"/spaces/#{space.id}/switch"}
@@ -132,7 +135,10 @@ defmodule MeddieWeb.Layouts do
                 {@current_scope.user.name || @current_scope.user.email}
                 <.icon name="hero-chevron-down-micro" class="size-4" />
               </div>
-              <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-48 z-50">
+              <ul
+                tabindex="0"
+                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-48 z-50"
+              >
                 <li>
                   <.link href={~p"/users/settings"}>Account settings</.link>
                 </li>
@@ -220,13 +226,25 @@ defmodule MeddieWeb.Layouts do
     ~H"""
     <div class="card relative flex flex-row items-center border-2 border-base-300 bg-base-300 rounded-full">
       <div class="absolute w-1/3 h-full rounded-full border-1 border-base-200 bg-base-100 brightness-200 left-0 [[data-theme=light]_&]:left-1/3 [[data-theme=dark]_&]:left-2/3 transition-[left]" />
-      <button class="flex p-2 cursor-pointer w-1/3" phx-click={JS.dispatch("phx:set-theme")} data-phx-theme="system">
+      <button
+        class="flex p-2 cursor-pointer w-1/3"
+        phx-click={JS.dispatch("phx:set-theme")}
+        data-phx-theme="system"
+      >
         <.icon name="hero-computer-desktop-micro" class="size-4 opacity-75 hover:opacity-100" />
       </button>
-      <button class="flex p-2 cursor-pointer w-1/3" phx-click={JS.dispatch("phx:set-theme")} data-phx-theme="light">
+      <button
+        class="flex p-2 cursor-pointer w-1/3"
+        phx-click={JS.dispatch("phx:set-theme")}
+        data-phx-theme="light"
+      >
         <.icon name="hero-sun-micro" class="size-4 opacity-75 hover:opacity-100" />
       </button>
-      <button class="flex p-2 cursor-pointer w-1/3" phx-click={JS.dispatch("phx:set-theme")} data-phx-theme="dark">
+      <button
+        class="flex p-2 cursor-pointer w-1/3"
+        phx-click={JS.dispatch("phx:set-theme")}
+        data-phx-theme="dark"
+      >
         <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
       </button>
     </div>

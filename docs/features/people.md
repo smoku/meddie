@@ -19,7 +19,7 @@ A person can optionally be linked to a user account (`user_id`), which tells the
    - **Date of birth** (optional)
    - **Height** in cm (optional)
    - **Weight** in kg (optional)
-   - **Link to your account** (optional checkbox — links this person to the current user)
+   - **Linked user** (optional select — links this person to a space member's account)
 3. On submit, the person is created with empty Markdown fields (health notes, supplements, medications).
 4. The user is redirected to the person's detail view where they can fill in the Markdown fields.
 
@@ -27,7 +27,7 @@ A person can optionally be linked to a user account (`user_id`), which tells the
 
 1. User navigates to a person's detail view and clicks "Edit."
 2. All fields are editable, including the three Markdown text areas.
-3. The Markdown fields use plain textarea inputs. No rich editor — users write Markdown directly.
+3. The Markdown fields use Milkdown — a WYSIWYG markdown editor (ProseMirror-based). Users type naturally without seeing markdown syntax. Content is stored as markdown and rendered as HTML on the detail view via Earmark.
 4. Changes are saved on form submit.
 
 ### Linking a Person to a User Account

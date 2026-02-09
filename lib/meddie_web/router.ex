@@ -88,6 +88,9 @@ defmodule MeddieWeb.Router do
         {MeddieWeb.UserAuth, :ensure_current_space}
       ] do
       live "/people", PeopleLive.Index, :index
+      live "/people/new", PeopleLive.Form, :new
+      live "/people/:id", PeopleLive.Show, :show
+      live "/people/:id/edit", PeopleLive.Form, :edit
       live "/settings", SettingsLive.Index, :index
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email

@@ -68,6 +68,7 @@ defmodule Meddie.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:oban, "~> 2.18"},
+      {:earmark, "~> 1.4"},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false}
     ]
   end
@@ -84,7 +85,11 @@ defmodule Meddie.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.setup": [
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing",
+        "cmd npm --prefix assets install"
+      ],
       "assets.build": ["compile", "tailwind meddie", "esbuild meddie"],
       "assets.deploy": [
         "tailwind meddie --minify",

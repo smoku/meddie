@@ -6,7 +6,11 @@ defmodule MeddieWeb.UserLive.Settings do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.sidebar flash={@flash} current_scope={@current_scope} page_title={gettext("Account Settings")}>
+    <Layouts.sidebar
+      flash={@flash}
+      current_scope={@current_scope}
+      page_title={gettext("Account Settings")}
+    >
       <div class="max-w-4xl space-y-8">
         <h2 class="text-xl font-bold mb-4">{gettext("Account Settings")}</h2>
 
@@ -38,7 +42,12 @@ defmodule MeddieWeb.UserLive.Settings do
         <div class="card bg-base-100 shadow-sm">
           <div class="card-body">
             <h3 class="card-title text-base">{gettext("Email")}</h3>
-            <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
+            <.form
+              for={@email_form}
+              id="email_form"
+              phx-submit="update_email"
+              phx-change="validate_email"
+            >
               <.input
                 field={@email_form[:email]}
                 type="email"
