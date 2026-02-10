@@ -35,3 +35,9 @@ meddie-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Local dev secrets (API keys, etc.)
+/config/dev.secret.exs
+
+# Local file uploads (dev/test)
+/priv/static/uploads/
+

@@ -20,6 +20,7 @@ defmodule Meddie.People.Person do
 
     belongs_to :space, Space
     belongs_to :user, User
+    has_many :documents, Meddie.Documents.Document
 
     timestamps(type: :utc_datetime)
   end

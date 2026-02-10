@@ -45,3 +45,11 @@ config :phoenix_live_view,
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# File storage: local filesystem for testing
+config :meddie, :storage_impl, Meddie.Storage.Local
+
+# AI providers: mock for testing
+config :meddie, :ai,
+  parsing_provider: Meddie.AI.Providers.Mock,
+  chat_provider: Meddie.AI.Providers.Mock

@@ -25,12 +25,13 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/meddie"
 import topbar from "../vendor/topbar"
 import MarkdownEditor from "./hooks/markdown_editor"
+import PdfViewer from "./hooks/pdf_viewer"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, MarkdownEditor},
+  hooks: {...colocatedHooks, MarkdownEditor, PdfViewer},
 })
 
 // Show progress bar on live navigation and form submits

@@ -23,7 +23,9 @@ defmodule MeddieWeb.SpaceLive.New do
           phx-mounted={JS.focus()}
         />
         <p class="text-xs text-base-content/50">
-          {gettext("A space groups people, documents and results. You can create your personal space or a family space.")}
+          {gettext(
+            "A space groups people, documents and results. You can create your personal space or a family space."
+          )}
         </p>
         <.button phx-disable-with={gettext("Creating...")} class="btn btn-primary w-full">
           {gettext("Create Space")}

@@ -22,7 +22,9 @@ defmodule MeddieWeb.PlatformLive.Index do
                   placeholder="email@example.com"
                   required
                 />
-                <button type="submit" class="btn btn-primary btn-sm">{gettext("Send invitation")}</button>
+                <button type="submit" class="btn btn-primary btn-sm">
+                  {gettext("Send invitation")}
+                </button>
               </.form>
             </div>
           </div>

@@ -57,6 +57,31 @@ if config_env() == :prod do
 
   config :meddie, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
+  # File storage: S3/Tigris for production
+  config :meddie, :storage_impl, Meddie.Storage.S3
+  config :meddie, :storage_bucket, System.get_env("BUCKET_NAME") || "meddie-documents"
+
+  config :ex_aws,
+    access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
+    secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
+    region: "auto"
+
+  if s3_endpoint = System.get_env("AWS_ENDPOINT_URL_S3") do
+    s3_host = URI.parse(s3_endpoint).host
+
+    config :ex_aws, :s3,
+      scheme: "https://",
+      host: s3_host,
+      port: 443
+  end
+
+  # AI providers for production
+  config :meddie, :ai,
+    parsing_provider: Meddie.AI.Providers.OpenAI,
+    chat_provider: Meddie.AI.Providers.Anthropic,
+    openai_api_key: System.get_env("OPENAI_API_KEY"),
+    anthropic_api_key: System.get_env("ANTHROPIC_API_KEY")
+
   config :meddie, MeddieWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [

@@ -90,3 +90,16 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+# File storage: local filesystem for development
+config :meddie, :storage_impl, Meddie.Storage.Local
+
+# AI providers for development
+config :meddie, :ai,
+  parsing_provider: Meddie.AI.Providers.Anthropic,
+  chat_provider: Meddie.AI.Providers.Anthropic
+
+# Import local secrets (API keys, etc.) — not tracked in git.
+if File.exists?(Path.expand("dev.secret.exs", __DIR__)) do
+  import_config "dev.secret.exs"
+end

@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@milkdown/kit": "^7.18.0"
+    "@milkdown/kit": "^7.18.0",
+    "pdfjs-dist": "^5.4.624"
   }
 }

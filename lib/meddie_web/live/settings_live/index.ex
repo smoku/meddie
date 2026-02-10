@@ -72,7 +72,9 @@ defmodule MeddieWeb.SettingsLive.Index do
                     class="input input-bordered input-sm flex-1"
                     required
                   />
-                  <button type="submit" class="btn btn-primary btn-sm">{gettext("Send invitation")}</button>
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    {gettext("Send invitation")}
+                  </button>
                 </.form>
               </div>
             </div>
@@ -102,14 +104,18 @@ defmodule MeddieWeb.SettingsLive.Index do
     case Spaces.remove_member(socket.assigns.current_scope, id) do
       {:ok, _} ->
         members = Spaces.list_space_members(socket.assigns.current_scope)
-        {:noreply, socket |> put_flash(:info, gettext("Member removed.")) |> assign(members: members)}
+
+        {:noreply,
+         socket |> put_flash(:info, gettext("Member removed.")) |> assign(members: members)}
 
       {:error, :last_admin} ->
         {:noreply,
          put_flash(
            socket,
            :error,
-           gettext("You are the only admin. Transfer admin role to another member before leaving.")
+           gettext(
+             "You are the only admin. Transfer admin role to another member before leaving."
+           )
          )}
     end
   end
@@ -123,7 +129,8 @@ defmodule MeddieWeb.SettingsLive.Index do
          |> assign(invite_form: to_form(%{"email" => ""}, as: "invite"))}
 
       {:error, :already_member} ->
-        {:noreply, put_flash(socket, :error, gettext("This user is already a member of this space."))}
+        {:noreply,
+         put_flash(socket, :error, gettext("This user is already a member of this space."))}
 
       {:error, changeset} ->
         message =

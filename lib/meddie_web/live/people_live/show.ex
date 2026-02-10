@@ -2,6 +2,7 @@ defmodule MeddieWeb.PeopleLive.Show do
   use MeddieWeb, :live_view
 
   alias Meddie.People
+  alias Meddie.Documents
 
   @impl true
   def render(assigns) do
@@ -13,6 +14,7 @@ defmodule MeddieWeb.PeopleLive.Show do
       page_title={@person.name}
     >
       <div class="max-w-4xl space-y-6">
+        <%!-- Header --%>
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <.link navigate={~p"/people"} class="btn btn-ghost btn-sm">
@@ -40,48 +42,175 @@ defmodule MeddieWeb.PeopleLive.Show do
           </div>
         </div>
 
-        <%!-- Profile card --%>
-        <div class="card bg-base-100 shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title text-base">{gettext("Profile")}</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-2">
-              <.info_item label={gettext("Sex")} value={display_sex(@person.sex)} />
-              <.info_item
-                label={gettext("Date of birth")}
-                value={
-                  if @person.date_of_birth,
-                    do: Calendar.strftime(@person.date_of_birth, "%Y-%m-%d"),
-                    else: "—"
-                }
-              />
-              <.info_item
-                label={gettext("Age")}
-                value={if @person.date_of_birth, do: "#{age(@person.date_of_birth)}", else: "—"}
-              />
-              <.info_item
-                label={gettext("Height")}
-                value={if @person.height_cm, do: "#{@person.height_cm} cm", else: "—"}
-              />
-              <.info_item
-                label={gettext("Weight")}
-                value={if @person.weight_kg, do: "#{@person.weight_kg} kg", else: "—"}
-              />
-            </div>
-          </div>
+        <%!-- Tabs --%>
+        <div class="flex gap-1 border-b border-base-300">
+          <.link
+            patch={~p"/people/#{@person}?tab=overview"}
+            class={[
+              "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+              if(@tab == "overview",
+                do: "border-primary text-primary",
+                else: "border-transparent text-base-content/60 hover:text-base-content"
+              )
+            ]}
+          >
+            {gettext("Overview")}
+          </.link>
+          <.link
+            patch={~p"/people/#{@person}?tab=documents"}
+            class={[
+              "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+              if(@tab == "documents",
+                do: "border-primary text-primary",
+                else: "border-transparent text-base-content/60 hover:text-base-content"
+              )
+            ]}
+          >
+            {gettext("Documents")}
+            <span :if={@documents_count > 0} class="ml-1.5 badge badge-sm">
+              {@documents_count}
+            </span>
+          </.link>
         </div>
 
-        <%!-- Health Notes --%>
-        <.markdown_card title={gettext("Health Notes")} content={@person.health_notes} />
+        <%!-- Overview tab --%>
+        <div :if={@tab == "overview"} class="space-y-6">
+          <%!-- Profile card --%>
+          <div class="card bg-base-100 shadow-sm">
+            <div class="card-body">
+              <h3 class="card-title text-base">{gettext("Profile")}</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-2">
+                <.info_item label={gettext("Sex")} value={display_sex(@person.sex)} />
+                <.info_item
+                  label={gettext("Date of birth")}
+                  value={
+                    if @person.date_of_birth,
+                      do: Calendar.strftime(@person.date_of_birth, "%Y-%m-%d"),
+                      else: "—"
+                  }
+                />
+                <.info_item
+                  label={gettext("Age")}
+                  value={if @person.date_of_birth, do: "#{age(@person.date_of_birth)}", else: "—"}
+                />
+                <.info_item
+                  label={gettext("Height")}
+                  value={if @person.height_cm, do: "#{@person.height_cm} cm", else: "—"}
+                />
+                <.info_item
+                  label={gettext("Weight")}
+                  value={if @person.weight_kg, do: "#{@person.weight_kg} kg", else: "—"}
+                />
+              </div>
+            </div>
+          </div>
 
-        <%!-- Supplements --%>
-        <.markdown_card title={gettext("Supplements")} content={@person.supplements} />
+          <.markdown_card title={gettext("Health Notes")} content={@person.health_notes} />
+          <.markdown_card title={gettext("Supplements")} content={@person.supplements} />
+          <.markdown_card title={gettext("Medications")} content={@person.medications} />
+        </div>
 
-        <%!-- Medications --%>
-        <.markdown_card title={gettext("Medications")} content={@person.medications} />
+        <%!-- Documents tab --%>
+        <div :if={@tab == "documents"} class="space-y-6">
+          <%!-- Upload zone --%>
+          <form phx-change="validate-upload" phx-submit="save-upload" class="space-y-4">
+            <div
+              class="border-2 border-dashed border-base-300 rounded-lg p-8 text-center hover:border-primary/50 transition-colors"
+              phx-drop-target={@uploads.document.ref}
+            >
+              <.icon name="hero-cloud-arrow-up" class="size-10 mx-auto mb-3 text-base-content/40" />
+              <p class="text-sm text-base-content/60 mb-3">
+                {gettext("Drag and drop files here, or")}
+              </p>
+              <.live_file_input upload={@uploads.document} class="hidden" />
+              <label for={@uploads.document.ref} class="btn btn-primary btn-sm cursor-pointer">
+                {gettext("Browse files")}
+              </label>
+              <p class="text-xs text-base-content/40 mt-2">
+                {gettext("PDF, JPG, PNG up to 20 MB")}
+              </p>
+            </div>
+
+            <%!-- Upload entries with progress --%>
+            <div
+              :for={entry <- @uploads.document.entries}
+              class="flex items-center gap-3 p-3 bg-base-200 rounded-lg"
+            >
+              <.icon name="hero-document" class="size-5 shrink-0 text-base-content/50" />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">{entry.client_name}</p>
+                <div class="w-full bg-base-300 rounded-full h-1.5 mt-1">
+                  <div
+                    class="bg-primary h-1.5 rounded-full transition-all"
+                    style={"width: #{entry.progress}%"}
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                phx-click="cancel-upload"
+                phx-value-ref={entry.ref}
+                class="btn btn-ghost btn-xs"
+              >
+                <.icon name="hero-x-mark-micro" class="size-4" />
+              </button>
+            </div>
+
+            <%!-- Upload errors --%>
+            <p
+              :for={err <- upload_errors(@uploads.document)}
+              class="text-error text-xs"
+            >
+              {upload_error_to_string(err)}
+            </p>
+          </form>
+
+          <%!-- Document list --%>
+          <div id="documents" phx-update="stream" class="space-y-3">
+            <div
+              id="documents-empty"
+              class="hidden only:block text-center py-12 text-base-content/50"
+            >
+              <.icon name="hero-document-text" class="size-12 mx-auto mb-4" />
+              <p class="text-lg">{gettext("No documents yet.")}</p>
+              <p class="text-sm mt-1">
+                {gettext("Upload a medical document to get started.")}
+              </p>
+            </div>
+
+            <.link
+              :for={{dom_id, doc} <- @streams.documents}
+              navigate={~p"/people/#{@person}/documents/#{doc}"}
+              id={dom_id}
+              class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow block"
+            >
+              <div class="card-body p-4 flex-row items-center gap-4">
+                <.document_type_icon type={doc.document_type} />
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-sm truncate">{doc.filename}</p>
+                  <p class="text-xs text-base-content/50 mt-0.5">
+                    {if doc.document_date,
+                      do: Calendar.strftime(doc.document_date, "%Y-%m-%d"),
+                      else: Calendar.strftime(doc.inserted_at, "%Y-%m-%d")}
+                  </p>
+                </div>
+                <.status_badge status={doc.status} />
+                <span
+                  :if={doc.status == "parsed" && doc.document_type == "lab_results"}
+                  class="text-xs text-base-content/50"
+                >
+                  {ngettext("1 biomarker", "%{count} biomarkers", length(doc.biomarkers))}
+                </span>
+              </div>
+            </.link>
+          </div>
+        </div>
       </div>
     </Layouts.sidebar>
     """
   end
+
+  # -- Private components --
 
   attr :label, :string, required: true
   attr :value, :string, required: true
@@ -113,15 +242,113 @@ defmodule MeddieWeb.PeopleLive.Show do
     """
   end
 
+  attr :status, :string, required: true
+
+  defp status_badge(%{status: "parsed"} = assigns) do
+    ~H"""
+    <span class="badge badge-success badge-sm">{gettext("Parsed")}</span>
+    """
+  end
+
+  defp status_badge(%{status: "parsing"} = assigns) do
+    ~H"""
+    <span class="badge badge-warning badge-sm">
+      <span class="loading loading-spinner loading-xs mr-1" />{gettext("Parsing")}
+    </span>
+    """
+  end
+
+  defp status_badge(%{status: "pending"} = assigns) do
+    ~H"""
+    <span class="badge badge-ghost badge-sm">{gettext("Pending")}</span>
+    """
+  end
+
+  defp status_badge(%{status: "failed"} = assigns) do
+    ~H"""
+    <span class="badge badge-error badge-sm">{gettext("Failed")}</span>
+    """
+  end
+
+  defp status_badge(assigns) do
+    ~H"""
+    <span class="badge badge-ghost badge-sm">{@status}</span>
+    """
+  end
+
+  attr :type, :string, required: true
+
+  defp document_type_icon(%{type: "lab_results"} = assigns) do
+    ~H"""
+    <div class="p-2 bg-info/10 rounded-lg">
+      <.icon name="hero-beaker" class="size-5 text-info" />
+    </div>
+    """
+  end
+
+  defp document_type_icon(%{type: "medical_report"} = assigns) do
+    ~H"""
+    <div class="p-2 bg-success/10 rounded-lg">
+      <.icon name="hero-document-text" class="size-5 text-success" />
+    </div>
+    """
+  end
+
+  defp document_type_icon(assigns) do
+    ~H"""
+    <div class="p-2 bg-base-200 rounded-lg">
+      <.icon name="hero-document" class="size-5 text-base-content/50" />
+    </div>
+    """
+  end
+
+  # -- Lifecycle --
+
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     person = People.get_person!(socket.assigns.current_scope, id)
 
+    if connected?(socket) do
+      Documents.subscribe_person_documents(person.id)
+    end
+
+    documents = Documents.list_documents(socket.assigns.current_scope, person.id)
+    documents_count = Documents.count_documents(socket.assigns.current_scope, person.id)
+
     {:ok,
      socket
      |> assign(page_title: person.name)
-     |> assign(person: person)}
+     |> assign(person: person)
+     |> assign(tab: "overview")
+     |> assign(documents_count: documents_count)
+     |> stream(:documents, documents)
+     |> allow_upload(:document,
+       accept: ~w(.jpg .jpeg .png .pdf),
+       max_file_size: 20_000_000,
+       max_entries: 5,
+       auto_upload: true,
+       progress: &handle_progress/3
+     )}
   end
+
+  @impl true
+  def handle_params(params, _uri, socket) do
+    tab = params["tab"] || "overview"
+
+    socket =
+      if tab == "documents" do
+        documents =
+          Documents.list_documents(socket.assigns.current_scope, socket.assigns.person.id)
+
+        stream(socket, :documents, documents, reset: true)
+      else
+        socket
+      end
+
+    {:noreply, assign(socket, :tab, tab)}
+  end
+
+  # -- Events --
 
   @impl true
   def handle_event("delete", _params, socket) do
@@ -132,6 +359,82 @@ defmodule MeddieWeb.PeopleLive.Show do
      |> put_flash(:info, gettext("Person deleted successfully."))
      |> push_navigate(to: ~p"/people")}
   end
+
+  def handle_event("validate-upload", _params, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("save-upload", _params, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :document, ref)}
+  end
+
+  # -- PubSub --
+
+  @impl true
+  def handle_info({:document_updated, document}, socket) do
+    document = Meddie.Repo.preload(document, :biomarkers)
+
+    documents_count =
+      Documents.count_documents(socket.assigns.current_scope, socket.assigns.person.id)
+
+    {:noreply,
+     socket
+     |> stream_insert(:documents, document)
+     |> assign(documents_count: documents_count)}
+  end
+
+  # -- Upload progress callback --
+
+  defp handle_progress(:document, entry, socket) do
+    if entry.done? do
+      consume_uploaded_entry(socket, entry, fn %{path: tmp_path} ->
+        person = socket.assigns.person
+        scope = socket.assigns.current_scope
+        document_id = Ecto.UUID.generate()
+
+        storage_path =
+          "documents/#{scope.space.id}/#{person.id}/#{document_id}/#{entry.client_name}"
+
+        file_data = File.read!(tmp_path)
+        :ok = Meddie.Storage.put(storage_path, file_data, entry.client_type)
+
+        attrs = %{
+          "filename" => entry.client_name,
+          "content_type" => entry.client_type,
+          "file_size" => entry.client_size,
+          "storage_path" => storage_path
+        }
+
+        {:ok, document} = Documents.create_document(scope, person.id, attrs)
+
+        %{document_id: document.id}
+        |> Meddie.Workers.ParseDocument.new()
+        |> Oban.insert()
+
+        {:ok, document}
+      end)
+
+      # Refresh the document list
+      documents =
+        Documents.list_documents(socket.assigns.current_scope, socket.assigns.person.id)
+
+      documents_count =
+        Documents.count_documents(socket.assigns.current_scope, socket.assigns.person.id)
+
+      {:noreply,
+       socket
+       |> stream(:documents, documents, reset: true)
+       |> assign(documents_count: documents_count)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  # -- Helpers --
 
   defp age(date_of_birth) do
     div(Date.diff(Date.utc_today(), date_of_birth), 365)
@@ -149,4 +452,12 @@ defmodule MeddieWeb.PeopleLive.Show do
   defp display_sex("male"), do: gettext("Male")
   defp display_sex("female"), do: gettext("Female")
   defp display_sex(_), do: ""
+
+  defp upload_error_to_string(:too_large), do: gettext("File is too large (max 20 MB)")
+  defp upload_error_to_string(:too_many_files), do: gettext("Too many files")
+
+  defp upload_error_to_string(:not_accepted),
+    do: gettext("Unsupported file format. Accepted: PDF, JPG, PNG")
+
+  defp upload_error_to_string(_), do: gettext("Upload error")
 end

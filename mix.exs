@@ -69,6 +69,8 @@ defmodule Meddie.MixProject do
       {:bandit, "~> 1.5"},
       {:oban, "~> 2.18"},
       {:earmark, "~> 1.4"},
+      {:ex_aws, "~> 2.5"},
+      {:ex_aws_s3, "~> 2.5"},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false}
     ]
   end
@@ -88,7 +90,8 @@ defmodule Meddie.MixProject do
       "assets.setup": [
         "tailwind.install --if-missing",
         "esbuild.install --if-missing",
-        "cmd npm --prefix assets install"
+        "cmd npm --prefix assets install",
+        "cmd cp assets/node_modules/pdfjs-dist/build/pdf.worker.min.mjs priv/static/assets/js/pdf.worker.min.mjs"
       ],
       "assets.build": ["compile", "tailwind meddie", "esbuild meddie"],
       "assets.deploy": [

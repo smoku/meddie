@@ -1,0 +1,143 @@
+defmodule Meddie.AI.Providers.Anthropic do
+  @moduledoc """
+  Anthropic provider implementation using Claude for vision and chat.
+  """
+
+  @behaviour Meddie.AI.Provider
+
+  require Logger
+
+  @api_url "https://api.anthropic.com/v1/messages"
+  @model "claude-sonnet-4-5-20250929"
+  @timeout 180_000
+
+  @impl true
+  def parse_document(images, person_context) do
+    system_prompt = person_context <> "\n\n" <> Meddie.AI.Prompts.document_parsing_prompt()
+
+    content =
+      Enum.flat_map(images, fn {image_data, content_type} ->
+        mime = content_type_to_media_type(content_type)
+        base64 = Base.encode64(image_data)
+
+        [
+          %{
+            "type" => "image",
+            "source" => %{
+              "type" => "base64",
+              "media_type" => mime,
+              "data" => base64
+            }
+          }
+        ]
+      end)
+
+    content = content ++ [%{"type" => "text", "text" => "Parse this medical document."}]
+
+    body = %{
+      "model" => @model,
+      "system" => system_prompt,
+      "messages" => [
+        %{"role" => "user", "content" => content}
+      ],
+      "max_tokens" => 32_768
+    }
+
+    Logger.debug(
+      "Anthropic parse_document request: model=#{@model} images=#{length(images)} system_prompt_length=#{String.length(system_prompt)}"
+    )
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [
+             {"x-api-key", api_key()},
+             {"anthropic-version", "2023-06-01"}
+           ],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: response}} ->
+        Logger.debug("Anthropic parse_document response: #{inspect(response, limit: 2000)}")
+        parse_response(response)
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("Anthropic API error: status=#{status} body=#{inspect(body)}")
+        {:error, "Anthropic API error: #{status}"}
+
+      {:error, reason} ->
+        Logger.error("Anthropic request failed: #{inspect(reason)}")
+        {:error, "Anthropic request failed: #{inspect(reason)}"}
+    end
+  end
+
+  @impl true
+  def chat_stream(messages, system_prompt, callback) do
+    body = %{
+      "model" => @model,
+      "system" => system_prompt,
+      "messages" =>
+        Enum.map(messages, fn msg ->
+          %{"role" => msg.role, "content" => msg.content}
+        end),
+      "max_tokens" => 4096,
+      "stream" => true
+    }
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [
+             {"x-api-key", api_key()},
+             {"anthropic-version", "2023-06-01"}
+           ],
+           receive_timeout: @timeout,
+           into: fn {:data, data}, {req, resp} ->
+             for line <- String.split(data, "\n", trim: true),
+                 String.starts_with?(line, "data: "),
+                 chunk = String.trim_leading(line, "data: "),
+                 {:ok, parsed} <- [Jason.decode(chunk)],
+                 parsed["type"] == "content_block_delta",
+                 text = get_in(parsed, ["delta", "text"]),
+                 text != nil do
+               callback.(%{content: text})
+             end
+
+             {:cont, {req, resp}}
+           end
+         ) do
+      {:ok, _} -> :ok
+      {:error, reason} -> {:error, "Anthropic stream failed: #{inspect(reason)}"}
+    end
+  end
+
+  defp parse_response(%{"content" => [%{"type" => "text", "text" => text} | _]}) do
+    text = strip_code_fences(text)
+
+    case Jason.decode(text) do
+      {:ok, parsed} -> {:ok, parsed}
+      {:error, _} -> {:error, "Failed to parse JSON response from Anthropic"}
+    end
+  end
+
+  defp parse_response(response) do
+    {:error, "Unexpected Anthropic response format: #{inspect(response)}"}
+  end
+
+  defp strip_code_fences(text) do
+    text
+    |> String.trim()
+    |> then(fn
+      "```json" <> rest -> rest |> String.trim_trailing("```") |> String.trim()
+      "```" <> rest -> rest |> String.trim_trailing("```") |> String.trim()
+      other -> other
+    end)
+  end
+
+  defp content_type_to_media_type("image/jpeg"), do: "image/jpeg"
+  defp content_type_to_media_type("image/png"), do: "image/png"
+  defp content_type_to_media_type("image/webp"), do: "image/webp"
+  defp content_type_to_media_type(other), do: other
+
+  defp api_key do
+    Application.get_env(:meddie, :ai)[:anthropic_api_key] ||
+      raise "ANTHROPIC_API_KEY not configured"
+  end
+end
