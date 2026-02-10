@@ -15,9 +15,11 @@ This feature covers the full document lifecycle: upload, AI parsing, document ma
 3. **File selection**: User selects one or more files. LiveView validates file type and size client-side before upload begins.
 4. **Upload progress**: LiveView streams the upload with a progress bar per file. The upload uses Phoenix LiveView's `allow_upload/3` with chunked uploads.
 5. **Server processing**: On upload completion, the server:
+   - Computes a SHA-256 hash of the file content
+   - Checks for an existing document with the same hash for this person — if found, skips the upload and shows an info flash ("This document has already been uploaded.")
    - Generates a UUID for the document
    - Uploads the file to Tigris under the path `documents/{space_id}/{person_id}/{document_id}/{original_filename}`
-   - Creates a `documents` record with status `pending` and the selected `person_id`
+   - Creates a `documents` record with status `pending`, the selected `person_id`, and the `content_hash`
    - Enqueues an Oban job for parsing
 6. **Confirmation**: The user sees the document appear in the document list with a "Parsing..." status indicator.
 
@@ -75,6 +77,7 @@ This feature covers the full document lifecycle: upload, AI parsing, document ma
 | page_count | `integer` | nullable, for PDFs |
 | document_date | `date` | nullable, extracted during parsing or set by user |
 | error_message | `string` | nullable, populated on failure |
+| content_hash | `string` | nullable, SHA-256 hash of file content for deduplication |
 | inserted_at | `utc_datetime` | NOT NULL |
 | updated_at | `utc_datetime` | NOT NULL |
 
@@ -101,6 +104,7 @@ This feature covers the full document lifecycle: upload, AI parsing, document ma
 
 **Indexes:**
 - `documents.person_id` — find all documents for a person
+- `documents.(person_id, content_hash)` — unique index for duplicate detection
 - `biomarkers.document_id` — find all biomarkers for a document
 - `biomarkers.(person_id, name)` — composite index for per-person trend queries
 
@@ -161,7 +165,7 @@ First, classify the document:
 
 Then, for ALL document types:
 - Extract the document date if visible
-- Write a brief summary (2-4 sentences) of the document contents and key findings
+- Write a brief summary (2-4 sentences) of the document contents and key findings. Write the summary in the same language as the document.
 
 Additionally, for lab_results ONLY, extract every biomarker/test result:
 - name: The biomarker or test name exactly as written on the document (keep original language, do NOT translate)
@@ -251,12 +255,13 @@ Sex: {sex} | DOB: {date_of_birth} | Height: {height_cm} cm | Weight: {weight_kg}
 - **PDF with many pages**: PDFs over 20 pages show a warning. Each page is processed individually during parsing.
 - **Concurrent uploads**: Multiple files can be uploaded simultaneously. Each gets its own progress bar and document record.
 - **No person selected**: Upload is blocked until a person is selected. If Space has no people, prompt to create one first.
+- **Duplicate document**: If the same file (by SHA-256 content hash) has already been uploaded for this person, the upload is skipped with an info message. The same file can still be uploaded for a different person (e.g., shared lab report).
 
 ### Parsing
 - **Illegible document**: If the AI cannot read the document at all, status is set to `failed` with message "Could not read this document. Please upload a clearer image."
 - **Non-biomarker document**: No longer treated as failure. AI classifies it as `medical_report` or `other` and provides a summary.
 - **Rate limiting**: If the AI API returns a rate limit error, Oban retries with exponential backoff.
-- **Timeout**: AI calls have a 60-second timeout per page. On timeout, Oban retries the job.
+- **Timeout**: AI calls have a 180-second timeout. On timeout, Oban retries the job.
 - **Duplicate biomarkers**: If the same biomarker appears multiple times in a document (e.g., repeated across pages), keep only the instance with the most complete data.
 - **Polish decimal notation**: The AI converts decimal commas to dots in `numeric_value` (e.g., "5,96" → 5.96). The `value` field preserves the original notation.
 - **Ambiguous values**: Values like ">60" or "<1,0" are stored as strings in `value`. `numeric_value` is set to the parsed number (60 or 1.0).

@@ -23,6 +23,7 @@ defmodule Meddie.Documents.Document do
     field :page_count, :integer
     field :document_date, :date
     field :error_message, :string
+    field :content_hash, :string
 
     belongs_to :space, Space
     belongs_to :person, Person
@@ -43,12 +44,17 @@ defmodule Meddie.Documents.Document do
       :summary,
       :page_count,
       :document_date,
-      :error_message
+      :error_message,
+      :content_hash
     ])
     |> validate_required([:filename, :content_type, :file_size, :storage_path])
     |> validate_inclusion(:status, @statuses)
     |> validate_inclusion(:document_type, @document_types)
     |> validate_number(:file_size, greater_than: 0)
+    |> unique_constraint(:content_hash,
+      name: :documents_person_id_content_hash_index,
+      message: "duplicate document"
+    )
   end
 
   def statuses, do: @statuses

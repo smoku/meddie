@@ -170,6 +170,54 @@ defmodule Meddie.DocumentsTest do
     end
   end
 
+  describe "document_exists_by_hash?/3" do
+    test "returns false when no document with hash exists", %{scope: scope, person: person} do
+      refute Documents.document_exists_by_hash?(scope, person.id, "abc123")
+    end
+
+    test "returns true when document with same hash exists for same person", %{
+      scope: scope,
+      person: person
+    } do
+      hash = "deadbeef" <> Integer.to_string(System.unique_integer([:positive]))
+      document_fixture(scope, person, %{"content_hash" => hash})
+
+      assert Documents.document_exists_by_hash?(scope, person.id, hash)
+    end
+
+    test "returns false for same hash but different person", %{scope: scope} do
+      hash = "samehash" <> Integer.to_string(System.unique_integer([:positive]))
+      person1 = person_fixture(scope, %{"name" => "Person A"})
+      person2 = person_fixture(scope, %{"name" => "Person B"})
+
+      document_fixture(scope, person1, %{"content_hash" => hash})
+
+      refute Documents.document_exists_by_hash?(scope, person2.id, hash)
+    end
+  end
+
+  describe "content_hash unique constraint" do
+    test "prevents duplicate hash for same person", %{scope: scope, person: person} do
+      hash = "unique_hash_" <> Integer.to_string(System.unique_integer([:positive]))
+      document_fixture(scope, person, %{"content_hash" => hash})
+
+      attrs = valid_document_attributes(%{"content_hash" => hash})
+      assert {:error, changeset} = Documents.create_document(scope, person.id, attrs)
+      assert errors_on(changeset).content_hash == ["duplicate document"]
+    end
+
+    test "allows same hash for different people", %{scope: scope} do
+      hash = "shared_hash_" <> Integer.to_string(System.unique_integer([:positive]))
+      person1 = person_fixture(scope, %{"name" => "Person X"})
+      person2 = person_fixture(scope, %{"name" => "Person Y"})
+
+      document_fixture(scope, person1, %{"content_hash" => hash})
+
+      attrs = valid_document_attributes(%{"content_hash" => hash})
+      assert {:ok, _} = Documents.create_document(scope, person2.id, attrs)
+    end
+  end
+
   describe "PubSub" do
     test "broadcast_document_update/1 sends message to subscribers", %{
       scope: scope,

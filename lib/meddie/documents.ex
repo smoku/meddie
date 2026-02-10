@@ -106,6 +106,19 @@ defmodule Meddie.Documents do
   end
 
   @doc """
+  Checks if a document with the given content hash already exists for a person.
+  """
+  def document_exists_by_hash?(%Scope{space: space}, person_id, content_hash) do
+    Repo.exists?(
+      from(d in Document,
+        where:
+          d.space_id == ^space.id and d.person_id == ^person_id and
+            d.content_hash == ^content_hash
+      )
+    )
+  end
+
+  @doc """
   Returns the count of documents for a person in the given scope.
   """
   def count_documents(%Scope{space: space}, person_id) do

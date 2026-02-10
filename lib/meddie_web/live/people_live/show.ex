@@ -391,32 +391,52 @@ defmodule MeddieWeb.PeopleLive.Show do
 
   defp handle_progress(:document, entry, socket) do
     if entry.done? do
-      consume_uploaded_entry(socket, entry, fn %{path: tmp_path} ->
-        person = socket.assigns.person
-        scope = socket.assigns.current_scope
-        document_id = Ecto.UUID.generate()
+      result =
+        consume_uploaded_entry(socket, entry, fn %{path: tmp_path} ->
+          person = socket.assigns.person
+          scope = socket.assigns.current_scope
 
-        storage_path =
-          "documents/#{scope.space.id}/#{person.id}/#{document_id}/#{entry.client_name}"
+          file_data = File.read!(tmp_path)
 
-        file_data = File.read!(tmp_path)
-        :ok = Meddie.Storage.put(storage_path, file_data, entry.client_type)
+          content_hash =
+            :crypto.hash(:sha256, file_data) |> Base.encode16(case: :lower)
 
-        attrs = %{
-          "filename" => entry.client_name,
-          "content_type" => entry.client_type,
-          "file_size" => entry.client_size,
-          "storage_path" => storage_path
-        }
+          if Documents.document_exists_by_hash?(scope, person.id, content_hash) do
+            {:ok, :duplicate}
+          else
+            document_id = Ecto.UUID.generate()
 
-        {:ok, document} = Documents.create_document(scope, person.id, attrs)
+            storage_path =
+              "documents/#{scope.space.id}/#{person.id}/#{document_id}/#{entry.client_name}"
 
-        %{document_id: document.id}
-        |> Meddie.Workers.ParseDocument.new()
-        |> Oban.insert()
+            :ok = Meddie.Storage.put(storage_path, file_data, entry.client_type)
 
-        {:ok, document}
-      end)
+            attrs = %{
+              "filename" => entry.client_name,
+              "content_type" => entry.client_type,
+              "file_size" => entry.client_size,
+              "storage_path" => storage_path,
+              "content_hash" => content_hash
+            }
+
+            {:ok, document} = Documents.create_document(scope, person.id, attrs)
+
+            %{document_id: document.id}
+            |> Meddie.Workers.ParseDocument.new()
+            |> Oban.insert()
+
+            {:ok, document}
+          end
+        end)
+
+      socket =
+        case result do
+          :duplicate ->
+            put_flash(socket, :info, gettext("This document has already been uploaded."))
+
+          _document ->
+            socket
+        end
 
       # Refresh the document list
       documents =
