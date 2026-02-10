@@ -88,7 +88,7 @@ defmodule MeddieWeb.DocumentLive.Show do
         <div class="flex flex-col lg:flex-row gap-6">
           <%!-- Left: Original document --%>
           <div class={["lg:w-1/2 lg:block", if(@panel != "original", do: "hidden")]}>
-            <div class="card bg-base-100 shadow-sm">
+            <div class="card bg-base-100 shadow-elevated border border-base-300/20 overflow-hidden">
               <div class="card-body p-2">
                 <%= if @document.content_type == "application/pdf" do %>
                   <div
@@ -137,14 +137,14 @@ defmodule MeddieWeb.DocumentLive.Show do
 
     ~H"""
     <div class="space-y-4">
-      <div :if={@document.summary} class="card bg-base-100 shadow-sm">
+      <div :if={@document.summary} class="card bg-base-100 shadow-elevated border border-base-300/20">
         <div class="card-body">
           <h3 class="card-title text-sm">{gettext("Summary")}</h3>
           <p class="text-sm text-base-content/80">{@document.summary}</p>
         </div>
       </div>
 
-      <div :for={{category, biomarkers} <- @grouped} class="card bg-base-100 shadow-sm">
+      <div :for={{category, biomarkers} <- @grouped} class="card bg-base-100 shadow-elevated border border-base-300/20">
         <div class="card-body">
           <h3 class="card-title text-sm">{category || gettext("Other")}</h3>
           <div class="overflow-x-auto">
@@ -200,7 +200,7 @@ defmodule MeddieWeb.DocumentLive.Show do
     assigns = assign(assigns, :rendered, render_markdown(assigns.document.summary))
 
     ~H"""
-    <div class="card bg-base-100 shadow-sm">
+    <div class="card bg-base-100 shadow-elevated border border-base-300/20">
       <div class="card-body">
         <h3 class="card-title text-sm">{gettext("Summary")}</h3>
         <div class="text-sm text-base-content/80 markdown-content">
@@ -213,9 +213,11 @@ defmodule MeddieWeb.DocumentLive.Show do
 
   defp document_results(%{document: %{status: "parsing"}} = assigns) do
     ~H"""
-    <div class="flex items-center gap-3 p-8">
-      <span class="loading loading-spinner loading-md" />
-      <p class="text-base-content/60">{gettext("Parsing document...")}</p>
+    <div class="flex flex-col items-center justify-center gap-4 p-12 text-center">
+      <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+        <span class="loading loading-spinner loading-md text-primary" />
+      </div>
+      <p class="text-base-content/60 font-medium">{gettext("Parsing document...")}</p>
     </div>
     """
   end

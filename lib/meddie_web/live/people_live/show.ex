@@ -43,13 +43,13 @@ defmodule MeddieWeb.PeopleLive.Show do
         </div>
 
         <%!-- Tabs --%>
-        <div class="flex gap-1 border-b border-base-300">
+        <div class="flex gap-1 border-b-2 border-base-300/50">
           <.link
             patch={~p"/people/#{@person}?tab=overview"}
             class={[
               "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
               if(@tab == "overview",
-                do: "border-primary text-primary",
+                do: "border-primary text-primary bg-primary/5 rounded-t-lg",
                 else: "border-transparent text-base-content/60 hover:text-base-content"
               )
             ]}
@@ -61,7 +61,7 @@ defmodule MeddieWeb.PeopleLive.Show do
             class={[
               "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
               if(@tab == "biomarkers",
-                do: "border-primary text-primary",
+                do: "border-primary text-primary bg-primary/5 rounded-t-lg",
                 else: "border-transparent text-base-content/60 hover:text-base-content"
               )
             ]}
@@ -76,7 +76,7 @@ defmodule MeddieWeb.PeopleLive.Show do
             class={[
               "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
               if(@tab == "documents",
-                do: "border-primary text-primary",
+                do: "border-primary text-primary bg-primary/5 rounded-t-lg",
                 else: "border-transparent text-base-content/60 hover:text-base-content"
               )
             ]}
@@ -91,7 +91,7 @@ defmodule MeddieWeb.PeopleLive.Show do
         <%!-- Overview tab --%>
         <div :if={@tab == "overview"} class="space-y-6">
           <%!-- Profile card --%>
-          <div class="card bg-base-100 shadow-sm">
+          <div class="card bg-base-100 shadow-elevated border border-base-300/20">
             <div class="card-body">
               <h3 class="card-title text-base">{gettext("Profile")}</h3>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-2">
@@ -130,7 +130,7 @@ defmodule MeddieWeb.PeopleLive.Show do
           <%!-- Upload zone --%>
           <form phx-change="validate-upload" phx-submit="save-upload" class="space-y-4">
             <div
-              class="border-2 border-dashed border-base-300 rounded-lg p-8 text-center hover:border-primary/50 transition-colors"
+              class="border-2 border-dashed border-base-300 rounded-xl p-10 text-center hover:border-primary/50 hover:bg-primary/3 transition-all duration-200"
               phx-drop-target={@uploads.document.ref}
             >
               <.icon name="hero-cloud-arrow-up" class="size-10 mx-auto mb-3 text-base-content/40" />
@@ -197,7 +197,7 @@ defmodule MeddieWeb.PeopleLive.Show do
               :for={{dom_id, doc} <- @streams.documents}
               navigate={~p"/people/#{@person}/documents/#{doc}"}
               id={dom_id}
-              class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow block"
+              class="card bg-base-100 shadow-elevated hover:shadow-elevated-lg hover:-translate-y-0.5 transition-all duration-200 block border border-base-300/30"
             >
               <div class="card-body p-4 flex-row items-center gap-4">
                 <.document_type_icon type={doc.document_type} />
@@ -251,7 +251,7 @@ defmodule MeddieWeb.PeopleLive.Show do
           <%!-- Categorized biomarker cards --%>
           <div
             :for={{category, biomarkers} <- @biomarker_groups || []}
-            class="card bg-base-100 shadow-sm"
+            class="card bg-base-100 shadow-elevated border border-base-300/20"
           >
             <div class="card-body">
               <h3 class="card-title text-sm">{category || gettext("Other")}</h3>
@@ -273,7 +273,7 @@ defmodule MeddieWeb.PeopleLive.Show do
                       <tr
                         id={"biomarker-row-#{bm.latest.id}"}
                         class={[
-                          "cursor-pointer hover:bg-base-200/50 transition-colors",
+                          "cursor-pointer hover:bg-primary/5 transition-colors",
                           biomarker_row_class(bm.latest.status),
                           bm.stale? && "opacity-50"
                         ]}
@@ -317,7 +317,7 @@ defmodule MeddieWeb.PeopleLive.Show do
                       <%!-- Inline trend expansion --%>
                       <%= if @expanded_biomarker == bm.key do %>
                         <tr id={"trend-#{bm.latest.id}"}>
-                          <td colspan="7" class="p-4 bg-base-200/30">
+                          <td colspan="7" class="p-4 bg-base-200/20 border-l-4 border-primary/30">
                             <.trend_detail biomarker={bm} person={@person} />
                           </td>
                         </tr>
@@ -391,9 +391,9 @@ defmodule MeddieWeb.PeopleLive.Show do
 
   defp info_item(assigns) do
     ~H"""
-    <div>
-      <dt class="text-xs text-base-content/50 uppercase tracking-wide">{@label}</dt>
-      <dd class="mt-1 text-sm font-medium">{@value}</dd>
+    <div class="pl-3 border-l-2 border-base-300">
+      <dt class="text-xs text-base-content/40 uppercase tracking-wider font-medium">{@label}</dt>
+      <dd class="mt-0.5 text-sm font-semibold">{@value}</dd>
     </div>
     """
   end
@@ -405,7 +405,7 @@ defmodule MeddieWeb.PeopleLive.Show do
     assigns = assign(assigns, :rendered, render_markdown(assigns.content))
 
     ~H"""
-    <div class="card bg-base-100 shadow-sm">
+    <div class="card bg-base-100 shadow-elevated border border-base-300/20">
       <div class="card-body">
         <h3 class="card-title text-base">{@title}</h3>
         <div class="mt-2 text-sm markdown-content text-base-content/80">

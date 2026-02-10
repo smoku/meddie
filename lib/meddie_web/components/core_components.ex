@@ -60,7 +60,7 @@ defmodule MeddieWeb.CoreComponents do
       {@rest}
     >
       <div class={[
-        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap",
+        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap shadow-elevated-lg animate-page-enter",
         @kind == :info && "alert-info",
         @kind == :error && "alert-error"
       ]}>
@@ -94,7 +94,10 @@ defmodule MeddieWeb.CoreComponents do
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
-    variants = %{"primary" => "btn-primary", nil => "btn-primary btn-soft"}
+    variants = %{
+      "primary" => "btn-primary shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-150",
+      nil => "btn-primary btn-soft hover:shadow-sm active:scale-[0.98] transition-all duration-150"
+    }
 
     assigns =
       assign_new(assigns, :class, fn ->
@@ -235,11 +238,11 @@ defmodule MeddieWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 font-medium">{@label}</span>
         <select
           id={@id}
           name={@name}
-          class={[@class || "w-full select", @errors != [] && (@error_class || "select-error")]}
+          class={[@class || "w-full select focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors", @errors != [] && (@error_class || "select-error")]}
           multiple={@multiple}
           {@rest}
         >
@@ -256,12 +259,12 @@ defmodule MeddieWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 font-medium">{@label}</span>
         <textarea
           id={@id}
           name={@name}
           class={[
-            @class || "w-full textarea",
+            @class || "w-full textarea focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors",
             @errors != [] && (@error_class || "textarea-error")
           ]}
           {@rest}
@@ -277,14 +280,14 @@ defmodule MeddieWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 font-medium">{@label}</span>
         <input
           type={@type}
           name={@name}
           id={@id}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            @class || "w-full input",
+            @class || "w-full input focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors",
             @errors != [] && (@error_class || "input-error")
           ]}
           {@rest}
@@ -316,10 +319,10 @@ defmodule MeddieWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", "pb-4"]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8">
+        <h1 class="text-xl font-bold leading-8 tracking-tight">
           {render_slot(@inner_block)}
         </h1>
-        <p :if={@subtitle != []} class="text-sm text-base-content/70">
+        <p :if={@subtitle != []} class="text-sm text-base-content/60 mt-1">
           {render_slot(@subtitle)}
         </p>
       </div>
@@ -360,9 +363,9 @@ defmodule MeddieWeb.CoreComponents do
       end
 
     ~H"""
-    <table class="table table-zebra">
+    <table class="table">
       <thead>
-        <tr>
+        <tr class="bg-base-200/50">
           <th :for={col <- @col}>{col[:label]}</th>
           <th :if={@action != []}>
             <span class="sr-only">{gettext("Actions")}</span>
@@ -370,7 +373,7 @@ defmodule MeddieWeb.CoreComponents do
         </tr>
       </thead>
       <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
-        <tr :for={row <- @rows} id={@row_id && @row_id.(row)}>
+        <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="hover:bg-base-200/30 transition-colors">
           <td
             :for={col <- @col}
             phx-click={@row_click && @row_click.(row)}
@@ -408,7 +411,7 @@ defmodule MeddieWeb.CoreComponents do
   def list(assigns) do
     ~H"""
     <ul class="list">
-      <li :for={item <- @item} class="list-row">
+      <li :for={item <- @item} class="list-row hover:bg-base-200/30 transition-colors">
         <div class="list-col-grow">
           <div class="font-bold">{item.title}</div>
           <div>{render_slot(item)}</div>

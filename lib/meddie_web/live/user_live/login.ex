@@ -5,8 +5,14 @@ defmodule MeddieWeb.UserLive.Login do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="mx-auto max-w-sm space-y-4">
+      <div class="mx-auto max-w-sm space-y-6">
         <div class="text-center">
+          <div class="flex items-center justify-center gap-2.5 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-gradient-brand flex items-center justify-center">
+              <span class="text-white font-bold text-lg">M</span>
+            </div>
+            <span class="text-2xl font-bold tracking-tight">Meddie</span>
+          </div>
           <.header>
             <p>{gettext("Log in")}</p>
             <:subtitle>
@@ -15,6 +21,7 @@ defmodule MeddieWeb.UserLive.Login do
           </.header>
         </div>
 
+        <div class="card bg-base-100 shadow-elevated-lg border border-base-300/20 p-6">
         <.form
           for={@form}
           id="login_form"
@@ -41,6 +48,7 @@ defmodule MeddieWeb.UserLive.Login do
             {gettext("Log in")}
           </.button>
         </.form>
+        </div>
       </div>
     </Layouts.app>
     """

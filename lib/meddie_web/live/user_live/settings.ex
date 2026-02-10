@@ -15,7 +15,7 @@ defmodule MeddieWeb.UserLive.Settings do
         <h2 class="text-xl font-bold mb-4">{gettext("Account Settings")}</h2>
 
         <%!-- Profile: Name + Language --%>
-        <div class="card bg-base-100 shadow-sm">
+        <div class="card bg-base-100 shadow-elevated border border-base-300/20">
           <div class="card-body">
             <h3 class="card-title text-base">{gettext("Profile")}</h3>
             <.form
@@ -39,7 +39,7 @@ defmodule MeddieWeb.UserLive.Settings do
         </div>
 
         <%!-- Email --%>
-        <div class="card bg-base-100 shadow-sm">
+        <div class="card bg-base-100 shadow-elevated border border-base-300/20">
           <div class="card-body">
             <h3 class="card-title text-base">{gettext("Email")}</h3>
             <.form
@@ -63,7 +63,7 @@ defmodule MeddieWeb.UserLive.Settings do
         </div>
 
         <%!-- Password --%>
-        <div class="card bg-base-100 shadow-sm">
+        <div class="card bg-base-100 shadow-elevated border border-base-300/20">
           <div class="card-body">
             <h3 class="card-title text-base">{gettext("Password")}</h3>
             <.form

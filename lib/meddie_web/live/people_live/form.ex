@@ -23,7 +23,7 @@ defmodule MeddieWeb.PeopleLive.Form do
         </div>
 
         <.form for={@form} id="person-form" phx-change="validate" phx-submit="save" class="space-y-6">
-          <div class="card bg-base-100 shadow-sm">
+          <div class="card bg-base-100 shadow-elevated border border-base-300/20">
             <div class="card-body">
               <h3 class="card-title text-base">{gettext("Basic information")}</h3>
               <.input field={@form[:name]} type="text" label={gettext("Name")} required />
@@ -61,7 +61,7 @@ defmodule MeddieWeb.PeopleLive.Form do
             </div>
           </div>
 
-          <div :if={@live_action == :edit} class="card bg-base-100 shadow-sm">
+          <div :if={@live_action == :edit} class="card bg-base-100 shadow-elevated border border-base-300/20">
             <div class="card-body space-y-4">
               <h3 class="card-title text-base">{gettext("Health information")}</h3>
               <div id="editor-health-notes" phx-hook="MarkdownEditor" phx-update="ignore">

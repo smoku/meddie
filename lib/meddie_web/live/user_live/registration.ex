@@ -8,13 +8,19 @@ defmodule MeddieWeb.UserLive.Registration do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="mx-auto max-w-sm">
+      <div class="mx-auto max-w-sm space-y-6">
         <div class="text-center">
+          <div class="flex items-center justify-center gap-2.5 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-gradient-brand flex items-center justify-center">
+              <span class="text-white font-bold text-lg">M</span>
+            </div>
+            <span class="text-2xl font-bold tracking-tight">Meddie</span>
+          </div>
           <.header>
             {gettext("Register for an account")}
             <:subtitle>
               {gettext("Already registered?")}
-              <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
+              <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
                 {gettext("Log in")}
               </.link>
               {gettext("to your account now.")}
@@ -22,6 +28,7 @@ defmodule MeddieWeb.UserLive.Registration do
           </.header>
         </div>
 
+        <div class="card bg-base-100 shadow-elevated-lg border border-base-300/20 p-6">
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
           <.input
             field={@form[:email]}
@@ -36,6 +43,7 @@ defmodule MeddieWeb.UserLive.Registration do
             {gettext("Create an account")}
           </.button>
         </.form>
+        </div>
       </div>
     </Layouts.app>
     """

@@ -70,7 +70,7 @@ defmodule MeddieWeb.BiomarkerComponents do
           points={@polyline_str}
           fill="none"
           stroke={@stroke_color}
-          stroke-width="1.5"
+          stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
         />
@@ -80,10 +80,10 @@ defmodule MeddieWeb.BiomarkerComponents do
     end
   end
 
-  defp status_stroke_color("normal"), do: "oklch(0.7 0.14 182.503)"
-  defp status_stroke_color("high"), do: "oklch(0.58 0.253 17.585)"
-  defp status_stroke_color("low"), do: "oklch(0.62 0.214 259.815)"
-  defp status_stroke_color(_), do: "oklch(0.55 0.027 264.364)"
+  defp status_stroke_color("normal"), do: "oklch(0.62 0.17 155)"
+  defp status_stroke_color("high"), do: "oklch(0.58 0.22 25)"
+  defp status_stroke_color("low"), do: "oklch(0.60 0.18 245)"
+  defp status_stroke_color(_), do: "oklch(0.40 0.015 260)"
 
   @doc """
   Renders a biomarker status badge with appropriate color.
@@ -92,25 +92,25 @@ defmodule MeddieWeb.BiomarkerComponents do
 
   def biomarker_status_badge(%{status: "normal"} = assigns) do
     ~H"""
-    <span class="badge badge-success badge-xs">{gettext("normal")}</span>
+    <span class="badge badge-success badge-xs font-medium">{gettext("normal")}</span>
     """
   end
 
   def biomarker_status_badge(%{status: "low"} = assigns) do
     ~H"""
-    <span class="badge badge-info badge-xs">{gettext("low")}</span>
+    <span class="badge badge-info badge-xs font-medium">{gettext("low")}</span>
     """
   end
 
   def biomarker_status_badge(%{status: "high"} = assigns) do
     ~H"""
-    <span class="badge badge-error badge-xs">{gettext("high")}</span>
+    <span class="badge badge-error badge-xs font-medium">{gettext("high")}</span>
     """
   end
 
   def biomarker_status_badge(assigns) do
     ~H"""
-    <span class="badge badge-ghost badge-xs">{gettext("unknown")}</span>
+    <span class="badge badge-ghost badge-xs font-medium">{gettext("unknown")}</span>
     """
   end
 
@@ -181,7 +181,7 @@ defmodule MeddieWeb.BiomarkerComponents do
         class="inline-block align-middle"
       >
         <%!-- Gray track --%>
-        <rect x="0" y={@track_y} width={@width} height={@track_h} rx="2" fill="oklch(0.8 0 0)" />
+        <rect x="0" y={@track_y} width={@width} height={@track_h} rx="2" fill="oklch(0.92 0.008 240)" />
         <%!-- Reference range segment --%>
         <rect
           x={@ref_x1}
@@ -203,11 +203,11 @@ defmodule MeddieWeb.BiomarkerComponents do
           stroke-linecap="round"
         />
         <%!-- Low label --%>
-        <text x={@ref_x1} y={@label_y} font-size="9" fill="oklch(0.55 0 0)" text-anchor="middle">
+        <text x={@ref_x1} y={@label_y} font-size="9" fill="oklch(0.40 0.015 260)" text-anchor="middle">
           {@low_label}
         </text>
         <%!-- High label --%>
-        <text x={@ref_x2} y={@label_y} font-size="9" fill="oklch(0.55 0 0)" text-anchor="middle">
+        <text x={@ref_x2} y={@label_y} font-size="9" fill="oklch(0.40 0.015 260)" text-anchor="middle">
           {@high_label}
         </text>
       </svg>

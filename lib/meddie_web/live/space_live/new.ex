@@ -9,12 +9,19 @@ defmodule MeddieWeb.SpaceLive.New do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="text-center mb-8">
+        <div class="flex items-center justify-center gap-2.5 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-gradient-brand flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="text-2xl font-bold tracking-tight">Meddie</span>
+        </div>
         <h1 class="text-2xl font-bold">{gettext("Welcome to Meddie!")}</h1>
-        <p class="mt-2 text-sm text-base-content/70">
+        <p class="mt-2 text-sm text-base-content/60">
           {gettext("Create your first Space to get started.")}
         </p>
       </div>
 
+      <div class="card bg-base-100 shadow-elevated-lg border border-base-300/20 p-6">
       <.form for={@form} id="space-form" phx-submit="save" phx-change="validate" class="space-y-4">
         <.input
           field={@form[:name]}
@@ -31,6 +38,7 @@ defmodule MeddieWeb.SpaceLive.New do
           {gettext("Create Space")}
         </.button>
       </.form>
+      </div>
     </Layouts.app>
     """
   end

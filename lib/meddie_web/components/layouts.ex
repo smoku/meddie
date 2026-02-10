@@ -15,8 +15,8 @@ defmodule MeddieWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <main class="min-h-screen flex items-center justify-center px-4 py-12">
-      <div class="w-full max-w-sm">
+    <main class="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-base-200 via-base-100 to-base-200">
+      <div class="w-full max-w-sm animate-page-enter">
         {render_slot(@inner_block)}
       </div>
     </main>
@@ -38,12 +38,17 @@ defmodule MeddieWeb.Layouts do
     ~H"""
     <div class="flex h-screen overflow-hidden">
       <%!-- Sidebar --%>
-      <aside class="hidden lg:flex flex-col w-56 border-r border-base-300 bg-base-200">
-        <div class="p-4">
-          <span class="text-lg font-bold">Meddie</span>
+      <aside class="hidden lg:flex flex-col w-60 bg-base-200 shadow-elevated">
+        <div class="px-5 py-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center">
+              <span class="text-white font-bold text-sm">M</span>
+            </div>
+            <span class="text-lg font-bold tracking-tight">Meddie</span>
+          </div>
         </div>
 
-        <nav class="flex-1 px-2 space-y-1">
+        <nav class="flex-1 px-3 space-y-0.5">
           <.sidebar_link
             href={~p"/people"}
             icon="hero-users"
@@ -71,12 +76,16 @@ defmodule MeddieWeb.Layouts do
             active={@page_title == gettext("Settings")}
           />
         </nav>
+
+        <div class="mt-auto px-3 pb-4">
+          <div class="px-3 py-2 text-xs text-base-content/30">v0.1</div>
+        </div>
       </aside>
 
       <%!-- Main content area --%>
       <div class="flex-1 flex flex-col overflow-hidden">
         <%!-- Top bar --%>
-        <header class="navbar border-b border-base-300 px-4">
+        <header class="navbar bg-base-100/80 glass-subtle border-b border-base-300/50 px-6 sticky top-0 z-40">
           <div class="flex-1">
             <%!-- Mobile hamburger --%>
             <label for="sidebar-drawer" class="btn btn-ghost btn-sm lg:hidden">
@@ -91,7 +100,7 @@ defmodule MeddieWeb.Layouts do
               </div>
               <ul
                 tabindex="0"
-                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-56 z-50"
+                class="dropdown-content menu p-2 shadow-elevated-lg bg-base-100 rounded-xl w-56 z-50 border border-base-300/50"
               >
                 <li :for={space <- @user_spaces}>
                   <.link
@@ -137,7 +146,7 @@ defmodule MeddieWeb.Layouts do
               </div>
               <ul
                 tabindex="0"
-                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-48 z-50"
+                class="dropdown-content menu p-2 shadow-elevated-lg bg-base-100 rounded-xl w-48 z-50 border border-base-300/50"
               >
                 <li>
                   <.link href={~p"/users/settings"}>{gettext("Account settings")}</.link>
@@ -151,8 +160,10 @@ defmodule MeddieWeb.Layouts do
         </header>
 
         <%!-- Page content --%>
-        <main class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          {render_slot(@inner_block)}
+        <main class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8 bg-base-100">
+          <div class="animate-page-enter">
+            {render_slot(@inner_block)}
+          </div>
         </main>
       </div>
     </div>
@@ -168,8 +179,8 @@ defmodule MeddieWeb.Layouts do
     <.link
       navigate={unless @disabled, do: @href}
       class={[
-        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm",
-        @active && "bg-base-300 font-semibold",
+        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150",
+        @active && "bg-primary/10 text-primary font-semibold border-l-2 border-primary",
         !@active && !@disabled && "hover:bg-base-300/50",
         @disabled && "opacity-40 cursor-not-allowed"
       ]}

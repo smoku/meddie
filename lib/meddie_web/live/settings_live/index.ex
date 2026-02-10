@@ -19,7 +19,7 @@ defmodule MeddieWeb.SettingsLive.Index do
           <h2 class="text-xl font-bold mb-4">{gettext("Space Settings")}</h2>
 
           <%!-- Members --%>
-          <div class="card bg-base-100 shadow-sm">
+          <div class="card bg-base-100 shadow-elevated border border-base-300/20">
             <div class="card-body">
               <h3 class="card-title text-base">{gettext("Members")}</h3>
               <div class="overflow-x-auto">
