@@ -190,7 +190,7 @@ msgstr "Edytuj osobę"
 
 #: lib/meddie_web/live/people_live/form.ex:35
 #: lib/meddie_web/live/people_live/index.ex:74
-#: lib/meddie_web/live/people_live/show.ex:669
+#: lib/meddie_web/live/people_live/show.ex:678
 #, elixir-autogen, elixir-format
 msgid "Female"
 msgstr "Kobieta"
@@ -225,7 +225,7 @@ msgstr "Zaloguj się"
 
 #: lib/meddie_web/live/people_live/form.ex:35
 #: lib/meddie_web/live/people_live/index.ex:73
-#: lib/meddie_web/live/people_live/show.ex:668
+#: lib/meddie_web/live/people_live/show.ex:677
 #, elixir-autogen, elixir-format
 msgid "Male"
 msgstr "Mężczyzna"
@@ -255,7 +255,7 @@ msgstr "Osoby"
 msgid "Person created successfully."
 msgstr "Osoba została utworzona."
 
-#: lib/meddie_web/live/people_live/show.ex:541
+#: lib/meddie_web/live/people_live/show.ex:550
 #, elixir-autogen, elixir-format
 msgid "Person deleted successfully."
 msgstr "Osoba została usunięta."
@@ -583,12 +583,12 @@ msgstr "Biomarker"
 msgid "Browse files"
 msgstr "Przeglądaj pliki"
 
-#: lib/meddie_web/live/document_live/show.ex:290
+#: lib/meddie_web/live/document_live/show.ex:301
 #, elixir-autogen, elixir-format
 msgid "Document deleted successfully."
 msgstr "Dokument został usunięty."
 
-#: lib/meddie_web/live/people_live/show.ex:69
+#: lib/meddie_web/live/people_live/show.ex:84
 #, elixir-autogen, elixir-format
 msgid "Documents"
 msgstr "Dokumenty"
@@ -598,12 +598,12 @@ msgstr "Dokumenty"
 msgid "Drag and drop files here, or"
 msgstr "Przeciągnij i upuść pliki tutaj, lub"
 
-#: lib/meddie_web/live/people_live/show.ex:434
+#: lib/meddie_web/live/people_live/show.ex:443
 #, elixir-autogen, elixir-format
 msgid "Failed"
 msgstr "Niepowodzenie"
 
-#: lib/meddie_web/live/people_live/show.ex:672
+#: lib/meddie_web/live/people_live/show.ex:681
 #, elixir-autogen, elixir-format
 msgid "File is too large (max 20 MB)"
 msgstr "Plik jest za duży (maks. 20 MB)"
@@ -634,32 +634,32 @@ msgstr "Przegląd"
 msgid "PDF, JPG, PNG up to 20 MB"
 msgstr "PDF, JPG, PNG do 20 MB"
 
-#: lib/meddie_web/live/people_live/show.ex:414
+#: lib/meddie_web/live/people_live/show.ex:423
 #, elixir-autogen, elixir-format
 msgid "Parsed"
 msgstr "Przeanalizowany"
 
-#: lib/meddie_web/live/people_live/show.ex:421
+#: lib/meddie_web/live/people_live/show.ex:430
 #, elixir-autogen, elixir-format
 msgid "Parsing"
 msgstr "Analizowanie"
 
-#: lib/meddie_web/live/document_live/show.ex:207
+#: lib/meddie_web/live/document_live/show.ex:218
 #, elixir-autogen, elixir-format
 msgid "Parsing document..."
 msgstr "Analizowanie dokumentu..."
 
-#: lib/meddie_web/live/document_live/show.ex:217
+#: lib/meddie_web/live/document_live/show.ex:228
 #, elixir-autogen, elixir-format
 msgid "Parsing failed"
 msgstr "Analiza nie powiodła się"
 
-#: lib/meddie_web/live/document_live/show.ex:277
+#: lib/meddie_web/live/document_live/show.ex:288
 #, elixir-autogen, elixir-format
 msgid "Parsing job enqueued. The document will be re-analyzed shortly."
 msgstr "Zlecono ponowną analizę. Dokument zostanie przeanalizowany wkrótce."
 
-#: lib/meddie_web/live/people_live/show.ex:428
+#: lib/meddie_web/live/people_live/show.ex:437
 #, elixir-autogen, elixir-format
 msgid "Pending"
 msgstr "Oczekujący"
@@ -671,6 +671,7 @@ msgid "Reference"
 msgstr "Referencja"
 
 #: lib/meddie_web/live/document_live/show.ex:70
+#: lib/meddie_web/live/people_live/show.ex:69
 #, elixir-autogen, elixir-format
 msgid "Results"
 msgstr "Wyniki"
@@ -687,7 +688,7 @@ msgid "Status"
 msgstr "Status"
 
 #: lib/meddie_web/live/document_live/show.ex:142
-#: lib/meddie_web/live/document_live/show.ex:194
+#: lib/meddie_web/live/document_live/show.ex:205
 #, elixir-autogen, elixir-format
 msgid "Summary"
 msgstr "Podsumowanie"
@@ -697,19 +698,19 @@ msgstr "Podsumowanie"
 msgid "This will permanently delete this document and all extracted data. This action cannot be undone."
 msgstr "To trwale usunie ten dokument i wszystkie wyekstrahowane dane. Tej operacji nie można cofnąć."
 
-#: lib/meddie_web/live/people_live/show.ex:673
+#: lib/meddie_web/live/people_live/show.ex:682
 #, elixir-autogen, elixir-format
 msgid "Too many files"
 msgstr "Za dużo plików"
 
 #: lib/meddie_web/live/document_live/show.ex:157
 #: lib/meddie_web/live/people_live/show.ex:265
-#: lib/meddie_web/live/people_live/show.ex:352
+#: lib/meddie_web/live/people_live/show.ex:361
 #, elixir-autogen, elixir-format
 msgid "Unit"
 msgstr "Jednostka"
 
-#: lib/meddie_web/live/people_live/show.ex:676
+#: lib/meddie_web/live/people_live/show.ex:685
 #, elixir-autogen, elixir-format
 msgid "Unsupported file format. Accepted: PDF, JPG, PNG"
 msgstr "Nieobsługiwany format pliku. Akceptowane: PDF, JPG, PNG"
@@ -719,7 +720,7 @@ msgstr "Nieobsługiwany format pliku. Akceptowane: PDF, JPG, PNG"
 msgid "Upload a medical document to get started."
 msgstr "Prześlij dokument medyczny, aby rozpocząć."
 
-#: lib/meddie_web/live/people_live/show.ex:678
+#: lib/meddie_web/live/people_live/show.ex:687
 #, elixir-autogen, elixir-format
 msgid "Upload error"
 msgstr "Błąd przesyłania"
@@ -731,12 +732,12 @@ msgstr "Przesłano"
 
 #: lib/meddie_web/live/document_live/show.ex:156
 #: lib/meddie_web/live/people_live/show.ex:264
-#: lib/meddie_web/live/people_live/show.ex:351
+#: lib/meddie_web/live/people_live/show.ex:360
 #, elixir-autogen, elixir-format
 msgid "Value"
 msgstr "Wartość"
 
-#: lib/meddie_web/live/document_live/show.ex:228
+#: lib/meddie_web/live/document_live/show.ex:239
 #, elixir-autogen, elixir-format
 msgid "Waiting to be parsed..."
 msgstr "Oczekiwanie na analizę..."
@@ -764,23 +765,18 @@ msgstr "prawidłowy"
 msgid "unknown"
 msgstr "nieznany"
 
-#: lib/meddie_web/live/people_live/show.ex:631
+#: lib/meddie_web/live/people_live/show.ex:640
 #, elixir-autogen, elixir-format
 msgid "This document has already been uploaded."
 msgstr "Ten dokument został już przesłany."
 
-#: lib/meddie_web/live/people_live/show.ex:84
-#, elixir-autogen, elixir-format
-msgid "Biomarkers"
-msgstr "Biomarkery"
-
 #: lib/meddie_web/live/people_live/show.ex:268
-#: lib/meddie_web/live/people_live/show.ex:350
+#: lib/meddie_web/live/people_live/show.ex:359
 #, elixir-autogen, elixir-format
 msgid "Date"
 msgstr "Data"
 
-#: lib/meddie_web/live/people_live/show.ex:353
+#: lib/meddie_web/live/people_live/show.ex:362
 #, elixir-autogen, elixir-format
 msgid "Document"
 msgstr "Dokument"

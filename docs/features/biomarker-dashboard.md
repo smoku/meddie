@@ -8,13 +8,13 @@ This feature combines the original F4 (Biomarker Dashboard) and F5 (Trend Tracki
 
 ## Location
 
-The dashboard lives as a **"Biomarkers" tab** on the person show page (`/people/:id?tab=biomarkers`), alongside Overview and Documents tabs. There is no separate trends page — trend expansion happens inline.
+The dashboard lives as a **"Results" tab** on the person show page (`/people/:id?tab=biomarkers`), alongside Overview and Documents tabs. Tab order: Overview | Results | Documents. There is no separate trends page — trend expansion happens inline.
 
 ## Behavior
 
 ### Biomarkers Tab
 
-1. **Tab badge**: The "Biomarkers" tab shows a count badge with the total number of unique biomarkers.
+1. **Tab badge**: The "Results" tab shows a count badge with the total number of unique biomarkers.
 2. **Summary stats**: At the top, a one-line summary: "32 biomarkers — 28 normal, 3 high, 1 low".
 3. **Categorized cards**: Biomarkers are grouped by category (e.g., "CBC", "Liver", "Lipid Panel"). Each category renders as a card with a table inside.
 4. **Table columns**: Biomarker name (with data point count) | Sparkline | Latest Value | Unit | Reference Range | Status Badge | Date.
@@ -24,7 +24,7 @@ The dashboard lives as a **"Biomarkers" tab** on the person show page (`/people/
    - A Chart.js line chart with time on the x-axis, value on the y-axis, and the reference range as a shaded annotation band.
    - A data table listing each historical measurement: Date, Value, Unit, and a link to the source document.
 8. **Empty state**: When no biomarkers exist, shows an icon with "No biomarkers yet. Upload lab results to start tracking biomarkers."
-9. **Lazy loading**: Biomarker data is only fetched when the Biomarkers tab is selected (not on mount). Aggregate counts for the badge are fetched cheaply on mount.
+9. **Lazy loading**: Biomarker data is only fetched when the Results tab is selected (not on mount). Aggregate counts for the badge are fetched cheaply on mount.
 10. **Real-time updates**: When a document is parsed (via PubSub), the biomarker counts refresh and the cached biomarker groups are invalidated.
 
 ### Document Show Sparklines
@@ -94,7 +94,7 @@ Returns: `%{category => [%{name, latest, history, sparkline_points, stale?, data
 |------|------|
 | `lib/meddie_web/components/biomarker_components.ex` | Shared sparkline, status badge, row class components |
 | `lib/meddie/documents.ex` | Context layer — 3 biomarker query functions |
-| `lib/meddie_web/live/people_live/show.ex` | Biomarkers tab, aggregation, trend expansion |
+| `lib/meddie_web/live/people_live/show.ex` | Results tab, aggregation, trend expansion |
 | `lib/meddie_web/live/document_live/show.ex` | Sparklines on document show |
 | `assets/js/hooks/trend_chart.js` | Chart.js TrendChart hook |
 | `assets/js/app.js` | Hook registration |

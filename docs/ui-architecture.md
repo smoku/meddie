@@ -109,7 +109,7 @@ The landing page after login. Shows all people in the current Space.
 Tabbed layout showing all data for one person.
 
 - **Header** (persistent across tabs): Person name, age, sex, height, weight. "Edit" button to modify basic info.
-- **Tabs**: Overview | Documents | Biomarkers
+- **Tabs**: Overview | Results | Documents
 
 #### Overview Tab
 

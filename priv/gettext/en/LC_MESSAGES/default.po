@@ -190,7 +190,7 @@ msgstr ""
 
 #: lib/meddie_web/live/people_live/form.ex:35
 #: lib/meddie_web/live/people_live/index.ex:74
-#: lib/meddie_web/live/people_live/show.ex:669
+#: lib/meddie_web/live/people_live/show.ex:678
 #, elixir-autogen, elixir-format
 msgid "Female"
 msgstr ""
@@ -225,7 +225,7 @@ msgstr ""
 
 #: lib/meddie_web/live/people_live/form.ex:35
 #: lib/meddie_web/live/people_live/index.ex:73
-#: lib/meddie_web/live/people_live/show.ex:668
+#: lib/meddie_web/live/people_live/show.ex:677
 #, elixir-autogen, elixir-format
 msgid "Male"
 msgstr ""
@@ -255,7 +255,7 @@ msgstr ""
 msgid "Person created successfully."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:541
+#: lib/meddie_web/live/people_live/show.ex:550
 #, elixir-autogen, elixir-format
 msgid "Person deleted successfully."
 msgstr ""
@@ -582,12 +582,12 @@ msgstr ""
 msgid "Browse files"
 msgstr ""
 
-#: lib/meddie_web/live/document_live/show.ex:290
+#: lib/meddie_web/live/document_live/show.ex:301
 #, elixir-autogen, elixir-format
 msgid "Document deleted successfully."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:69
+#: lib/meddie_web/live/people_live/show.ex:84
 #, elixir-autogen, elixir-format
 msgid "Documents"
 msgstr ""
@@ -597,12 +597,12 @@ msgstr ""
 msgid "Drag and drop files here, or"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:434
+#: lib/meddie_web/live/people_live/show.ex:443
 #, elixir-autogen, elixir-format
 msgid "Failed"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:672
+#: lib/meddie_web/live/people_live/show.ex:681
 #, elixir-autogen, elixir-format
 msgid "File is too large (max 20 MB)"
 msgstr ""
@@ -633,32 +633,32 @@ msgstr ""
 msgid "PDF, JPG, PNG up to 20 MB"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:414
+#: lib/meddie_web/live/people_live/show.ex:423
 #, elixir-autogen, elixir-format
 msgid "Parsed"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:421
+#: lib/meddie_web/live/people_live/show.ex:430
 #, elixir-autogen, elixir-format
 msgid "Parsing"
 msgstr ""
 
-#: lib/meddie_web/live/document_live/show.ex:207
+#: lib/meddie_web/live/document_live/show.ex:218
 #, elixir-autogen, elixir-format
 msgid "Parsing document..."
 msgstr ""
 
-#: lib/meddie_web/live/document_live/show.ex:217
+#: lib/meddie_web/live/document_live/show.ex:228
 #, elixir-autogen, elixir-format
 msgid "Parsing failed"
 msgstr ""
 
-#: lib/meddie_web/live/document_live/show.ex:277
+#: lib/meddie_web/live/document_live/show.ex:288
 #, elixir-autogen, elixir-format
 msgid "Parsing job enqueued. The document will be re-analyzed shortly."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:428
+#: lib/meddie_web/live/people_live/show.ex:437
 #, elixir-autogen, elixir-format
 msgid "Pending"
 msgstr ""
@@ -670,6 +670,7 @@ msgid "Reference"
 msgstr ""
 
 #: lib/meddie_web/live/document_live/show.ex:70
+#: lib/meddie_web/live/people_live/show.ex:69
 #, elixir-autogen, elixir-format
 msgid "Results"
 msgstr ""
@@ -686,7 +687,7 @@ msgid "Status"
 msgstr ""
 
 #: lib/meddie_web/live/document_live/show.ex:142
-#: lib/meddie_web/live/document_live/show.ex:194
+#: lib/meddie_web/live/document_live/show.ex:205
 #, elixir-autogen, elixir-format
 msgid "Summary"
 msgstr ""
@@ -696,19 +697,19 @@ msgstr ""
 msgid "This will permanently delete this document and all extracted data. This action cannot be undone."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:673
+#: lib/meddie_web/live/people_live/show.ex:682
 #, elixir-autogen, elixir-format
 msgid "Too many files"
 msgstr ""
 
 #: lib/meddie_web/live/document_live/show.ex:157
 #: lib/meddie_web/live/people_live/show.ex:265
-#: lib/meddie_web/live/people_live/show.ex:352
+#: lib/meddie_web/live/people_live/show.ex:361
 #, elixir-autogen, elixir-format
 msgid "Unit"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:676
+#: lib/meddie_web/live/people_live/show.ex:685
 #, elixir-autogen, elixir-format
 msgid "Unsupported file format. Accepted: PDF, JPG, PNG"
 msgstr ""
@@ -718,7 +719,7 @@ msgstr ""
 msgid "Upload a medical document to get started."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:678
+#: lib/meddie_web/live/people_live/show.ex:687
 #, elixir-autogen, elixir-format
 msgid "Upload error"
 msgstr ""
@@ -730,12 +731,12 @@ msgstr ""
 
 #: lib/meddie_web/live/document_live/show.ex:156
 #: lib/meddie_web/live/people_live/show.ex:264
-#: lib/meddie_web/live/people_live/show.ex:351
+#: lib/meddie_web/live/people_live/show.ex:360
 #, elixir-autogen, elixir-format
 msgid "Value"
 msgstr ""
 
-#: lib/meddie_web/live/document_live/show.ex:228
+#: lib/meddie_web/live/document_live/show.ex:239
 #, elixir-autogen, elixir-format
 msgid "Waiting to be parsed..."
 msgstr ""
@@ -763,23 +764,18 @@ msgstr ""
 msgid "unknown"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:631
+#: lib/meddie_web/live/people_live/show.ex:640
 #, elixir-autogen, elixir-format
 msgid "This document has already been uploaded."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:84
-#, elixir-autogen, elixir-format, fuzzy
-msgid "Biomarkers"
-msgstr ""
-
 #: lib/meddie_web/live/people_live/show.ex:268
-#: lib/meddie_web/live/people_live/show.ex:350
+#: lib/meddie_web/live/people_live/show.ex:359
 #, elixir-autogen, elixir-format
 msgid "Date"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:353
+#: lib/meddie_web/live/people_live/show.ex:362
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Document"
 msgstr ""
