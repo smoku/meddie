@@ -135,4 +135,75 @@ defmodule Meddie.Documents do
   def change_document(%Document{} = document, attrs \\ %{}) do
     Document.changeset(document, attrs)
   end
+
+  # -- Biomarker queries --
+
+  @doc """
+  Returns all biomarkers for a person from parsed lab_results documents,
+  ordered by category, name, and document date. Documents are preloaded.
+  """
+  def list_person_biomarkers(%Scope{space: space}, person_id) do
+    from(b in Biomarker,
+      join: d in assoc(b, :document),
+      where: b.space_id == ^space.id and b.person_id == ^person_id,
+      where: d.status == "parsed" and d.document_type == "lab_results",
+      order_by: [asc: b.category, asc: b.name, asc: d.document_date, asc: d.inserted_at],
+      preload: [document: d]
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Returns biomarker counts grouped by status for a person.
+  Returns a map like `%{"normal" => 5, "high" => 2}`.
+
+  Counts unique biomarker names (latest per name) rather than total rows.
+  """
+  def count_person_biomarkers_by_status(%Scope{space: space}, person_id) do
+    from(b in Biomarker,
+      join: d in assoc(b, :document),
+      where: b.space_id == ^space.id and b.person_id == ^person_id,
+      where: d.status == "parsed" and d.document_type == "lab_results",
+      group_by: b.status,
+      select: {b.status, count(b.id)}
+    )
+    |> Repo.all()
+    |> Map.new()
+  end
+
+  @doc """
+  Returns biomarker history for given names and person, grouped by name.
+  Only includes entries with non-nil numeric_value (for sparklines/charts).
+
+  Returns `%{"Hemoglobina" => [%{numeric_value: 14.5, status: "normal", ...}]}`.
+  """
+  def list_biomarker_history(%Scope{space: space}, person_id, biomarker_names)
+      when is_list(biomarker_names) do
+    from(b in Biomarker,
+      join: d in assoc(b, :document),
+      where: b.space_id == ^space.id and b.person_id == ^person_id,
+      where: b.name in ^biomarker_names,
+      where: d.status == "parsed" and d.document_type == "lab_results",
+      where: not is_nil(b.numeric_value),
+      order_by: [asc: d.document_date, asc: d.inserted_at],
+      select: %{
+        name: b.name,
+        unit: b.unit,
+        numeric_value: b.numeric_value,
+        status: b.status,
+        document_date: d.document_date,
+        document_id: d.id
+      }
+    )
+    |> Repo.all()
+    |> Enum.group_by(&{&1.name, normalize_unit(&1.unit)})
+  end
+
+  @doc """
+  Normalizes a biomarker unit by stripping trailing markers (e.g. `*`).
+
+  This ensures "%" and "%*", or "tys/μl" and "tys/μl*" are treated as the same unit.
+  """
+  def normalize_unit(nil), do: nil
+  def normalize_unit(unit), do: String.replace(unit, ~r/\*+$/, "")
 end

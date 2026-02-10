@@ -231,4 +231,111 @@ defmodule Meddie.DocumentsTest do
       assert_receive {:document_updated, ^doc}
     end
   end
+
+  describe "list_person_biomarkers/2" do
+    test "returns biomarkers from parsed lab_results ordered by category, name, date", %{
+      scope: scope,
+      person: person
+    } do
+      doc1 = parsed_document_fixture(scope, person, %{"document_date" => ~D[2025-01-15]})
+      doc2 = parsed_document_fixture(scope, person, %{"document_date" => ~D[2025-06-15]})
+
+      biomarker_fixture(doc1, %{name: "WBC", value: "6.0", numeric_value: 6.0, category: "CBC"})
+      biomarker_fixture(doc2, %{name: "WBC", value: "7.0", numeric_value: 7.0, category: "CBC"})
+      biomarker_fixture(doc1, %{name: "ALT", value: "25", numeric_value: 25.0, category: "Liver"})
+
+      results = Documents.list_person_biomarkers(scope, person.id)
+
+      names = Enum.map(results, & &1.name)
+      # Ordered by category (CBC < Liver), then name, then date
+      assert names == ["WBC", "WBC", "ALT"]
+    end
+
+    test "only includes biomarkers from parsed lab_results", %{scope: scope, person: person} do
+      parsed_doc = parsed_document_fixture(scope, person)
+      pending_doc = document_fixture(scope, person)
+
+      biomarker_fixture(parsed_doc, %{name: "HGB", value: "14.5"})
+      biomarker_fixture(pending_doc, %{name: "WBC", value: "6.0"})
+
+      results = Documents.list_person_biomarkers(scope, person.id)
+      assert length(results) == 1
+      assert hd(results).name == "HGB"
+    end
+
+    test "preloads document", %{scope: scope, person: person} do
+      doc = parsed_document_fixture(scope, person)
+      biomarker_fixture(doc)
+
+      [bm] = Documents.list_person_biomarkers(scope, person.id)
+      assert %Meddie.Documents.Document{} = bm.document
+    end
+
+    test "scopes to space", %{scope: scope, person: person} do
+      doc = parsed_document_fixture(scope, person)
+      biomarker_fixture(doc)
+
+      %{scope: other_scope} = user_with_space_fixture()
+      assert Documents.list_person_biomarkers(other_scope, person.id) == []
+    end
+  end
+
+  describe "count_person_biomarkers_by_status/2" do
+    test "returns counts grouped by status", %{scope: scope, person: person} do
+      doc = parsed_document_fixture(scope, person)
+
+      biomarker_fixture(doc, %{name: "HGB", status: "normal"})
+      biomarker_fixture(doc, %{name: "WBC", status: "normal"})
+      biomarker_fixture(doc, %{name: "ALT", status: "high"})
+      biomarker_fixture(doc, %{name: "Iron", status: "low"})
+
+      counts = Documents.count_person_biomarkers_by_status(scope, person.id)
+
+      assert counts["normal"] == 2
+      assert counts["high"] == 1
+      assert counts["low"] == 1
+    end
+
+    test "returns empty map when no biomarkers", %{scope: scope, person: person} do
+      assert Documents.count_person_biomarkers_by_status(scope, person.id) == %{}
+    end
+  end
+
+  describe "list_biomarker_history/3" do
+    test "returns history grouped by name with numeric values only", %{
+      scope: scope,
+      person: person
+    } do
+      doc1 = parsed_document_fixture(scope, person, %{"document_date" => ~D[2025-01-15]})
+      doc2 = parsed_document_fixture(scope, person, %{"document_date" => ~D[2025-06-15]})
+
+      biomarker_fixture(doc1, %{name: "HGB", value: "14.0", numeric_value: 14.0})
+      biomarker_fixture(doc2, %{name: "HGB", value: "15.0", numeric_value: 15.0})
+      biomarker_fixture(doc1, %{name: "RBC", value: "Positive", numeric_value: nil})
+
+      history = Documents.list_biomarker_history(scope, person.id, ["HGB", "RBC"])
+
+      assert Map.has_key?(history, {"HGB", "g/dL"})
+      assert length(history[{"HGB", "g/dL"}]) == 2
+      # RBC excluded because numeric_value is nil
+      refute Enum.any?(Map.keys(history), fn {name, _unit} -> name == "RBC" end)
+    end
+
+    test "returns empty map for no matching names", %{scope: scope, person: person} do
+      assert Documents.list_biomarker_history(scope, person.id, ["Nonexistent"]) == %{}
+    end
+
+    test "orders by document date ascending", %{scope: scope, person: person} do
+      doc_old = parsed_document_fixture(scope, person, %{"document_date" => ~D[2024-01-01]})
+      doc_new = parsed_document_fixture(scope, person, %{"document_date" => ~D[2025-06-01]})
+
+      biomarker_fixture(doc_new, %{name: "HGB", value: "15.0", numeric_value: 15.0})
+      biomarker_fixture(doc_old, %{name: "HGB", value: "14.0", numeric_value: 14.0})
+
+      history = Documents.list_biomarker_history(scope, person.id, ["HGB"])
+      values = Enum.map(history[{"HGB", "g/dL"}], & &1.numeric_value)
+
+      assert values == [14.0, 15.0]
+    end
+  end
 end

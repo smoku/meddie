@@ -73,17 +73,16 @@ People (/people)                                 ← sidebar item, landing page
   │     │     └── Document Detail (/people/:person_id/documents/:id)
   │     │           ├── Parsed results (biomarkers or summary)
   │     │           └── Original document (PDF.js / image)
-  │     ├── [Biomarkers tab]                     ← F4, future
-  │     └── [Trends tab]                         ← F5, future
+  │     └── Biomarkers tab                        ← F4: dashboard + sparklines + inline trend charts
   ├── New Person (/people/new)
   └── Edit Person (/people/:id/edit)
 
 Chat (/chat)                                     ← sidebar item
   ├── Conversation List                          ← all conversations, grouped by person
-  └── Conversation Detail (/chat/:id)            ← F6: AI Q&A
+  └── Conversation Detail (/chat/:id)            ← F5: AI Q&A
 
 Telegram (/telegram)                             ← sidebar item
-  └── [F7: TBD]
+  └── [F6: TBD]
 
 Settings (/settings)                             ← sidebar item
   ├── Space Settings                             ← members, invites (admin only)
@@ -110,7 +109,7 @@ The landing page after login. Shows all people in the current Space.
 Tabbed layout showing all data for one person.
 
 - **Header** (persistent across tabs): Person name, age, sex, height, weight. "Edit" button to modify basic info.
-- **Tabs**: Overview | Documents | (future: Biomarkers | Trends)
+- **Tabs**: Overview | Documents | Biomarkers
 
 #### Overview Tab
 
@@ -164,7 +163,7 @@ Top-level chat view — accessible from the sidebar. Shows all AI Q&A conversati
 - **List**: Reverse chronological. Each row: conversation title, person name, last message preview, date.
 - **Filter**: Filter by person (dropdown or tabs).
 - **New conversation**: "New chat" button — prompts to select a person, then opens a new conversation.
-- **Click row** → Conversation Detail (F6).
+- **Click row** → Conversation Detail (F5).
 
 This provides a quick entry point for chat without navigating through People → Person → Chat tab.
 

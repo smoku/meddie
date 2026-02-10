@@ -111,7 +111,7 @@ defmodule MeddieWeb.DocumentLive.Show do
 
           <%!-- Right: Parsed results --%>
           <div class={["lg:w-1/2 lg:block", if(@panel != "results", do: "hidden")]}>
-            <.document_results document={@document} />
+            <.document_results document={@document} biomarker_history={@biomarker_history} />
           </div>
         </div>
       </div>
@@ -122,8 +122,18 @@ defmodule MeddieWeb.DocumentLive.Show do
   # -- Result components --
 
   defp document_results(%{document: %{status: "parsed", document_type: "lab_results"}} = assigns) do
+    grouped = Enum.group_by(assigns.document.biomarkers, & &1.category)
+
+    sparklines =
+      Map.new(assigns.biomarker_history, fn {{name, unit}, entries} ->
+        points = Enum.map(entries, &%{value: &1.numeric_value, status: &1.status})
+        {{name, unit}, points}
+      end)
+
     assigns =
-      assign(assigns, :grouped, Enum.group_by(assigns.document.biomarkers, & &1.category))
+      assigns
+      |> assign(:grouped, grouped)
+      |> assign(:sparklines, sparklines)
 
     ~H"""
     <div class="space-y-4">
@@ -142,6 +152,7 @@ defmodule MeddieWeb.DocumentLive.Show do
               <thead>
                 <tr>
                   <th>{gettext("Biomarker")}</th>
+                  <th>{gettext("Trend")}</th>
                   <th class="text-right">{gettext("Value")}</th>
                   <th>{gettext("Unit")}</th>
                   <th>{gettext("Reference")}</th>
@@ -154,9 +165,26 @@ defmodule MeddieWeb.DocumentLive.Show do
                   class={biomarker_row_class(bm.status)}
                 >
                   <td>{bm.name}</td>
+                  <td>
+                    <.sparkline
+                      :if={length(Map.get(@sparklines, {bm.name, Meddie.Documents.normalize_unit(bm.unit)}, [])) > 1}
+                      points={Map.get(@sparklines, {bm.name, Meddie.Documents.normalize_unit(bm.unit)}, [])}
+                    />
+                  </td>
                   <td class="text-right font-mono">{bm.value}</td>
                   <td class="text-base-content/60">{bm.unit}</td>
-                  <td class="text-base-content/60 text-xs">{bm.reference_range_text}</td>
+                  <td class="text-base-content/60 text-xs">
+                    <.reference_range_bar
+                      :if={bm.reference_range_low && bm.reference_range_high && bm.numeric_value}
+                      value={bm.numeric_value}
+                      low={bm.reference_range_low}
+                      high={bm.reference_range_high}
+                      status={bm.status}
+                    />
+                    <span :if={!bm.reference_range_low || !bm.reference_range_high || !bm.numeric_value}>
+                      {bm.reference_range_text}
+                    </span>
+                  </td>
                   <td><.biomarker_status_badge status={bm.status} /></td>
                 </tr>
               </tbody>
@@ -213,32 +241,6 @@ defmodule MeddieWeb.DocumentLive.Show do
     """
   end
 
-  attr :status, :string, required: true
-
-  defp biomarker_status_badge(%{status: "normal"} = assigns) do
-    ~H"""
-    <span class="badge badge-success badge-xs">{gettext("normal")}</span>
-    """
-  end
-
-  defp biomarker_status_badge(%{status: "low"} = assigns) do
-    ~H"""
-    <span class="badge badge-info badge-xs">{gettext("low")}</span>
-    """
-  end
-
-  defp biomarker_status_badge(%{status: "high"} = assigns) do
-    ~H"""
-    <span class="badge badge-error badge-xs">{gettext("high")}</span>
-    """
-  end
-
-  defp biomarker_status_badge(assigns) do
-    ~H"""
-    <span class="badge badge-ghost badge-xs">{gettext("unknown")}</span>
-    """
-  end
-
   # -- Lifecycle --
 
   @impl true
@@ -253,12 +255,15 @@ defmodule MeddieWeb.DocumentLive.Show do
 
     {:ok, signed_url} = Meddie.Storage.presigned_url(document.storage_path)
 
+    biomarker_history = load_biomarker_history(scope, person, document)
+
     {:ok,
      socket
      |> assign(page_title: document.filename)
      |> assign(person: person)
      |> assign(document: document)
      |> assign(signed_url: signed_url)
+     |> assign(biomarker_history: biomarker_history)
      |> assign(panel: "results")}
   end
 
@@ -307,7 +312,14 @@ defmodule MeddieWeb.DocumentLive.Show do
   def handle_info({:document_updated, document}, socket) do
     if document.id == socket.assigns.document.id do
       document = Meddie.Repo.preload(document, :biomarkers, force: true)
-      {:noreply, assign(socket, :document, document)}
+      scope = socket.assigns.current_scope
+      person = socket.assigns.person
+      biomarker_history = load_biomarker_history(scope, person, document)
+
+      {:noreply,
+       socket
+       |> assign(:document, document)
+       |> assign(:biomarker_history, biomarker_history)}
     else
       {:noreply, socket}
     end
@@ -315,9 +327,19 @@ defmodule MeddieWeb.DocumentLive.Show do
 
   # -- Helpers --
 
-  defp biomarker_row_class("high"), do: "text-error font-medium"
-  defp biomarker_row_class("low"), do: "text-info font-medium"
-  defp biomarker_row_class(_), do: ""
+  defp load_biomarker_history(scope, person, document) do
+    biomarker_names =
+      document.biomarkers
+      |> Enum.filter(& &1.numeric_value)
+      |> Enum.map(& &1.name)
+      |> Enum.uniq()
+
+    if biomarker_names != [] do
+      Documents.list_biomarker_history(scope, person.id, biomarker_names)
+    else
+      %{}
+    end
+  end
 
   defp render_markdown(nil), do: "—"
   defp render_markdown(""), do: "—"

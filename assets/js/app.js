@@ -26,12 +26,13 @@ import {hooks as colocatedHooks} from "phoenix-colocated/meddie"
 import topbar from "../vendor/topbar"
 import MarkdownEditor from "./hooks/markdown_editor"
 import PdfViewer from "./hooks/pdf_viewer"
+import TrendChart from "./hooks/trend_chart"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, MarkdownEditor, PdfViewer},
+  hooks: {...colocatedHooks, MarkdownEditor, PdfViewer, TrendChart},
 })
 
 // Show progress bar on live navigation and form submits

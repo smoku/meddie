@@ -86,6 +86,7 @@ defmodule MeddieWeb do
       import Phoenix.HTML
       # Core UI components
       import MeddieWeb.CoreComponents
+      import MeddieWeb.BiomarkerComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

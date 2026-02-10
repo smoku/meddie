@@ -38,13 +38,12 @@ MIT
 
 | # | Feature | Description | Spec |
 |---|---------|-------------|------|
-| F1 | [Authentication & Multi-tenancy](features/authentication-multitenancy.md) | Email/password registration & login via Pow, data isolation per Space | [→](features/authentication-multitenancy.md) |
+| F1 | [Authentication & Multi-tenancy](features/authentication-multitenancy.md) | Email/password registration & login via phx.gen.auth, data isolation per Space | [→](features/authentication-multitenancy.md) |
 | F2 | [People](features/people.md) | Health profiles per Space — basic info, health notes, supplements, medications | [→](features/people.md) |
 | F3 | [Documents](features/documents.md) | Upload, AI parsing (lab results + medical reports), document preview and management | [→](features/documents.md) |
-| F4 | [Biomarker Dashboard](features/biomarker-dashboard.md) | Structured view of parsed results | [→](features/biomarker-dashboard.md) |
-| F5 | [Trend Tracking](features/trend-tracking.md) | Chart biomarker values over time | [→](features/trend-tracking.md) |
-| F6 | [AI Q&A](features/ai-qa.md) | Ask questions about your results | [→](features/ai-qa.md) |
-| F7 | [Telegram](features/telegram.md) | Telegram bot for chatting with AI about health data | [→](features/telegram.md) |
+| F4 | [Biomarker Dashboard & Trends](features/biomarker-dashboard.md) | Per-person biomarker dashboard with sparklines, trend charts, and staleness tracking | [→](features/biomarker-dashboard.md) |
+| F5 | [AI Q&A](features/ai-qa.md) | Ask questions about your results | [→](features/ai-qa.md) |
+| F6 | [Telegram](features/telegram.md) | Telegram bot for chatting with AI about health data | [→](features/telegram.md) |
 
 **UI Architecture**: [ui-architecture.md](ui-architecture.md) — layout, navigation, screen flow, responsive behavior, component patterns.
 

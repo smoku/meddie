@@ -1,3 +1,3 @@
-# F7: Telegram
+# F6: Telegram
 
 <!-- TODO: To be described -->

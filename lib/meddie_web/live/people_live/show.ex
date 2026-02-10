@@ -57,6 +57,21 @@ defmodule MeddieWeb.PeopleLive.Show do
             {gettext("Overview")}
           </.link>
           <.link
+            patch={~p"/people/#{@person}?tab=biomarkers"}
+            class={[
+              "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+              if(@tab == "biomarkers",
+                do: "border-primary text-primary",
+                else: "border-transparent text-base-content/60 hover:text-base-content"
+              )
+            ]}
+          >
+            {gettext("Results")}
+            <span :if={@biomarkers_total > 0} class="ml-1.5 badge badge-sm">
+              {@biomarkers_total}
+            </span>
+          </.link>
+          <.link
             patch={~p"/people/#{@person}?tab=documents"}
             class={[
               "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
@@ -205,12 +220,171 @@ defmodule MeddieWeb.PeopleLive.Show do
             </.link>
           </div>
         </div>
+
+        <%!-- Biomarkers tab --%>
+        <div :if={@tab == "biomarkers"} class="space-y-6">
+          <%!-- Summary stats --%>
+          <div :if={@biomarkers_total > 0} class="flex flex-wrap gap-3 text-sm">
+            <span class="font-medium">
+              {ngettext("1 biomarker", "%{count} biomarkers", @biomarkers_total)}
+            </span>
+            <span :if={@biomarker_status_counts["normal"]} class="text-success">
+              {@biomarker_status_counts["normal"]} {gettext("normal")}
+            </span>
+            <span :if={@biomarker_status_counts["high"]} class="text-error">
+              {@biomarker_status_counts["high"]} {gettext("high")}
+            </span>
+            <span :if={@biomarker_status_counts["low"]} class="text-info">
+              {@biomarker_status_counts["low"]} {gettext("low")}
+            </span>
+          </div>
+
+          <%!-- Empty state --%>
+          <div :if={@biomarkers_total == 0} class="text-center py-12 text-base-content/50">
+            <.icon name="hero-beaker" class="size-12 mx-auto mb-4" />
+            <p class="text-lg">{gettext("No biomarkers yet.")}</p>
+            <p class="text-sm mt-1">
+              {gettext("Upload lab results to start tracking biomarkers.")}
+            </p>
+          </div>
+
+          <%!-- Categorized biomarker cards --%>
+          <div
+            :for={{category, biomarkers} <- @biomarker_groups || []}
+            class="card bg-base-100 shadow-sm"
+          >
+            <div class="card-body">
+              <h3 class="card-title text-sm">{category || gettext("Other")}</h3>
+              <div class="overflow-x-auto">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>{gettext("Biomarker")}</th>
+                      <th>{gettext("Trend")}</th>
+                      <th class="text-right">{gettext("Value")}</th>
+                      <th>{gettext("Unit")}</th>
+                      <th>{gettext("Reference")}</th>
+                      <th>{gettext("Status")}</th>
+                      <th>{gettext("Date")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for bm <- biomarkers do %>
+                      <tr
+                        id={"biomarker-row-#{bm.latest.id}"}
+                        class={[
+                          "cursor-pointer hover:bg-base-200/50 transition-colors",
+                          biomarker_row_class(bm.latest.status),
+                          bm.stale? && "opacity-50"
+                        ]}
+                        phx-click="toggle-trend"
+                        phx-value-key={bm.key}
+                      >
+                        <td class="font-medium">
+                          {bm.name}
+                          <span
+                            :if={bm.data_point_count > 1}
+                            class="text-xs text-base-content/40 ml-1"
+                          >
+                            ({bm.data_point_count})
+                          </span>
+                        </td>
+                        <td>
+                          <.sparkline
+                            :if={length(bm.sparkline_points) > 1}
+                            points={bm.sparkline_points}
+                          />
+                        </td>
+                        <td class="text-right font-mono">{bm.latest.value}</td>
+                        <td class="text-base-content/60">{bm.latest.unit}</td>
+                        <td class="text-base-content/60 text-xs">
+                          <.reference_range_bar
+                            :if={bm.latest.reference_range_low && bm.latest.reference_range_high && bm.latest.numeric_value}
+                            value={bm.latest.numeric_value}
+                            low={bm.latest.reference_range_low}
+                            high={bm.latest.reference_range_high}
+                            status={bm.latest.status}
+                          />
+                          <span :if={!bm.latest.reference_range_low || !bm.latest.reference_range_high || !bm.latest.numeric_value}>
+                            {bm.latest.reference_range_text}
+                          </span>
+                        </td>
+                        <td><.biomarker_status_badge status={bm.latest.status} /></td>
+                        <td class="text-xs text-base-content/50">
+                          {Calendar.strftime(bm.latest_date, "%Y-%m-%d")}
+                        </td>
+                      </tr>
+                      <%!-- Inline trend expansion --%>
+                      <%= if @expanded_biomarker == bm.key do %>
+                        <tr id={"trend-#{bm.latest.id}"}>
+                          <td colspan="7" class="p-4 bg-base-200/30">
+                            <.trend_detail biomarker={bm} person={@person} />
+                          </td>
+                        </tr>
+                      <% end %>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Layouts.sidebar>
     """
   end
 
   # -- Private components --
+
+  attr :biomarker, :map, required: true
+  attr :person, :any, required: true
+
+  defp trend_detail(assigns) do
+    chart_data = build_chart_data(assigns.biomarker)
+    assigns = assign(assigns, :chart_data, Jason.encode!(chart_data))
+
+    ~H"""
+    <div class="space-y-4">
+      <div
+        id={"trend-chart-#{Base.encode16(:crypto.hash(:md5, @biomarker.name), case: :lower)}"}
+        phx-hook="TrendChart"
+        phx-update="ignore"
+        data-chart={@chart_data}
+        class="h-48"
+      />
+
+      <table class="table table-xs">
+        <thead>
+          <tr>
+            <th>{gettext("Date")}</th>
+            <th class="text-right">{gettext("Value")}</th>
+            <th>{gettext("Unit")}</th>
+            <th>{gettext("Document")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :for={entry <- Enum.reverse(@biomarker.history)}>
+            <td class="text-xs">
+              {if entry.document.document_date,
+                do: Calendar.strftime(entry.document.document_date, "%Y-%m-%d"),
+                else: Calendar.strftime(entry.document.inserted_at, "%Y-%m-%d")}
+            </td>
+            <td class="text-right font-mono">{entry.value}</td>
+            <td class="text-base-content/60">{entry.unit}</td>
+            <td>
+              <.link
+                navigate={~p"/people/#{@person}/documents/#{entry.document}"}
+                class="link link-primary text-xs"
+              >
+                {entry.document.filename}
+              </.link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
 
   attr :label, :string, required: true
   attr :value, :string, required: true
@@ -306,14 +480,18 @@ defmodule MeddieWeb.PeopleLive.Show do
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
-    person = People.get_person!(socket.assigns.current_scope, id)
+    scope = socket.assigns.current_scope
+    person = People.get_person!(scope, id)
 
     if connected?(socket) do
       Documents.subscribe_person_documents(person.id)
     end
 
-    documents = Documents.list_documents(socket.assigns.current_scope, person.id)
-    documents_count = Documents.count_documents(socket.assigns.current_scope, person.id)
+    documents = Documents.list_documents(scope, person.id)
+    documents_count = Documents.count_documents(scope, person.id)
+
+    biomarker_status_counts = Documents.count_person_biomarkers_by_status(scope, person.id)
+    biomarkers_total = biomarker_status_counts |> Map.values() |> Enum.sum()
 
     {:ok,
      socket
@@ -321,6 +499,10 @@ defmodule MeddieWeb.PeopleLive.Show do
      |> assign(person: person)
      |> assign(tab: "overview")
      |> assign(documents_count: documents_count)
+     |> assign(biomarker_status_counts: biomarker_status_counts)
+     |> assign(biomarkers_total: biomarkers_total)
+     |> assign(biomarker_groups: nil)
+     |> assign(expanded_biomarker: nil)
      |> stream(:documents, documents)
      |> allow_upload(:document,
        accept: ~w(.jpg .jpeg .png .pdf),
@@ -336,13 +518,22 @@ defmodule MeddieWeb.PeopleLive.Show do
     tab = params["tab"] || "overview"
 
     socket =
-      if tab == "documents" do
-        documents =
-          Documents.list_documents(socket.assigns.current_scope, socket.assigns.person.id)
+      case tab do
+        "documents" ->
+          documents =
+            Documents.list_documents(socket.assigns.current_scope, socket.assigns.person.id)
 
-        stream(socket, :documents, documents, reset: true)
-      else
-        socket
+          stream(socket, :documents, documents, reset: true)
+
+        "biomarkers" ->
+          if socket.assigns.biomarker_groups do
+            socket
+          else
+            load_biomarker_groups(socket)
+          end
+
+        _ ->
+          socket
       end
 
     {:noreply, assign(socket, :tab, tab)}
@@ -372,19 +563,33 @@ defmodule MeddieWeb.PeopleLive.Show do
     {:noreply, cancel_upload(socket, :document, ref)}
   end
 
+  def handle_event("toggle-trend", %{"key" => key}, socket) do
+    expanded =
+      if socket.assigns.expanded_biomarker == key, do: nil, else: key
+
+    {:noreply, assign(socket, :expanded_biomarker, expanded)}
+  end
+
   # -- PubSub --
 
   @impl true
   def handle_info({:document_updated, document}, socket) do
     document = Meddie.Repo.preload(document, :biomarkers)
+    scope = socket.assigns.current_scope
+    person_id = socket.assigns.person.id
 
-    documents_count =
-      Documents.count_documents(socket.assigns.current_scope, socket.assigns.person.id)
+    documents_count = Documents.count_documents(scope, person_id)
+
+    biomarker_status_counts = Documents.count_person_biomarkers_by_status(scope, person_id)
+    biomarkers_total = biomarker_status_counts |> Map.values() |> Enum.sum()
 
     {:noreply,
      socket
      |> stream_insert(:documents, document)
-     |> assign(documents_count: documents_count)}
+     |> assign(documents_count: documents_count)
+     |> assign(biomarker_status_counts: biomarker_status_counts)
+     |> assign(biomarkers_total: biomarkers_total)
+     |> assign(biomarker_groups: nil, expanded_biomarker: nil)}
   end
 
   # -- Upload progress callback --
@@ -480,4 +685,75 @@ defmodule MeddieWeb.PeopleLive.Show do
     do: gettext("Unsupported file format. Accepted: PDF, JPG, PNG")
 
   defp upload_error_to_string(_), do: gettext("Upload error")
+
+  # -- Biomarker helpers --
+
+  defp load_biomarker_groups(socket) do
+    scope = socket.assigns.current_scope
+    person_id = socket.assigns.person.id
+
+    all_biomarkers = Documents.list_person_biomarkers(scope, person_id)
+    biomarker_groups = aggregate_biomarkers(all_biomarkers)
+
+    assign(socket, biomarker_groups: biomarker_groups)
+  end
+
+  defp aggregate_biomarkers(biomarkers) do
+    biomarkers
+    |> Enum.group_by(&{&1.name, Documents.normalize_unit(&1.unit)})
+    |> Enum.map(fn {{name, unit}, entries} ->
+      entries =
+        Enum.sort_by(entries, fn e ->
+          e.document.document_date || DateTime.to_date(e.document.inserted_at)
+        end, Date)
+
+      latest = List.last(entries)
+      history = Enum.filter(entries, & &1.numeric_value)
+      sparkline_points = Enum.map(history, &%{value: &1.numeric_value, status: &1.status})
+
+      latest_date =
+        latest.document.document_date || DateTime.to_date(latest.document.inserted_at)
+
+      stale? = Date.diff(Date.utc_today(), latest_date) > 180
+
+      %{
+        name: name,
+        unit: unit,
+        key: "#{name}::#{unit}",
+        category: latest.category,
+        latest: latest,
+        latest_date: latest_date,
+        history: entries,
+        sparkline_points: sparkline_points,
+        stale?: stale?,
+        data_point_count: length(entries)
+      }
+    end)
+    |> Enum.sort_by(&{&1.category || "zzz", &1.name, &1.unit || ""})
+    |> Enum.group_by(& &1.category)
+  end
+
+  defp build_chart_data(biomarker) do
+    points =
+      biomarker.history
+      |> Enum.filter(& &1.numeric_value)
+      |> Enum.map(fn entry ->
+        date =
+          entry.document.document_date || DateTime.to_date(entry.document.inserted_at)
+
+        %{
+          x: Date.to_iso8601(date),
+          y: entry.numeric_value,
+          status: entry.status
+        }
+      end)
+
+    %{
+      points: points,
+      reference_low: biomarker.latest.reference_range_low,
+      reference_high: biomarker.latest.reference_range_high,
+      unit: biomarker.latest.unit,
+      name: biomarker.name
+    }
+  end
 end

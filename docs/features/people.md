@@ -85,14 +85,14 @@ Users can restructure freely. The AI auto-population adds new items to "Current"
 
 ### Auto-population from AI Q&A
 
-The AI Q&A feature (F6) can suggest updates to a person's Markdown fields. The mechanism:
+The AI Q&A feature (F5) can suggest updates to a person's Markdown fields. The mechanism:
 
 1. During a Q&A conversation scoped to a person, the AI detects health-relevant information in the user's messages (e.g., "I am diabetic", "I started taking Vitamin D 2000 IU daily", "I stopped taking metformin").
 2. The AI proposes an update — specifying the target field (health notes, supplements, or medications) and the text to add, modify, or move.
 3. The user sees the suggestion in the chat interface and can confirm or dismiss it.
 4. On confirm, the system updates the relevant Markdown field.
 
-The detection and suggestion logic is defined in F6: AI Q&A. This section defines the data model and the fact that these fields are programmatically updatable.
+The detection and suggestion logic is defined in F5: AI Q&A. This section defines the data model and the fact that these fields are programmatically updatable.
 
 ## Data Model
 
@@ -155,6 +155,5 @@ Minimal for now — will be refined in later iterations.
 Adding the Person concept requires `person_id` on data in other features. These will be updated in their respective specs:
 
 - **F3: Documents** — `documents` table gains `person_id` FK. Upload flow requires person selection.
-- **F4: Biomarker Dashboard** — Scoped to a person.
-- **F5: Trend Tracking** — Per-person trend charts.
-- **F6: AI Q&A** — `conversations` table gains `person_id` FK. Person context bundle sent with every LLM call. Auto-population suggestion mechanism.
+- **F4: Biomarker Dashboard & Trends** — Per-person biomarker dashboard with sparklines and trend charts.
+- **F5: AI Q&A** — `conversations` table gains `person_id` FK. Person context bundle sent with every LLM call. Auto-population suggestion mechanism.
