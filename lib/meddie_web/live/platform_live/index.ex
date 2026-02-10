@@ -8,13 +8,13 @@ defmodule MeddieWeb.PlatformLive.Index do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="max-w-2xl mx-auto space-y-8">
-        <h1 class="text-2xl font-bold">Platform Admin</h1>
+        <h1 class="text-2xl font-bold">{gettext("Platform Admin")}</h1>
 
         <%!-- Invite new user --%>
         <section>
           <div class="card bg-base-100 shadow-sm">
             <div class="card-body">
-              <h2 class="card-title text-base">Invite new user</h2>
+              <h2 class="card-title text-base">{gettext("Invite new user")}</h2>
               <.form for={@invite_form} phx-submit="invite_user" class="flex gap-2">
                 <.input
                   field={@invite_form[:email]}
@@ -22,7 +22,7 @@ defmodule MeddieWeb.PlatformLive.Index do
                   placeholder="email@example.com"
                   required
                 />
-                <button type="submit" class="btn btn-primary btn-sm">Send invitation</button>
+                <button type="submit" class="btn btn-primary btn-sm">{gettext("Send invitation")}</button>
               </.form>
             </div>
           </div>
@@ -30,14 +30,14 @@ defmodule MeddieWeb.PlatformLive.Index do
 
         <%!-- Pending invitations --%>
         <section :if={@pending_invitations != []}>
-          <h2 class="text-lg font-semibold mb-2">Pending Invitations</h2>
+          <h2 class="text-lg font-semibold mb-2">{gettext("Pending Invitations")}</h2>
           <div class="overflow-x-auto">
             <table class="table">
               <thead>
                 <tr>
-                  <th>Email</th>
-                  <th>Invited by</th>
-                  <th>Expires</th>
+                  <th>{gettext("Email")}</th>
+                  <th>{gettext("Invited by")}</th>
+                  <th>{gettext("Expires")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -53,16 +53,16 @@ defmodule MeddieWeb.PlatformLive.Index do
 
         <%!-- All spaces --%>
         <section>
-          <h2 class="text-lg font-semibold mb-2">All Spaces</h2>
+          <h2 class="text-lg font-semibold mb-2">{gettext("All Spaces")}</h2>
           <div :if={@spaces == []} class="text-base-content/50 text-sm">
-            No spaces yet.
+            {gettext("No spaces yet.")}
           </div>
           <div :if={@spaces != []} class="overflow-x-auto">
             <table class="table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Created</th>
+                  <th>{gettext("Name")}</th>
+                  <th>{gettext("Created")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -77,7 +77,7 @@ defmodule MeddieWeb.PlatformLive.Index do
 
         <div class="text-center">
           <.link navigate={~p"/people"} class="btn btn-ghost btn-sm">
-            &larr; Back to app
+            &larr; {gettext("Back to app")}
           </.link>
         </div>
       </div>
@@ -93,7 +93,7 @@ defmodule MeddieWeb.PlatformLive.Index do
     {:ok,
      socket
      |> assign(
-       page_title: "Platform Admin",
+       page_title: gettext("Platform Admin"),
        pending_invitations: pending_invitations,
        spaces: spaces,
        invite_form: to_form(%{"email" => ""}, as: "invite")
@@ -108,7 +108,7 @@ defmodule MeddieWeb.PlatformLive.Index do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Invitation sent to #{email}.")
+         |> put_flash(:info, gettext("Invitation sent to %{email}.", email: email))
          |> assign(
            pending_invitations: pending_invitations,
            invite_form: to_form(%{"email" => ""}, as: "invite")
@@ -118,7 +118,7 @@ defmodule MeddieWeb.PlatformLive.Index do
         message =
           case changeset.errors[:email] do
             {msg, _} -> msg
-            _ -> "Could not send invitation."
+            _ -> gettext("Could not send invitation.")
           end
 
         {:noreply, put_flash(socket, :error, message)}

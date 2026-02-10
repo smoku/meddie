@@ -55,7 +55,11 @@ msgstr ""
 msgid "Confirm new password"
 msgstr ""
 
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:18
+#: lib/meddie_web/live/platform_live/index.ex:38
+#: lib/meddie_web/live/settings_live/index.ex:30
 #: lib/meddie_web/live/user_live/login.ex:28
+#: lib/meddie_web/live/user_live/registration.ex:29
 #: lib/meddie_web/live/user_live/settings.ex:44
 #: lib/meddie_web/live/user_live/settings.ex:54
 #, elixir-autogen, elixir-format
@@ -77,7 +81,10 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:15
 #: lib/meddie_web/live/people_live/form.ex:29
+#: lib/meddie_web/live/platform_live/index.ex:64
+#: lib/meddie_web/live/settings_live/index.ex:29
 #: lib/meddie_web/live/user_live/settings.ex:27
 #, elixir-autogen, elixir-format
 msgid "Name"
@@ -88,6 +95,7 @@ msgstr ""
 msgid "New password"
 msgstr ""
 
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:28
 #: lib/meddie_web/live/user_live/login.ex:36
 #: lib/meddie_web/live/user_live/settings.ex:68
 #, elixir-autogen, elixir-format
@@ -105,13 +113,13 @@ msgstr ""
 msgid "Profile updated successfully."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:90
+#: lib/meddie_web/live/people_live/form.ex:96
 #: lib/meddie_web/live/user_live/settings.ex:35
 #, elixir-autogen, elixir-format
 msgid "Save"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:89
+#: lib/meddie_web/live/people_live/form.ex:95
 #: lib/meddie_web/live/user_live/settings.ex:34
 #, elixir-autogen, elixir-format
 msgid "Saving..."
@@ -132,7 +140,7 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:109
+#: lib/meddie_web/live/people_live/form.ex:115
 #: lib/meddie_web/live/people_live/index.ex:20
 #, elixir-autogen, elixir-format
 msgid "Add person"
@@ -174,19 +182,19 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:122
+#: lib/meddie_web/live/people_live/form.ex:128
 #, elixir-autogen, elixir-format
 msgid "Edit person"
 msgstr ""
 
 #: lib/meddie_web/live/people_live/form.ex:35
 #: lib/meddie_web/live/people_live/index.ex:74
-#: lib/meddie_web/live/people_live/show.ex:139
+#: lib/meddie_web/live/people_live/show.ex:150
 #, elixir-autogen, elixir-format
 msgid "Female"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:70
+#: lib/meddie_web/live/people_live/form.ex:71
 #: lib/meddie_web/live/people_live/show.ex:74
 #, elixir-autogen, elixir-format
 msgid "Health Notes"
@@ -209,18 +217,19 @@ msgstr ""
 
 #: lib/meddie_web/live/user_live/login.ex:11
 #: lib/meddie_web/live/user_live/login.ex:41
+#: lib/meddie_web/live/user_live/registration.ex:18
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr ""
 
 #: lib/meddie_web/live/people_live/form.ex:35
 #: lib/meddie_web/live/people_live/index.ex:73
-#: lib/meddie_web/live/people_live/show.ex:138
+#: lib/meddie_web/live/people_live/show.ex:149
 #, elixir-autogen, elixir-format
 msgid "Male"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:82
+#: lib/meddie_web/live/people_live/form.ex:87
 #: lib/meddie_web/live/people_live/show.ex:80
 #, elixir-autogen, elixir-format
 msgid "Medications"
@@ -231,6 +240,8 @@ msgstr ""
 msgid "No people yet."
 msgstr ""
 
+#: lib/meddie_web/components/layouts.ex:50
+#: lib/meddie_web/components/layouts.ex:51
 #: lib/meddie_web/live/people_live/index.ex:13
 #: lib/meddie_web/live/people_live/index.ex:17
 #: lib/meddie_web/live/people_live/index.ex:64
@@ -238,17 +249,17 @@ msgstr ""
 msgid "People"
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:150
+#: lib/meddie_web/live/people_live/form.ex:156
 #, elixir-autogen, elixir-format
 msgid "Person created successfully."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/show.ex:130
+#: lib/meddie_web/live/people_live/show.ex:132
 #, elixir-autogen, elixir-format
 msgid "Person deleted successfully."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:163
+#: lib/meddie_web/live/people_live/form.ex:169
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Person updated successfully."
 msgstr ""
@@ -268,7 +279,7 @@ msgstr ""
 msgid "Sign in to your Meddie account."
 msgstr ""
 
-#: lib/meddie_web/live/people_live/form.ex:76
+#: lib/meddie_web/live/people_live/form.ex:79
 #: lib/meddie_web/live/people_live/show.ex:77
 #, elixir-autogen, elixir-format
 msgid "Supplements"
@@ -302,4 +313,251 @@ msgstr ""
 #: lib/meddie_web/live/people_live/form.ex:58
 #, elixir-autogen, elixir-format
 msgid "None"
+msgstr ""
+
+#: lib/meddie_web/live/space_live/new.ex:26
+#, elixir-autogen, elixir-format
+msgid "A space groups people, documents and results. You can create your personal space or a family space."
+msgstr ""
+
+#: lib/meddie_web/live/user_live/registration.ex:62
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Account created successfully."
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:143
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Account settings"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:56
+#, elixir-autogen, elixir-format
+msgid "All Spaces"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/registration.ex:16
+#, elixir-autogen, elixir-format
+msgid "Already registered?"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:53
+#, elixir-autogen, elixir-format
+msgid "Are you sure you want to remove this member?"
+msgstr ""
+
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "At least 12 characters"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:80
+#, elixir-autogen, elixir-format
+msgid "Back to app"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:56
+#, elixir-autogen, elixir-format
+msgid "Chat"
+msgstr ""
+
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:34
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Confirm password"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:121
+#: lib/meddie_web/live/settings_live/index.ex:132
+#, elixir-autogen, elixir-format
+msgid "Could not send invitation."
+msgstr ""
+
+#: lib/meddie_web/live/space_live/new.ex:29
+#, elixir-autogen, elixir-format
+msgid "Create Space"
+msgstr ""
+
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:39
+#, elixir-autogen, elixir-format
+msgid "Create account"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/registration.ex:36
+#, elixir-autogen, elixir-format
+msgid "Create an account"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:115
+#, elixir-autogen, elixir-format
+msgid "Create new Space"
+msgstr ""
+
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:3
+#, elixir-autogen, elixir-format
+msgid "Create your account"
+msgstr ""
+
+#: lib/meddie_web/live/space_live/new.ex:14
+#, elixir-autogen, elixir-format
+msgid "Create your first Space to get started."
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:65
+#, elixir-autogen, elixir-format
+msgid "Created"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/registration.ex:35
+#, elixir-autogen, elixir-format
+msgid "Creating account..."
+msgstr ""
+
+#: lib/meddie_web/live/space_live/new.ex:28
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Creating..."
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:40
+#, elixir-autogen, elixir-format
+msgid "Expires"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:111
+#: lib/meddie_web/live/settings_live/index.ex:122
+#, elixir-autogen, elixir-format
+msgid "Invitation sent to %{email}."
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:17
+#, elixir-autogen, elixir-format
+msgid "Invite new user"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:66
+#, elixir-autogen, elixir-format
+msgid "Invite to Space"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:39
+#, elixir-autogen, elixir-format
+msgid "Invited by"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:105
+#, elixir-autogen, elixir-format
+msgid "Member removed."
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:24
+#, elixir-autogen, elixir-format
+msgid "Members"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:58
+#, elixir-autogen, elixir-format
+msgid "No spaces yet."
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:33
+#, elixir-autogen, elixir-format
+msgid "Pending Invitations"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:128
+#, elixir-autogen, elixir-format
+msgid "Platform"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:11
+#: lib/meddie_web/live/platform_live/index.ex:96
+#, elixir-autogen, elixir-format
+msgid "Platform Admin"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/registration.ex:14
+#, elixir-autogen, elixir-format
+msgid "Register for an account"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:56
+#, elixir-autogen, elixir-format
+msgid "Remove"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:31
+#, elixir-autogen, elixir-format
+msgid "Role"
+msgstr ""
+
+#: lib/meddie_web/live/platform_live/index.ex:25
+#: lib/meddie_web/live/settings_live/index.ex:75
+#, elixir-autogen, elixir-format
+msgid "Send invitation"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:70
+#: lib/meddie_web/components/layouts.ex:71
+#: lib/meddie_web/live/settings_live/index.ex:14
+#: lib/meddie_web/live/settings_live/index.ex:96
+#, elixir-autogen, elixir-format
+msgid "Settings"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:146
+#, elixir-autogen, elixir-format
+msgid "Sign out"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:19
+#, elixir-autogen, elixir-format
+msgid "Space Settings"
+msgstr ""
+
+#: lib/meddie_web/live/space_live/new.ex:60
+#, elixir-autogen, elixir-format
+msgid "Space created!"
+msgstr ""
+
+#: lib/meddie_web/live/space_live/new.ex:22
+#, elixir-autogen, elixir-format
+msgid "Space name"
+msgstr ""
+
+#: lib/meddie_web/components/layouts.ex:63
+#, elixir-autogen, elixir-format
+msgid "Telegram"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:126
+#, elixir-autogen, elixir-format
+msgid "This user is already a member of this space."
+msgstr ""
+
+#: lib/meddie_web/live/space_live/new.ex:12
+#, elixir-autogen, elixir-format
+msgid "Welcome to Meddie!"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:112
+#, elixir-autogen, elixir-format
+msgid "You are the only admin. Transfer admin role to another member before leaving."
+msgstr ""
+
+#: lib/meddie_web/controllers/invitation_html/new.html.heex:5
+#, elixir-autogen, elixir-format
+msgid "You've been invited to join Meddie."
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:139
+#, elixir-autogen, elixir-format
+msgid "admin"
+msgstr ""
+
+#: lib/meddie_web/live/settings_live/index.ex:140
+#, elixir-autogen, elixir-format
+msgid "member"
+msgstr ""
+
+#: lib/meddie_web/live/user_live/registration.ex:20
+#, elixir-autogen, elixir-format
+msgid "to your account now."
 msgstr ""

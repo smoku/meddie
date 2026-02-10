@@ -47,28 +47,28 @@ defmodule MeddieWeb.Layouts do
           <.sidebar_link
             href={~p"/people"}
             icon="hero-users"
-            label="People"
-            active={@page_title == "People"}
+            label={gettext("People")}
+            active={@page_title == gettext("People")}
           />
           <.sidebar_link
             href="#"
             icon="hero-chat-bubble-left-right"
-            label="Chat"
+            label={gettext("Chat")}
             active={false}
             disabled={true}
           />
           <.sidebar_link
             href="#"
             icon="hero-paper-airplane"
-            label="Telegram"
+            label={gettext("Telegram")}
             active={false}
             disabled={true}
           />
           <.sidebar_link
             href={~p"/settings"}
             icon="hero-cog-6-tooth"
-            label="Settings"
-            active={@page_title == "Settings"}
+            label={gettext("Settings")}
+            active={@page_title == gettext("Settings")}
           />
         </nav>
       </aside>
@@ -112,7 +112,7 @@ defmodule MeddieWeb.Layouts do
                 <li class="border-t border-base-300 mt-1 pt-1">
                   <.link navigate={~p"/spaces/new"}>
                     <.icon name="hero-plus-micro" class="size-4" />
-                    <span>Create new Space</span>
+                    <span>{gettext("Create new Space")}</span>
                   </.link>
                 </li>
               </ul>
@@ -125,7 +125,7 @@ defmodule MeddieWeb.Layouts do
               href={~p"/platform"}
               class="btn btn-ghost btn-sm"
             >
-              Platform
+              {gettext("Platform")}
             </.link>
 
             <.theme_toggle />
@@ -140,10 +140,10 @@ defmodule MeddieWeb.Layouts do
                 class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-48 z-50"
               >
                 <li>
-                  <.link href={~p"/users/settings"}>Account settings</.link>
+                  <.link href={~p"/users/settings"}>{gettext("Account settings")}</.link>
                 </li>
                 <li>
-                  <.link href={~p"/users/log-out"} method="delete">Sign out</.link>
+                  <.link href={~p"/users/log-out"} method="delete">{gettext("Sign out")}</.link>
                 </li>
               </ul>
             </div>

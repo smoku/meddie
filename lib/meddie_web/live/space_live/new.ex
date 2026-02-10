@@ -9,9 +9,9 @@ defmodule MeddieWeb.SpaceLive.New do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold">Welcome to Meddie!</h1>
+        <h1 class="text-2xl font-bold">{gettext("Welcome to Meddie!")}</h1>
         <p class="mt-2 text-sm text-base-content/70">
-          Create your first Space to get started.
+          {gettext("Create your first Space to get started.")}
         </p>
       </div>
 
@@ -19,14 +19,14 @@ defmodule MeddieWeb.SpaceLive.New do
         <.input
           field={@form[:name]}
           type="text"
-          label="Space name"
+          label={gettext("Space name")}
           phx-mounted={JS.focus()}
         />
         <p class="text-xs text-base-content/50">
-          A space groups people, documents and results. You can create your personal space or a family space.
+          {gettext("A space groups people, documents and results. You can create your personal space or a family space.")}
         </p>
-        <.button phx-disable-with="Creating..." class="btn btn-primary w-full">
-          Create Space
+        <.button phx-disable-with={gettext("Creating...")} class="btn btn-primary w-full">
+          {gettext("Create Space")}
         </.button>
       </.form>
     </Layouts.app>
@@ -57,7 +57,7 @@ defmodule MeddieWeb.SpaceLive.New do
       {:ok, space} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Space created!")
+         |> put_flash(:info, gettext("Space created!"))
          |> redirect(to: ~p"/spaces/#{space.id}/switch")}
 
       {:error, changeset} ->

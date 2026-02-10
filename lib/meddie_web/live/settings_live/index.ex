@@ -11,24 +11,24 @@ defmodule MeddieWeb.SettingsLive.Index do
       flash={@flash}
       current_scope={@current_scope}
       user_spaces={@user_spaces}
-      page_title="Settings"
+      page_title={gettext("Settings")}
     >
       <div class="max-w-4xl space-y-8">
         <%!-- Space Settings (admin only) --%>
         <section :if={@is_admin}>
-          <h2 class="text-xl font-bold mb-4">Space Settings</h2>
+          <h2 class="text-xl font-bold mb-4">{gettext("Space Settings")}</h2>
 
           <%!-- Members --%>
           <div class="card bg-base-100 shadow-sm">
             <div class="card-body">
-              <h3 class="card-title text-base">Members</h3>
+              <h3 class="card-title text-base">{gettext("Members")}</h3>
               <div class="overflow-x-auto">
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
+                      <th>{gettext("Name")}</th>
+                      <th>{gettext("Email")}</th>
+                      <th>{gettext("Role")}</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -42,7 +42,7 @@ defmodule MeddieWeb.SettingsLive.Index do
                           member.role == "admin" && "badge-primary",
                           member.role == "member" && "badge-ghost"
                         ]}>
-                          {member.role}
+                          {display_role(member.role)}
                         </span>
                       </td>
                       <td>
@@ -50,10 +50,10 @@ defmodule MeddieWeb.SettingsLive.Index do
                           :if={member.user_id != @current_scope.user.id}
                           phx-click="remove_member"
                           phx-value-id={member.id}
-                          data-confirm="Are you sure you want to remove this member?"
+                          data-confirm={gettext("Are you sure you want to remove this member?")}
                           class="btn btn-ghost btn-xs text-error"
                         >
-                          Remove
+                          {gettext("Remove")}
                         </button>
                       </td>
                     </tr>
@@ -63,7 +63,7 @@ defmodule MeddieWeb.SettingsLive.Index do
 
               <%!-- Invite form --%>
               <div class="mt-4">
-                <h4 class="font-semibold text-sm mb-2">Invite to Space</h4>
+                <h4 class="font-semibold text-sm mb-2">{gettext("Invite to Space")}</h4>
                 <.form for={@invite_form} phx-submit="invite_to_space" class="flex gap-2">
                   <.input
                     field={@invite_form[:email]}
@@ -72,7 +72,7 @@ defmodule MeddieWeb.SettingsLive.Index do
                     class="input input-bordered input-sm flex-1"
                     required
                   />
-                  <button type="submit" class="btn btn-primary btn-sm">Send invitation</button>
+                  <button type="submit" class="btn btn-primary btn-sm">{gettext("Send invitation")}</button>
                 </.form>
               </div>
             </div>
@@ -93,7 +93,7 @@ defmodule MeddieWeb.SettingsLive.Index do
 
     {:ok,
      socket
-     |> assign(page_title: "Settings", is_admin: is_admin, members: members)
+     |> assign(page_title: gettext("Settings"), is_admin: is_admin, members: members)
      |> assign(invite_form: to_form(%{"email" => ""}, as: "invite"))}
   end
 
@@ -102,14 +102,14 @@ defmodule MeddieWeb.SettingsLive.Index do
     case Spaces.remove_member(socket.assigns.current_scope, id) do
       {:ok, _} ->
         members = Spaces.list_space_members(socket.assigns.current_scope)
-        {:noreply, socket |> put_flash(:info, "Member removed.") |> assign(members: members)}
+        {:noreply, socket |> put_flash(:info, gettext("Member removed.")) |> assign(members: members)}
 
       {:error, :last_admin} ->
         {:noreply,
          put_flash(
            socket,
            :error,
-           "You are the only admin. Transfer admin role to another member before leaving."
+           gettext("You are the only admin. Transfer admin role to another member before leaving.")
          )}
     end
   end
@@ -119,20 +119,24 @@ defmodule MeddieWeb.SettingsLive.Index do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Invitation sent to #{email}.")
+         |> put_flash(:info, gettext("Invitation sent to %{email}.", email: email))
          |> assign(invite_form: to_form(%{"email" => ""}, as: "invite"))}
 
       {:error, :already_member} ->
-        {:noreply, put_flash(socket, :error, "This user is already a member of this space.")}
+        {:noreply, put_flash(socket, :error, gettext("This user is already a member of this space."))}
 
       {:error, changeset} ->
         message =
           case changeset.errors[:email] do
             {msg, _} -> msg
-            _ -> "Could not send invitation."
+            _ -> gettext("Could not send invitation.")
           end
 
         {:noreply, put_flash(socket, :error, message)}
     end
   end
+
+  defp display_role("admin"), do: gettext("admin")
+  defp display_role("member"), do: gettext("member")
+  defp display_role(role), do: role
 end

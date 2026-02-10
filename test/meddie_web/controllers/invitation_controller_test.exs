@@ -17,7 +17,7 @@ defmodule MeddieWeb.InvitationControllerTest do
       conn = get(conn, ~p"/invitations/#{invitation.token}")
       response = html_response(conn, 200)
       assert response =~ "new@example.com"
-      assert response =~ "Create account"
+      assert response =~ "Utwórz konto"
     end
 
     test "redirects to login for valid token and existing user", %{conn: conn} do
@@ -116,7 +116,7 @@ defmodule MeddieWeb.InvitationControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "Create account"
+      assert response =~ "Utwórz konto"
     end
 
     test "redirects for invalid token", %{conn: conn} do
