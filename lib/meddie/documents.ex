@@ -33,7 +33,7 @@ defmodule Meddie.Documents do
 
     from(d in Document,
       where: d.space_id == ^space.id and d.person_id == ^person_id,
-      order_by: [desc: d.inserted_at],
+      order_by: [desc_nulls_first: d.document_date, desc: d.inserted_at],
       limit: ^limit,
       offset: ^offset,
       preload: [:biomarkers]
