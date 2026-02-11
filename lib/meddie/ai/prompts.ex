@@ -98,7 +98,7 @@ defmodule Meddie.AI.Prompts do
   biomarkers, and document summaries.
   """
   def chat_context(scope, person) do
-    is_current_user = person.user_id != nil and person.user_id == scope.user.id
+    is_current_user = scope.user != nil and person.user_id != nil and person.user_id == scope.user.id
     user_marker = if is_current_user, do: " (this is you)", else: ""
 
     age = calculate_age(person.date_of_birth)
@@ -125,7 +125,7 @@ defmodule Meddie.AI.Prompts do
     people
     |> Enum.with_index(1)
     |> Enum.map_join("\n", fn {person, idx} ->
-      is_current = person.user_id != nil and person.user_id == scope.user.id
+      is_current = scope.user != nil and person.user_id != nil and person.user_id == scope.user.id
       marker = if is_current, do: " — THIS IS THE CURRENT USER", else: ""
       age = calculate_age(person.date_of_birth)
       age_str = if age, do: ", age #{age}", else: ""

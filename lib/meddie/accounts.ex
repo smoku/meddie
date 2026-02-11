@@ -269,4 +269,5 @@ defmodule Meddie.Accounts do
       end
     end)
   end
+
 end

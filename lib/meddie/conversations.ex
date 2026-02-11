@@ -163,4 +163,59 @@ defmodule Meddie.Conversations do
     )
     |> Repo.all()
   end
+
+  # -- Telegram --
+
+  @doc """
+  Gets or creates the active Telegram conversation for a user in a space.
+  Returns the most recent telegram conversation, or creates a new one.
+  """
+  def get_or_create_telegram_conversation(%Scope{user: user, space: space} = scope, person_id) do
+    query =
+      from(c in Conversation,
+        where:
+          c.space_id == ^space.id and
+            c.user_id == ^user.id and
+            c.source == "telegram",
+        order_by: [desc: c.updated_at],
+        limit: 1,
+        preload: [:person]
+      )
+
+    case Repo.one(query) do
+      %Conversation{} = conv -> {:ok, conv}
+      nil -> create_conversation(scope, %{"source" => "telegram", "person_id" => person_id})
+    end
+  end
+
+  @doc """
+  Gets or creates the active Telegram conversation for a telegram_link (no user required).
+  Queries by telegram_link_id instead of user_id.
+  """
+  def get_or_create_telegram_link_conversation(space, telegram_link, person_id \\ nil) do
+    query =
+      from(c in Conversation,
+        where:
+          c.space_id == ^space.id and
+            c.telegram_link_id == ^telegram_link.id and
+            c.source == "telegram",
+        order_by: [desc: c.updated_at],
+        limit: 1,
+        preload: [:person]
+      )
+
+    case Repo.one(query) do
+      %Conversation{} = conv ->
+        {:ok, conv}
+
+      nil ->
+        %Conversation{
+          space_id: space.id,
+          telegram_link_id: telegram_link.id,
+          user_id: telegram_link.user_id
+        }
+        |> Conversation.changeset(%{"source" => "telegram", "person_id" => person_id})
+        |> Repo.insert()
+    end
+  end
 end

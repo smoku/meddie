@@ -46,6 +46,11 @@ defmodule Meddie.AI.Providers.Mock do
   end
 
   @impl true
+  def chat(_messages, _system_prompt) do
+    {:ok, "This is a mock response."}
+  end
+
+  @impl true
   def resolve_person(_message, _people_context) do
     {:ok, 1}
   end

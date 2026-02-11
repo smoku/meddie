@@ -13,6 +13,8 @@ defmodule Meddie.Application do
       {DNSCluster, query: Application.get_env(:meddie, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Meddie.PubSub},
       {Oban, Application.fetch_env!(:meddie, Oban)},
+      {Registry, keys: :unique, name: Meddie.Telegram.Registry},
+      Meddie.Telegram.Supervisor,
       # Start to serve requests, typically the last entry
       MeddieWeb.Endpoint
     ]
@@ -20,7 +22,12 @@ defmodule Meddie.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Meddie.Supervisor]
-    Supervisor.start_link(children, opts)
+    result = Supervisor.start_link(children, opts)
+
+    # Boot Telegram pollers after supervision tree is up
+    Meddie.Telegram.Supervisor.boot_pollers()
+
+    result
   end
 
   # Tell Phoenix to update the endpoint configuration

@@ -127,4 +127,30 @@ defmodule Meddie.Spaces do
   def change_space(%Space{} = space, attrs \\ %{}) do
     Space.changeset(space, attrs)
   end
+
+  # -- Telegram --
+
+  @doc """
+  Updates the Telegram bot token for a space.
+  """
+  def update_telegram_token(%Scope{space: space}, attrs) do
+    space
+    |> Space.telegram_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Returns all spaces that have a Telegram bot token configured.
+  """
+  def list_spaces_with_telegram_token do
+    from(s in Space, where: not is_nil(s.telegram_bot_token) and s.telegram_bot_token != "")
+    |> Repo.all()
+  end
+
+  @doc """
+  Finds a space by its Telegram bot token.
+  """
+  def get_space_by_telegram_token(token) when is_binary(token) do
+    Repo.get_by(Space, telegram_bot_token: token)
+  end
 end

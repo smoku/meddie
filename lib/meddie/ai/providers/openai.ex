@@ -74,6 +74,10 @@ defmodule Meddie.AI.Providers.OpenAI do
       "stream" => true
     }
 
+    Logger.debug(
+      "OpenAI chat_stream request: model=#{@model} messages=#{length(messages)} system_prompt_length=#{String.length(system_prompt)}"
+    )
+
     case Req.post(@api_url,
            json: body,
            headers: [{"authorization", "Bearer #{api_key()}"}],
@@ -94,6 +98,40 @@ defmodule Meddie.AI.Providers.OpenAI do
          ) do
       {:ok, _} -> :ok
       {:error, reason} -> {:error, "OpenAI stream failed: #{inspect(reason)}"}
+    end
+  end
+
+  @impl true
+  def chat(messages, system_prompt) do
+    body = %{
+      "model" => @model,
+      "messages" =>
+        [%{"role" => "system", "content" => system_prompt}] ++
+          Enum.map(messages, fn msg ->
+            %{"role" => msg.role, "content" => msg.content}
+          end)
+    }
+
+    Logger.debug(
+      "OpenAI chat request: model=#{@model} messages=#{length(messages)} system_prompt_length=#{String.length(system_prompt)}"
+    )
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [{"authorization", "Bearer #{api_key()}"}],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: %{"choices" => [%{"message" => %{"content" => content}} | _]} = response}} ->
+        Logger.debug("OpenAI chat response: #{inspect(response, limit: 2000)}")
+        {:ok, content}
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("OpenAI chat error: status=#{status} body=#{inspect(body)}")
+        {:error, "OpenAI API error: #{status}"}
+
+      {:error, reason} ->
+        Logger.error("OpenAI chat failed: #{inspect(reason)}")
+        {:error, "OpenAI chat failed: #{inspect(reason)}"}
     end
   end
 

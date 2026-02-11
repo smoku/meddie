@@ -32,6 +32,15 @@ defmodule Meddie.AI.Provider do
               {:ok, integer() | nil} | {:error, String.t()}
 
   @doc """
+  Non-streaming chat response given messages and context.
+  Returns the full response text. Used by Telegram integration.
+  """
+  @callback chat(
+              messages :: list(map()),
+              system_prompt :: String.t()
+            ) :: {:ok, String.t()} | {:error, String.t()}
+
+  @doc """
   Generate a short conversation title from the first user message and assistant response.
   Uses a fast, cheap model. Non-streaming.
   """

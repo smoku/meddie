@@ -42,4 +42,12 @@ defmodule Meddie.Accounts.Scope do
   def put_space(%__MODULE__{} = scope, nil) do
     %{scope | space: nil}
   end
+
+  @doc """
+  Creates a scope for the given space without a user.
+  Used for Telegram links that don't have a linked Meddie account.
+  """
+  def for_space(%Space{} = space) do
+    %__MODULE__{space: space}
+  end
 end

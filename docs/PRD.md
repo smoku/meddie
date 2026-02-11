@@ -43,7 +43,7 @@ MIT
 | F3 | [Documents](features/f3-documents.md) | Upload, AI parsing (lab results + medical reports), document preview and management | [→](features/f3-documents.md) |
 | F4 | [Biomarker Dashboard & Trends](features/f4-biomarker-dashboard.md) | Per-person biomarker dashboard with sparklines, trend charts, and staleness tracking | [→](features/f4-biomarker-dashboard.md) |
 | F5 | [Ask Meddie](features/f5-ask-meddie.md) | Ask questions about your results | [→](features/f5-ask-meddie.md) |
-| F6 | [Telegram](features/f6-telegram.md) | Telegram bot for chatting with AI about health data | [→](features/f6-telegram.md) |
+| F6 | [Telegram](features/f6-telegram.md) | Per-Space Telegram bot — chat with Meddie, upload documents, check biomarkers from Telegram | [→](features/f6-telegram.md) |
 
 **UI Architecture**: [ui-architecture.md](ui-architecture.md) — layout, navigation, screen flow, responsive behavior, component patterns.
 
@@ -55,16 +55,17 @@ MIT
 
 ```
 users
-  ├── has_many → memberships → belongs_to → spaces
+  ├── has_many → memberships → belongs_to → spaces (telegram_bot_token per Space)
   ├── has_many → invitations (as inviter)
   ├── has_one → person (optional link, per Space)
   │
   └── (all data below is scoped to a Space, then to a Person)
         spaces
+          ├── has_many → telegram_links (telegram_id, optional user, optional person)
           └── has_many → people
-                          ├── has_ma  ny → documents
+                          ├── has_many → documents
                           │                 └── has_many → biomarkers
-                          └── has_many → conversations
+                          └── has_many → conversations (source: web|telegram, optional telegram_link)
                                             └── has_many → messages
 ```
 
@@ -73,13 +74,14 @@ users
 | Table | Key Fields | Relationships |
 |-------|-----------|---------------|
 | **users** | id, name, email, password_hash, platform_admin, locale | has_many: memberships, invitations; has_one: person (optional, per Space) |
-| **spaces** | id, name | has_many: memberships, people |
+| **spaces** | id, name, telegram_bot_token | has_many: memberships, people |
 | **memberships** | id, user_id, space_id, role | belongs_to: user, space |
 | **invitations** | id, email, space_id (nullable), invited_by_id, token, accepted_at, expires_at | belongs_to: space (optional), invited_by (user) |
 | **people** | id, space_id, user_id (nullable), name, date_of_birth, sex, height_cm, weight_kg, health_notes, supplements, medications | belongs_to: space, user (optional); has_many: documents, conversations |
 | **documents** | id, space_id, person_id, filename, content_type, file_size, storage_path, status, document_type, summary, page_count, document_date, error_message | belongs_to: space, person; has_many: biomarkers |
 | **biomarkers** | id, document_id, space_id, person_id, name, value, numeric_value, unit, reference_range_low, reference_range_high, reference_range_text, status, page_number, category | belongs_to: document, space, person |
-| **conversations** | id, space_id, person_id, user_id, title | belongs_to: space, person, user; has_many: messages |
+| **telegram_links** | id, telegram_id, space_id, user_id (nullable), person_id (nullable) | belongs_to: space, user (optional), person (optional) |
+| **conversations** | id, space_id, person_id, user_id (nullable), telegram_link_id (nullable), title, source | belongs_to: space, person, user (optional), telegram_link (optional); has_many: messages |
 | **messages** | id, conversation_id, role, content | belongs_to: conversation |
 
 ### Key Indexes
@@ -93,6 +95,7 @@ users
 - `documents.person_id` — find all documents for a person
 - `biomarkers.document_id` — find all biomarkers for a document
 - `biomarkers.(person_id, name)` — composite index for per-person trend queries
+- `telegram_links.(telegram_id, space_id)` — unique composite index
 - `conversations.space_id` — find all conversations for a Space
 - `conversations.person_id` — find all conversations for a person
 - `messages.conversation_id` — find all messages in a conversation

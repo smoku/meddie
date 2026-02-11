@@ -217,4 +217,59 @@ defmodule Meddie.ConversationsTest do
       assert reverted.reverted == true
     end
   end
+
+  describe "get_or_create_telegram_conversation/2" do
+    test "creates a new telegram conversation when none exists", %{scope: scope} do
+      {:ok, conv} = Conversations.get_or_create_telegram_conversation(scope, nil)
+
+      assert conv.source == "telegram"
+      assert conv.user_id == scope.user.id
+      assert conv.space_id == scope.space.id
+    end
+
+    test "returns existing telegram conversation", %{scope: scope} do
+      {:ok, conv1} = Conversations.get_or_create_telegram_conversation(scope, nil)
+      {:ok, conv2} = Conversations.get_or_create_telegram_conversation(scope, nil)
+
+      assert conv1.id == conv2.id
+    end
+
+    test "does not return web conversations", %{scope: scope} do
+      _web_conv = conversation_fixture(scope)
+
+      {:ok, telegram_conv} = Conversations.get_or_create_telegram_conversation(scope, nil)
+
+      assert telegram_conv.source == "telegram"
+      # Should be a different conversation from the web one
+      convs = Conversations.list_conversations(scope)
+      assert length(convs) == 2
+    end
+
+    test "creates conversation with person_id when provided", %{scope: scope, person: person} do
+      {:ok, conv} = Conversations.get_or_create_telegram_conversation(scope, person.id)
+
+      assert conv.person_id == person.id
+      assert conv.source == "telegram"
+    end
+  end
+
+  describe "create_conversation/2 with source" do
+    test "creates conversation with source telegram", %{scope: scope} do
+      {:ok, conv} = Conversations.create_conversation(scope, %{"source" => "telegram"})
+
+      assert conv.source == "telegram"
+    end
+
+    test "defaults source to web", %{scope: scope} do
+      {:ok, conv} = Conversations.create_conversation(scope)
+
+      assert conv.source == "web"
+    end
+
+    test "rejects invalid source", %{scope: scope} do
+      {:error, changeset} = Conversations.create_conversation(scope, %{"source" => "invalid"})
+
+      assert "is invalid" in errors_on(changeset).source
+    end
+  end
 end

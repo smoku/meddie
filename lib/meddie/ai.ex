@@ -12,6 +12,10 @@ defmodule Meddie.AI do
     chat_provider().chat_stream(messages, system_prompt, callback)
   end
 
+  def chat(messages, system_prompt) do
+    chat_provider().chat(messages, system_prompt)
+  end
+
   def resolve_person(message, people_context) do
     chat_provider().resolve_person(message, people_context)
   end

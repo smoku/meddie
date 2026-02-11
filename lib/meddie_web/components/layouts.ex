@@ -62,13 +62,6 @@ defmodule MeddieWeb.Layouts do
             active={@page_title == gettext("Ask Meddie")}
           />
           <.sidebar_link
-            href="#"
-            icon="hero-paper-airplane"
-            label={gettext("Telegram")}
-            active={false}
-            disabled={true}
-          />
-          <.sidebar_link
             href={~p"/settings"}
             icon="hero-cog-6-tooth"
             label={gettext("Settings")}

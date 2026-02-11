@@ -83,6 +83,10 @@ defmodule Meddie.AI.Providers.Anthropic do
       "stream" => true
     }
 
+    Logger.debug(
+      "Anthropic chat_stream request: model=#{@model} messages=#{length(messages)} system_prompt_length=#{String.length(system_prompt)}"
+    )
+
     case Req.post(@api_url,
            json: body,
            headers: [
@@ -106,6 +110,47 @@ defmodule Meddie.AI.Providers.Anthropic do
          ) do
       {:ok, _} -> :ok
       {:error, reason} -> {:error, "Anthropic stream failed: #{inspect(reason)}"}
+    end
+  end
+
+  @impl true
+  def chat(messages, system_prompt) do
+    body = %{
+      "model" => @model,
+      "system" => system_prompt,
+      "messages" =>
+        Enum.map(messages, fn msg ->
+          %{"role" => msg.role, "content" => msg.content}
+        end),
+      "max_tokens" => 4096
+    }
+
+    Logger.debug("Anthropic chat request: model=#{@model} messages=#{length(messages)}")
+    Logger.debug("Anthropic chat system_prompt:\n#{system_prompt}")
+
+    Logger.debug(
+      "Anthropic chat messages:\n#{Enum.map_join(body["messages"], "\n---\n", fn m -> "[#{m["role"]}] #{String.slice(m["content"], 0..500)}" end)}"
+    )
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [
+             {"x-api-key", api_key()},
+             {"anthropic-version", "2023-06-01"}
+           ],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]} = response}} ->
+        Logger.debug("Anthropic chat response: #{inspect(response, limit: 2000)}")
+        {:ok, text}
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("Anthropic chat error: status=#{status} body=#{inspect(body)}")
+        {:error, "Anthropic API error: #{status}"}
+
+      {:error, reason} ->
+        Logger.error("Anthropic chat failed: #{inspect(reason)}")
+        {:error, "Anthropic chat failed: #{inspect(reason)}"}
     end
   end
 

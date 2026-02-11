@@ -8,6 +8,7 @@ defmodule Meddie.Spaces.Space do
   @foreign_key_type :binary_id
   schema "spaces" do
     field :name, :string
+    field :telegram_bot_token, :string
 
     has_many :memberships, Membership
 
@@ -19,5 +20,9 @@ defmodule Meddie.Spaces.Space do
     |> cast(attrs, [:name])
     |> validate_required([:name])
     |> validate_length(:name, min: 1, max: 255)
+  end
+
+  def telegram_changeset(space, attrs) do
+    cast(space, attrs, [:telegram_bot_token])
   end
 end

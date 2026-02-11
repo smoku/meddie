@@ -2,13 +2,12 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   use MeddieWeb, :live_view
 
   alias Meddie.Conversations
+  alias Meddie.Conversations.Chat
   alias Meddie.People
-  alias Meddie.AI.Prompts
 
   require Logger
 
   @daily_message_limit 200
-  @max_ai_messages 20
 
   @impl true
   def render(assigns) do
@@ -290,14 +289,18 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   end
 
   def handle_event("select_person", %{"person-id" => person_id}, socket) do
-    person = Enum.find(socket.assigns.people, &(&1.id == person_id))
+    case Enum.find(socket.assigns.people, &(&1.id == person_id)) do
+      nil ->
+        {:noreply, socket}
 
-    socket =
-      socket
-      |> assign(selected_person: person)
-      |> maybe_update_conversation_person(person_id)
+      person ->
+        socket =
+          socket
+          |> assign(selected_person: person)
+          |> maybe_update_conversation_person(person.id)
 
-    {:noreply, socket}
+        {:noreply, socket}
+    end
   end
 
   def handle_event("quick_question", %{"text" => text}, socket) do
@@ -357,14 +360,20 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     full_text = socket.assigns.streaming_text
 
     # Parse and strip memory_updates JSON
-    {display_text, memory_updates_data} = parse_memory_updates(full_text)
+    {display_text, memory_updates_data} = Chat.parse_memory_updates(full_text)
 
     # Save assistant message
     conversation = socket.assigns.conversation
     {:ok, assistant_msg} = Conversations.create_message(conversation, %{"role" => "assistant", "content" => display_text})
 
     # Apply memory updates
-    socket = apply_memory_updates(socket, assistant_msg, memory_updates_data)
+    Chat.apply_memory_updates(
+      socket.assigns.current_scope,
+      conversation,
+      socket.assigns.selected_person,
+      assistant_msg,
+      memory_updates_data
+    )
 
     # Reload messages
     messages = Conversations.list_messages(conversation)
@@ -434,20 +443,8 @@ defmodule MeddieWeb.AskMeddieLive.Show do
 
     Task.start(fn ->
       try do
-        person_context =
-          if selected_person do
-            Prompts.chat_context(scope, selected_person)
-          else
-            nil
-          end
-
-        system_prompt = Prompts.chat_system_prompt(person_context)
-
-        # Take last N messages for AI context
-        ai_messages =
-          messages
-          |> Enum.take(-@max_ai_messages)
-          |> Enum.filter(&(&1.role in ["user", "assistant"]))
+        system_prompt = Chat.build_system_prompt(scope, selected_person)
+        ai_messages = Chat.prepare_ai_messages(messages)
 
         callback = fn %{content: chunk} ->
           send(lv_pid, {:chat_token, chunk})
@@ -500,14 +497,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     if socket.assigns.selected_person do
       socket
     else
-      people = socket.assigns.people
-
-      resolved_person =
-        case people do
-          [] -> nil
-          [single] -> single
-          multiple -> resolve_person_via_ai(message, multiple, socket.assigns.current_scope)
-        end
+      resolved_person = Chat.resolve_person(message, socket.assigns.people, socket.assigns.current_scope)
 
       if resolved_person do
         Conversations.update_conversation(conversation, %{"person_id" => resolved_person.id})
@@ -521,133 +511,6 @@ defmodule MeddieWeb.AskMeddieLive.Show do
       end
     end
   end
-
-  defp resolve_person_via_ai(message, people, scope) do
-    people_context = Prompts.person_resolution_prompt(people, scope)
-
-    case Meddie.AI.resolve_person(message, people_context) do
-      {:ok, n} when is_integer(n) and n >= 1 and n <= length(people) ->
-        Enum.at(people, n - 1)
-
-      _ ->
-        nil
-    end
-  end
-
-  # -- Private: memory updates --
-
-  defp parse_memory_updates(text) do
-    # Look for JSON block at end of response
-    regex = ~r/```json\s*(\{[^`]*"memory_updates"[^`]*\})\s*```\s*\z/s
-
-    case Regex.run(regex, text) do
-      [full_match, json_str] ->
-        display_text = String.trim(String.replace(text, full_match, ""))
-
-        case Jason.decode(json_str) do
-          {:ok, %{"memory_updates" => updates}} when is_list(updates) ->
-            {display_text, updates}
-
-          _ ->
-            {text, []}
-        end
-
-      nil ->
-        # Try without code fences
-        regex2 = ~r/(\{"memory_updates"\s*:\s*\[.*?\]\})\s*\z/s
-
-        case Regex.run(regex2, text) do
-          [full_match, json_str] ->
-            display_text = String.trim(String.replace(text, full_match, ""))
-
-            case Jason.decode(json_str) do
-              {:ok, %{"memory_updates" => updates}} when is_list(updates) ->
-                {display_text, updates}
-
-              _ ->
-                {text, []}
-            end
-
-          nil ->
-            {text, []}
-        end
-    end
-  end
-
-  defp apply_memory_updates(socket, _assistant_msg, []), do: socket
-
-  defp apply_memory_updates(socket, assistant_msg, updates) do
-    person = socket.assigns.selected_person
-
-    if person do
-      scope = socket.assigns.current_scope
-      # Reload person to get fresh field values
-      person = People.get_person!(scope, person.id)
-
-      Enum.reduce(updates, socket, fn update, acc_socket ->
-        field = update["field"]
-        action = update["action"]
-        text = update["text"]
-
-        if field in ~w(health_notes supplements medications) and action in ~w(append remove) and text do
-          previous_value = Map.get(person, String.to_existing_atom(field))
-          new_value = apply_field_update(previous_value, action, text)
-
-          # Update person
-          People.update_person(scope, person, %{field => new_value})
-
-          # Create memory_update record
-          Conversations.create_memory_update(%{
-            "message_id" => assistant_msg.id,
-            "person_id" => person.id,
-            "field" => field,
-            "action" => action,
-            "text" => text,
-            "previous_value" => previous_value
-          })
-
-          # Create system message
-          action_text =
-            case action do
-              "append" -> gettext("Saved to %{field}: %{text}", field: display_field_name(field), text: text)
-              "remove" -> gettext("Moved from %{field}: %{text}", field: display_field_name(field), text: text)
-            end
-
-          Conversations.create_message(socket.assigns.conversation, %{
-            "role" => "system",
-            "content" => action_text
-          })
-
-          acc_socket
-        else
-          acc_socket
-        end
-      end)
-    else
-      socket
-    end
-  end
-
-  defp apply_field_update(nil, "append", text), do: text
-  defp apply_field_update("", "append", text), do: text
-  defp apply_field_update(current, "append", text), do: current <> "\n" <> text
-
-  defp apply_field_update(nil, "remove", _text), do: nil
-  defp apply_field_update("", "remove", _text), do: ""
-
-  defp apply_field_update(current, "remove", text) do
-    # Remove the text line from current value
-    current
-    |> String.split("\n")
-    |> Enum.reject(&(String.contains?(&1, text)))
-    |> Enum.join("\n")
-    |> String.trim()
-  end
-
-  defp display_field_name("health_notes"), do: gettext("Health Notes")
-  defp display_field_name("supplements"), do: gettext("Supplements")
-  defp display_field_name("medications"), do: gettext("Medications")
-  defp display_field_name(other), do: other
 
   defp load_all_memory_updates(messages) do
     messages

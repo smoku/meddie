@@ -53,3 +53,6 @@ config :meddie, :storage_impl, Meddie.Storage.Local
 config :meddie, :ai,
   parsing_provider: Meddie.AI.Providers.Mock,
   chat_provider: Meddie.AI.Providers.Mock
+
+# Disable Telegram polling in tests
+config :meddie, :telegram, polling_enabled: false
