@@ -22,4 +22,19 @@ defmodule Meddie.AI.Provider do
               system_prompt :: String.t(),
               callback :: function()
             ) :: :ok | {:error, String.t()}
+
+  @doc """
+  Resolve which person a message is about, given a list of people in the space.
+  Returns the person number (1-indexed) from the list, or nil if unclear.
+  Uses a fast, cheap model. Non-streaming.
+  """
+  @callback resolve_person(message :: String.t(), people_context :: String.t()) ::
+              {:ok, integer() | nil} | {:error, String.t()}
+
+  @doc """
+  Generate a short conversation title from the first user message and assistant response.
+  Uses a fast, cheap model. Non-streaming.
+  """
+  @callback generate_title(user_message :: String.t(), assistant_message :: String.t()) ::
+              {:ok, String.t()} | {:error, String.t()}
 end

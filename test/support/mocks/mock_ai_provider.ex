@@ -44,4 +44,14 @@ defmodule Meddie.AI.Providers.Mock do
     callback.(%{content: "This is a mock response."})
     :ok
   end
+
+  @impl true
+  def resolve_person(_message, _people_context) do
+    {:ok, 1}
+  end
+
+  @impl true
+  def generate_title(_user_message, _assistant_message) do
+    {:ok, "Mock Conversation Title"}
+  end
 end

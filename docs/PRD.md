@@ -38,12 +38,12 @@ MIT
 
 | # | Feature | Description | Spec |
 |---|---------|-------------|------|
-| F1 | [Authentication & Multi-tenancy](features/authentication-multitenancy.md) | Email/password registration & login via phx.gen.auth, data isolation per Space | [→](features/authentication-multitenancy.md) |
-| F2 | [People](features/people.md) | Health profiles per Space — basic info, health notes, supplements, medications | [→](features/people.md) |
-| F3 | [Documents](features/documents.md) | Upload, AI parsing (lab results + medical reports), document preview and management | [→](features/documents.md) |
-| F4 | [Biomarker Dashboard & Trends](features/biomarker-dashboard.md) | Per-person biomarker dashboard with sparklines, trend charts, and staleness tracking | [→](features/biomarker-dashboard.md) |
-| F5 | [AI Q&A](features/ai-qa.md) | Ask questions about your results | [→](features/ai-qa.md) |
-| F6 | [Telegram](features/telegram.md) | Telegram bot for chatting with AI about health data | [→](features/telegram.md) |
+| F1 | [Authentication & Multi-tenancy](features/f1-authentication-multitenancy.md) | Email/password registration & login via phx.gen.auth, data isolation per Space | [→](features/f1-authentication-multitenancy.md) |
+| F2 | [People](features/f2-people.md) | Health profiles per Space — basic info, health notes, supplements, medications | [→](features/f2-people.md) |
+| F3 | [Documents](features/f3-documents.md) | Upload, AI parsing (lab results + medical reports), document preview and management | [→](features/f3-documents.md) |
+| F4 | [Biomarker Dashboard & Trends](features/f4-biomarker-dashboard.md) | Per-person biomarker dashboard with sparklines, trend charts, and staleness tracking | [→](features/f4-biomarker-dashboard.md) |
+| F5 | [Ask Meddie](features/f5-ask-meddie.md) | Ask questions about your results | [→](features/f5-ask-meddie.md) |
+| F6 | [Telegram](features/f6-telegram.md) | Telegram bot for chatting with AI about health data | [→](features/f6-telegram.md) |
 
 **UI Architecture**: [ui-architecture.md](ui-architecture.md) — layout, navigation, screen flow, responsive behavior, component patterns.
 

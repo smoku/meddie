@@ -16,7 +16,7 @@ Authentication uses the Pow library with email/password. OAuth providers can be 
 - **Membership** — The link between a User and a Space. Each membership has a role: `admin` or `member`.
 - **Roles**:
   - `admin` — Can do everything a member can, plus manage users (invite/remove) within the Space.
-  - `member` — Can upload documents, view results, use AI Q&A, and view trends within the Space.
+  - `member` — Can upload documents, view results, use Ask Meddie, and view trends within the Space.
 - **Platform admin** — A flag on the user account (`platform_admin`). Only platform admins can invite new users to the platform and see the platform admin area. This flag is **not editable** via any user-facing form — it can only be set via seeds, migrations, or console.
 
 ## Behavior

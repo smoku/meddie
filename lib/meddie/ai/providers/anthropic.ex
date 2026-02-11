@@ -9,6 +9,7 @@ defmodule Meddie.AI.Providers.Anthropic do
 
   @api_url "https://api.anthropic.com/v1/messages"
   @model "claude-sonnet-4-5-20250929"
+  @fast_model "claude-haiku-4-5-20251001"
   @timeout 180_000
 
   @impl true
@@ -105,6 +106,74 @@ defmodule Meddie.AI.Providers.Anthropic do
          ) do
       {:ok, _} -> :ok
       {:error, reason} -> {:error, "Anthropic stream failed: #{inspect(reason)}"}
+    end
+  end
+
+  @impl true
+  def resolve_person(message, people_context) do
+    body = %{
+      "model" => @fast_model,
+      "system" =>
+        "You resolve which person a message is about. Return JSON: {\"person_number\": N} where N is the 1-indexed number, or {\"person_number\": null} if unclear.",
+      "messages" => [
+        %{
+          "role" => "user",
+          "content" => "#{people_context}\n\nUser message: #{message}"
+        }
+      ],
+      "max_tokens" => 50
+    }
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [
+             {"x-api-key", api_key()},
+             {"anthropic-version", "2023-06-01"}
+           ],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
+        text = strip_code_fences(text)
+
+        case Jason.decode(text) do
+          {:ok, %{"person_number" => n}} -> {:ok, n}
+          _ -> {:ok, nil}
+        end
+
+      {:error, reason} ->
+        {:error, "Anthropic resolve_person failed: #{inspect(reason)}"}
+    end
+  end
+
+  @impl true
+  def generate_title(user_message, assistant_message) do
+    body = %{
+      "model" => @fast_model,
+      "system" =>
+        "Generate a concise conversation title (3-6 words) in the same language as the user message. Return only the title text, no quotes or punctuation at the end.",
+      "messages" => [
+        %{
+          "role" => "user",
+          "content" =>
+            "User: #{String.slice(user_message, 0..500)}\nAssistant: #{String.slice(assistant_message, 0..500)}"
+        }
+      ],
+      "max_tokens" => 30
+    }
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [
+             {"x-api-key", api_key()},
+             {"anthropic-version", "2023-06-01"}
+           ],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: %{"content" => [%{"text" => title} | _]}}} ->
+        {:ok, String.trim(title)}
+
+      {:error, reason} ->
+        {:error, "Anthropic generate_title failed: #{inspect(reason)}"}
     end
   end
 

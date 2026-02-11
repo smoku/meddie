@@ -92,6 +92,9 @@ defmodule MeddieWeb.Router do
       live "/people/:id", PeopleLive.Show, :show
       live "/people/:id/edit", PeopleLive.Form, :edit
       live "/people/:person_id/documents/:id", DocumentLive.Show, :show
+      live "/ask-meddie", AskMeddieLive.Index, :index
+      live "/ask-meddie/new", AskMeddieLive.Show, :new
+      live "/ask-meddie/:id", AskMeddieLive.Show, :show
       live "/settings", SettingsLive.Index, :index
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email

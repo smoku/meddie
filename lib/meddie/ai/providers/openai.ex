@@ -9,6 +9,7 @@ defmodule Meddie.AI.Providers.OpenAI do
 
   @api_url "https://api.openai.com/v1/chat/completions"
   @model "gpt-4o"
+  @fast_model "gpt-4o-mini"
   @timeout 60_000
 
   @impl true
@@ -93,6 +94,73 @@ defmodule Meddie.AI.Providers.OpenAI do
          ) do
       {:ok, _} -> :ok
       {:error, reason} -> {:error, "OpenAI stream failed: #{inspect(reason)}"}
+    end
+  end
+
+  @impl true
+  def resolve_person(message, people_context) do
+    body = %{
+      "model" => @fast_model,
+      "messages" => [
+        %{
+          "role" => "system",
+          "content" =>
+            "You resolve which person a message is about. Return JSON: {\"person_number\": N} where N is the 1-indexed number, or {\"person_number\": null} if unclear."
+        },
+        %{
+          "role" => "user",
+          "content" => "#{people_context}\n\nUser message: #{message}"
+        }
+      ],
+      "response_format" => %{"type" => "json_object"},
+      "max_tokens" => 50
+    }
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [{"authorization", "Bearer #{api_key()}"}],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: response}} ->
+        case parse_response(response) do
+          {:ok, %{"person_number" => n}} -> {:ok, n}
+          _ -> {:ok, nil}
+        end
+
+      {:error, reason} ->
+        {:error, "OpenAI resolve_person failed: #{inspect(reason)}"}
+    end
+  end
+
+  @impl true
+  def generate_title(user_message, assistant_message) do
+    body = %{
+      "model" => @fast_model,
+      "messages" => [
+        %{
+          "role" => "system",
+          "content" =>
+            "Generate a concise conversation title (3-6 words) in the same language as the user message. Return only the title text, no quotes or punctuation at the end."
+        },
+        %{
+          "role" => "user",
+          "content" =>
+            "User: #{String.slice(user_message, 0..500)}\nAssistant: #{String.slice(assistant_message, 0..500)}"
+        }
+      ],
+      "max_tokens" => 30
+    }
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [{"authorization", "Bearer #{api_key()}"}],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: %{"choices" => [%{"message" => %{"content" => title}} | _]}}} ->
+        {:ok, String.trim(title)}
+
+      {:error, reason} ->
+        {:error, "OpenAI generate_title failed: #{inspect(reason)}"}
     end
   end
 

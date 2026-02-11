@@ -56,11 +56,10 @@ defmodule MeddieWeb.Layouts do
             active={@page_title == gettext("People")}
           />
           <.sidebar_link
-            href="#"
+            href={~p"/ask-meddie"}
             icon="hero-chat-bubble-left-right"
-            label={gettext("Chat")}
-            active={false}
-            disabled={true}
+            label={gettext("Ask Meddie")}
+            active={@page_title == gettext("Ask Meddie")}
           />
           <.sidebar_link
             href="#"

@@ -18,15 +18,14 @@ Open-source web app that uses AI vision models to parse medical documents. Uploa
 
 ## Features
 
-| # | Feature | Status |
-|---|---------|--------|
-| F1 | Authentication & Multi-tenancy | Done |
-| F2 | People (health profiles) | Planned |
-| F3 | Documents (upload & AI parsing) | Planned |
-| F4 | Biomarker Dashboard | Planned |
-| F5 | Trend Tracking (charts) | Planned |
-| F6 | AI Q&A | Planned |
-| F7 | Telegram Bot | Planned |
+| # | Feature | Description | Status |
+|---|---------|-------------|--------|
+| F1 | [Authentication & Multi-tenancy](docs/features/f1-authentication-multitenancy.md) | Email/password login, invitation-only registration, Spaces with role-based access | Done |
+| F2 | [People](docs/features/f2-people.md) | Health profiles for yourself or family — age, sex, conditions, supplements, medications | Done |
+| F3 | [Documents](docs/features/f3-documents.md) | Upload medical PDFs/photos, AI vision parsing extracts biomarkers and report summaries | Done |
+| F4 | [Biomarker Dashboard & Trends](docs/features/f4-biomarker-dashboard.md) | Lab results grouped by category, inline sparklines, interactive Chart.js trend graphs | Done |
+| F5 | [Ask Meddie](docs/features/f5-ask-meddie.md) | Chat with AI about your health data — references biomarkers, medications, and documents | Done |
+| F6 | [Telegram Bot](docs/features/f6-telegram.md) | Telegram integration for uploading documents and querying results on the go | Planned |
 
 See [docs/PRD.md](docs/PRD.md) for the full product requirements document.
 

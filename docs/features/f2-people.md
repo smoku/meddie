@@ -83,16 +83,16 @@ The Markdown fields naturally support tracking current vs. previous items. The r
 
 Users can restructure freely. The AI auto-population adds new items to "Current" by default. When a user mentions stopping something (e.g., "I stopped taking iron"), the AI suggests moving it from "Current" to "Previous."
 
-### Auto-population from AI Q&A
+### Auto-population from Ask Meddie
 
-The AI Q&A feature (F5) can suggest updates to a person's Markdown fields. The mechanism:
+The Ask Meddie feature (F5) can suggest updates to a person's Markdown fields. The mechanism:
 
 1. During a Q&A conversation scoped to a person, the AI detects health-relevant information in the user's messages (e.g., "I am diabetic", "I started taking Vitamin D 2000 IU daily", "I stopped taking metformin").
 2. The AI proposes an update — specifying the target field (health notes, supplements, or medications) and the text to add, modify, or move.
 3. The user sees the suggestion in the chat interface and can confirm or dismiss it.
 4. On confirm, the system updates the relevant Markdown field.
 
-The detection and suggestion logic is defined in F5: AI Q&A. This section defines the data model and the fact that these fields are programmatically updatable.
+The detection and suggestion logic is defined in F5: Ask Meddie. This section defines the data model and the fact that these fields are programmatically updatable.
 
 ## Data Model
 
@@ -156,4 +156,4 @@ Adding the Person concept requires `person_id` on data in other features. These 
 
 - **F3: Documents** — `documents` table gains `person_id` FK. Upload flow requires person selection.
 - **F4: Biomarker Dashboard & Trends** — Per-person biomarker dashboard with sparklines and trend charts.
-- **F5: AI Q&A** — `conversations` table gains `person_id` FK. Person context bundle sent with every LLM call. Auto-population suggestion mechanism.
+- **F5: Ask Meddie** — `conversations` table gains `person_id` FK. Person context bundle sent with every LLM call. Auto-population suggestion mechanism.

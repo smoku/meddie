@@ -12,6 +12,14 @@ defmodule Meddie.AI do
     chat_provider().chat_stream(messages, system_prompt, callback)
   end
 
+  def resolve_person(message, people_context) do
+    chat_provider().resolve_person(message, people_context)
+  end
+
+  def generate_title(user_message, assistant_message) do
+    chat_provider().generate_title(user_message, assistant_message)
+  end
+
   defp parsing_provider do
     config()[:parsing_provider] || raise "No AI parsing provider configured"
   end

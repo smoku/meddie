@@ -27,6 +27,14 @@ defmodule Meddie.People do
   end
 
   @doc """
+  Gets the person linked to the current user in the current space.
+  Returns nil if the user has no linked person.
+  """
+  def get_linked_person(%Scope{user: user, space: space}) do
+    Repo.get_by(Person, user_id: user.id, space_id: space.id)
+  end
+
+  @doc """
   Creates a person in the given scope's space.
 
   If `"user_id"` is present in attrs, links the person to that user.

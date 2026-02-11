@@ -27,6 +27,10 @@ defmodule MeddieWeb.PeopleLive.Show do
               <.icon name="hero-pencil-square-micro" class="size-4" />
               {gettext("Edit")}
             </.link>
+            <.link navigate={~p"/ask-meddie/new?person_id=#{@person}"} class="btn btn-ghost btn-sm">
+              <.icon name="hero-chat-bubble-left-right-micro" class="size-4" />
+              {gettext("Ask Meddie")}
+            </.link>
             <button
               phx-click="delete"
               data-confirm={

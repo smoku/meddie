@@ -37,7 +37,7 @@ Primary navigation for the app. Contains 4 items:
 | Item | Icon | Route | Description |
 |------|------|-------|-------------|
 | People | users icon | `/people` | People list. Landing page after login. |
-| Chat | message icon | `/chat` | AI Q&A conversations across all people. |
+| Chat | message icon | `/chat` | Ask Meddie conversations across all people. |
 | Telegram | telegram icon | `/telegram` | Telegram bot setup and status. |
 | Settings | gear icon | `/settings` | Space settings (members, invites) + user settings (language). |
 
@@ -79,7 +79,7 @@ People (/people)                                 ← sidebar item, landing page
 
 Chat (/chat)                                     ← sidebar item
   ├── Conversation List                          ← all conversations, grouped by person
-  └── Conversation Detail (/chat/:id)            ← F5: AI Q&A
+  └── Conversation Detail (/chat/:id)            ← F5: Ask Meddie
 
 Telegram (/telegram)                             ← sidebar item
   └── [F6: TBD]
@@ -158,7 +158,7 @@ Split view showing the original document alongside parsed results.
 
 ### Chat (Conversation List)
 
-Top-level chat view — accessible from the sidebar. Shows all AI Q&A conversations across people.
+Top-level chat view — accessible from the sidebar. Shows all Ask Meddie conversations across people.
 
 - **List**: Reverse chronological. Each row: conversation title, person name, last message preview, date.
 - **Filter**: Filter by person (dropdown or tabs).
