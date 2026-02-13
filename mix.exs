@@ -92,6 +92,7 @@ defmodule Meddie.MixProject do
         "tailwind.install --if-missing",
         "esbuild.install --if-missing",
         "cmd npm --prefix assets install",
+        "cmd mkdir -p priv/static/assets/js",
         "cmd cp assets/node_modules/pdfjs-dist/build/pdf.worker.min.mjs priv/static/assets/js/pdf.worker.min.mjs"
       ],
       "assets.build": ["compile", "tailwind meddie", "esbuild meddie"],
