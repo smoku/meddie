@@ -44,10 +44,6 @@ defmodule Meddie.AI.Providers.Anthropic do
       "max_tokens" => 32_768
     }
 
-    Logger.debug(
-      "Anthropic parse_document request: model=#{@model} images=#{length(images)} system_prompt_length=#{String.length(system_prompt)}"
-    )
-
     case Req.post(@api_url,
            json: body,
            headers: [
@@ -57,7 +53,6 @@ defmodule Meddie.AI.Providers.Anthropic do
            receive_timeout: @timeout
          ) do
       {:ok, %{status: 200, body: response}} ->
-        Logger.debug("Anthropic parse_document response: #{inspect(response, limit: 2000)}")
         parse_response(response)
 
       {:ok, %{status: status, body: body}} ->
@@ -82,10 +77,6 @@ defmodule Meddie.AI.Providers.Anthropic do
       "max_tokens" => 4096,
       "stream" => true
     }
-
-    Logger.debug(
-      "Anthropic chat_stream request: model=#{@model} messages=#{length(messages)} system_prompt_length=#{String.length(system_prompt)}"
-    )
 
     case Req.post(@api_url,
            json: body,
@@ -125,13 +116,6 @@ defmodule Meddie.AI.Providers.Anthropic do
       "max_tokens" => 4096
     }
 
-    Logger.debug("Anthropic chat request: model=#{@model} messages=#{length(messages)}")
-    Logger.debug("Anthropic chat system_prompt:\n#{system_prompt}")
-
-    Logger.debug(
-      "Anthropic chat messages:\n#{Enum.map_join(body["messages"], "\n---\n", fn m -> "[#{m["role"]}] #{String.slice(m["content"], 0..500)}" end)}"
-    )
-
     case Req.post(@api_url,
            json: body,
            headers: [
@@ -140,8 +124,7 @@ defmodule Meddie.AI.Providers.Anthropic do
            ],
            receive_timeout: @timeout
          ) do
-      {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]} = response}} ->
-        Logger.debug("Anthropic chat response: #{inspect(response, limit: 2000)}")
+      {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
         {:ok, text}
 
       {:ok, %{status: status, body: body}} ->

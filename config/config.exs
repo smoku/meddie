@@ -24,6 +24,9 @@ config :meddie,
   ecto_repos: [Meddie.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
+# Postgrex types (pgvector support)
+config :meddie, Meddie.Repo, types: Meddie.PostgrexTypes
+
 # Configure the endpoint
 config :meddie, MeddieWeb.Endpoint,
   url: [host: "localhost"],

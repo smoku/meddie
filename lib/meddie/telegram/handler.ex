@@ -88,7 +88,7 @@ defmodule Meddie.Telegram.Handler do
 
   defp handle_new(space, link, token, chat_id) do
     {:ok, _conversation} =
-      Conversations.get_or_create_telegram_link_conversation(space, link, link.person_id)
+      Conversations.create_telegram_conversation(space, link, link.person_id)
 
     Client.send_message(token, chat_id,
       "Started a new conversation. What would you like to know?"
@@ -136,22 +136,33 @@ defmodule Meddie.Telegram.Handler do
     # Send typing indicator
     Client.send_chat_action(token, chat_id)
 
-    # Build AI context
-    system_prompt = Chat.build_system_prompt(scope, person)
+    # Build AI context with memory
+    memory_facts = Meddie.Memory.search_for_prompt(scope, text)
+    system_prompt = Chat.build_system_prompt(scope, person, memory_facts)
     messages = Conversations.list_messages(conversation)
     ai_messages = Chat.prepare_ai_messages(messages)
+
+    # Carry forward context from previous conversation for continuity
+    previous_messages =
+      Conversations.get_previous_conversation_messages(space, link)
+      |> Enum.map(fn msg -> %{role: msg.role, content: msg.content} end)
+
+    ai_messages = previous_messages ++ ai_messages
 
     # Call AI (non-streaming)
     case Meddie.AI.chat(ai_messages, system_prompt) do
       {:ok, response_text} ->
-        # Parse memory updates
-        {display_text, memory_updates_data} = Chat.parse_memory_updates(response_text)
+        # Parse profile updates + memory saves
+        {display_text, profile_updates_data, memory_saves_data} = Chat.parse_response_metadata(response_text)
 
         # Save assistant message
         {:ok, assistant_msg} = Conversations.create_message(conversation, %{"role" => "assistant", "content" => display_text})
 
-        # Apply memory updates
-        system_messages = Chat.apply_memory_updates(scope, conversation, person, assistant_msg, memory_updates_data)
+        # Apply profile updates (person profile fields)
+        system_messages = Chat.apply_profile_updates(scope, conversation, person, assistant_msg, profile_updates_data)
+
+        # Apply memory saves (semantic facts)
+        Chat.apply_memory_saves(scope, memory_saves_data)
 
         # Send response (split if needed)
         chunks = Chat.split_message(display_text)

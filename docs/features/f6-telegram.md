@@ -83,7 +83,8 @@ Telegram conversations use the same `Meddie.Conversations` context module — sa
 - `conversations.source` — new field: `"web"` (default) or `"telegram"` to distinguish origin
 - Telegram conversations appear in the web UI's Ask Meddie sidebar (and vice versa) — they share the same data
 - Each user has **one active Telegram conversation** per Space. New messages continue the active conversation.
-- `/new` command starts a fresh conversation
+- Conversations **auto-close after 8 hours of inactivity** — when a new message arrives and the last activity was >8h ago, a fresh conversation is created automatically. This keeps conversations a manageable size for AI context and memory extraction. When a new conversation starts, the **last 30 messages from the previous conversation** are carried forward into the AI context for continuity.
+- `/new` command starts a fresh conversation immediately
 
 ### Person resolution
 
@@ -151,7 +152,7 @@ Telegram doesn't support streaming text updates well. The bot collects the full 
 
 Same as F5 — the AI detects health-relevant information and auto-saves it to the person's profile:
 
-- Works identically: AI appends `memory_updates` JSON block, system parses and applies
+- Works identically: AI appends `profile_updates` JSON block, system parses and applies
 - No undo button (Telegram doesn't have interactive buttons for this). Instead, the bot sends a follow-up message: "Saved to Health Notes: Hypothyroidism diagnosed 2023"
 - Users can undo from the web UI (F5) if needed
 

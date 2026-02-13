@@ -1,4 +1,4 @@
-defmodule Meddie.Conversations.MemoryUpdate do
+defmodule Meddie.Conversations.ProfileUpdate do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -11,7 +11,7 @@ defmodule Meddie.Conversations.MemoryUpdate do
   @fields ~w(health_notes supplements medications)
   @actions ~w(append remove)
 
-  schema "memory_updates" do
+  schema "profile_updates" do
     field :field, :string
     field :action, :string
     field :text, :string
@@ -23,8 +23,8 @@ defmodule Meddie.Conversations.MemoryUpdate do
     belongs_to :person, Person
   end
 
-  def changeset(memory_update, attrs) do
-    memory_update
+  def changeset(profile_update, attrs) do
+    profile_update
     |> cast(attrs, [:field, :action, :text, :previous_value, :message_id, :person_id])
     |> validate_required([:field, :action, :text, :message_id, :person_id])
     |> validate_inclusion(:field, @fields)

@@ -178,7 +178,7 @@ The AI auto-saves detected information and tells the user, with an option to rev
 
 **AI structured output format** (appended to response):
 ```json
-{"memory_updates": [
+{"profile_updates": [
   {"field": "health_notes", "action": "append", "text": "Hypothyroidism diagnosed 2023"},
   {"field": "supplements", "action": "append", "text": "Vitamin D 2000 IU daily"},
   {"field": "medications", "action": "remove", "text": "Metformin"}
@@ -193,7 +193,7 @@ Actions:
 - Only works when a person is selected.
 - Only saves to: health_notes, supplements, medications.
 - Undo available until a new message is sent.
-- The `memory_updates` JSON block is stripped from the displayed assistant message.
+- The `profile_updates` JSON block is stripped from the displayed assistant message.
 
 ## Streaming Implementation
 
@@ -221,8 +221,8 @@ LiveView manages all state (conversations, messages, person, persistence, auth).
    - Auto-scrolls to bottom
 6. Task completes → sends {:chat_complete, full_text}
 7. LiveView handle_info({:chat_complete, full_text}):
-   - Parses and strips memory_updates JSON block (if any)
-   - Applies memory updates to person fields
+   - Parses and strips profile_updates JSON block (if any)
+   - Applies profile updates to person fields
    - Saves assistant message to DB (without JSON block)
    - Updates assigns (source of truth)
    - push_event(socket, "chat:complete", %{})
@@ -264,9 +264,9 @@ LiveView manages all state (conversations, messages, person, persistence, auth).
 | content | `text` | NOT NULL |
 | inserted_at | `utc_datetime` | NOT NULL |
 
-Messages are immutable — no `updated_at`. The `system` role is used for memory update notifications.
+Messages are immutable — no `updated_at`. The `system` role is used for profile update notifications.
 
-**memory_updates** (for undo tracking)
+**profile_updates** (for undo tracking)
 
 | Column | Type | Constraints |
 |--------|------|------------|

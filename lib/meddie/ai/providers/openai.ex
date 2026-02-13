@@ -39,17 +39,12 @@ defmodule Meddie.AI.Providers.OpenAI do
       "max_tokens" => 4096
     }
 
-    Logger.debug(
-      "OpenAI parse_document request: model=#{@model} images=#{length(images)} system_prompt_length=#{String.length(system_prompt)}"
-    )
-
     case Req.post(@api_url,
            json: body,
            headers: [{"authorization", "Bearer #{api_key()}"}],
            receive_timeout: @timeout
          ) do
       {:ok, %{status: 200, body: response}} ->
-        Logger.debug("OpenAI parse_document response: #{inspect(response, limit: 2000)}")
         parse_response(response)
 
       {:ok, %{status: status, body: body}} ->
@@ -73,10 +68,6 @@ defmodule Meddie.AI.Providers.OpenAI do
           end),
       "stream" => true
     }
-
-    Logger.debug(
-      "OpenAI chat_stream request: model=#{@model} messages=#{length(messages)} system_prompt_length=#{String.length(system_prompt)}"
-    )
 
     case Req.post(@api_url,
            json: body,
@@ -112,17 +103,12 @@ defmodule Meddie.AI.Providers.OpenAI do
           end)
     }
 
-    Logger.debug(
-      "OpenAI chat request: model=#{@model} messages=#{length(messages)} system_prompt_length=#{String.length(system_prompt)}"
-    )
-
     case Req.post(@api_url,
            json: body,
            headers: [{"authorization", "Bearer #{api_key()}"}],
            receive_timeout: @timeout
          ) do
-      {:ok, %{status: 200, body: %{"choices" => [%{"message" => %{"content" => content}} | _]} = response}} ->
-        Logger.debug("OpenAI chat response: #{inspect(response, limit: 2000)}")
+      {:ok, %{status: 200, body: %{"choices" => [%{"message" => %{"content" => content}} | _]}}} ->
         {:ok, content}
 
       {:ok, %{status: status, body: body}} ->

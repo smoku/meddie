@@ -44,6 +44,7 @@ MIT
 | F4 | [Biomarker Dashboard & Trends](features/f4-biomarker-dashboard.md) | Per-person biomarker dashboard with sparklines, trend charts, and staleness tracking | [→](features/f4-biomarker-dashboard.md) |
 | F5 | [Ask Meddie](features/f5-ask-meddie.md) | Ask questions about your results | [→](features/f5-ask-meddie.md) |
 | F6 | [Telegram](features/f6-telegram.md) | Per-Space Telegram bot — chat with Meddie, upload documents, check biomarkers from Telegram | [→](features/f6-telegram.md) |
+| F7 | [Memory](features/f7-memory.md) | Per-user semantic memory — extracts facts from conversations, retrieves via hybrid search (pgvector + full-text) | [→](features/f7-memory.md) |
 
 **UI Architecture**: [ui-architecture.md](ui-architecture.md) — layout, navigation, screen flow, responsive behavior, component patterns.
 

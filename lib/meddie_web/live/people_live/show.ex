@@ -491,7 +491,6 @@ defmodule MeddieWeb.PeopleLive.Show do
       Documents.subscribe_person_documents(person.id)
     end
 
-    documents = Documents.list_documents(scope, person.id)
     documents_count = Documents.count_documents(scope, person.id)
 
     biomarker_status_counts = Documents.count_person_biomarkers_by_status(scope, person.id)
@@ -507,7 +506,7 @@ defmodule MeddieWeb.PeopleLive.Show do
      |> assign(biomarkers_total: biomarkers_total)
      |> assign(biomarker_groups: nil)
      |> assign(expanded_biomarker: nil)
-     |> stream(:documents, documents)
+     |> stream(:documents, [])
      |> allow_upload(:document,
        accept: ~w(.jpg .jpeg .png .pdf),
        max_file_size: 20_000_000,

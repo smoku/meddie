@@ -7,50 +7,111 @@ defmodule Meddie.Conversations.ChatTest do
   import Meddie.PeopleFixtures
   import Meddie.ConversationsFixtures
 
-  describe "parse_memory_updates/1" do
+  describe "parse_response_metadata/1" do
     test "parses memory updates from code-fenced JSON block" do
       text = """
       Here is some response text.
 
       ```json
-      {"memory_updates": [{"field": "health_notes", "action": "append", "text": "Hypothyroidism"}]}
+      {"profile_updates": [{"field": "health_notes", "action": "append", "text": "Hypothyroidism"}]}
       ```
       """
 
-      {display_text, updates} = Chat.parse_memory_updates(text)
+      {display_text, updates, saves} = Chat.parse_response_metadata(text)
 
       assert String.trim(display_text) == "Here is some response text."
       assert length(updates) == 1
       assert hd(updates)["field"] == "health_notes"
       assert hd(updates)["action"] == "append"
       assert hd(updates)["text"] == "Hypothyroidism"
+      assert saves == []
     end
 
     test "parses memory updates from unfenced JSON block" do
-      text = ~s|Some text.\n{"memory_updates": [{"field": "medications", "action": "append", "text": "Aspirin"}]}|
+      text = ~s|Some text.\n{"profile_updates": [{"field": "medications", "action": "append", "text": "Aspirin"}]}|
 
-      {display_text, updates} = Chat.parse_memory_updates(text)
+      {display_text, updates, _saves} = Chat.parse_response_metadata(text)
 
       assert String.trim(display_text) == "Some text."
       assert length(updates) == 1
       assert hd(updates)["field"] == "medications"
     end
 
-    test "returns empty list when no memory updates present" do
+    test "returns empty lists when no memory block present" do
       text = "Just a regular response with no updates."
 
-      {display_text, updates} = Chat.parse_memory_updates(text)
+      {display_text, updates, saves} = Chat.parse_response_metadata(text)
 
       assert display_text == text
       assert updates == []
+      assert saves == []
     end
 
-    test "returns empty list for invalid JSON" do
+    test "returns empty lists for invalid JSON" do
       text = "Some text.\n```json\n{not valid json}\n```"
 
-      {_display_text, updates} = Chat.parse_memory_updates(text)
+      {_display_text, updates, saves} = Chat.parse_response_metadata(text)
 
       assert updates == []
+      assert saves == []
+    end
+
+    test "parses memory_saves from code-fenced JSON block" do
+      text = """
+      Got it, noted.
+
+      ```json
+      {"memory_saves": ["User is allergic to ibuprofen", "User's mother has type 2 diabetes"]}
+      ```
+      """
+
+      {display_text, updates, saves} = Chat.parse_response_metadata(text)
+
+      assert String.trim(display_text) == "Got it, noted."
+      assert updates == []
+      assert length(saves) == 2
+      assert "User is allergic to ibuprofen" in saves
+      assert "User's mother has type 2 diabetes" in saves
+    end
+
+    test "parses both profile_updates and memory_saves from same block" do
+      text = """
+      Understood.
+
+      ```json
+      {"profile_updates": [{"field": "health_notes", "action": "append", "text": "Diabetes type 2"}], "memory_saves": ["User prefers natural supplements"]}
+      ```
+      """
+
+      {display_text, updates, saves} = Chat.parse_response_metadata(text)
+
+      assert String.trim(display_text) == "Understood."
+      assert length(updates) == 1
+      assert hd(updates)["text"] == "Diabetes type 2"
+      assert saves == ["User prefers natural supplements"]
+    end
+
+    test "parses memory_saves from unfenced JSON block" do
+      text = ~s|Some text.\n{"memory_saves": ["User exercises 3 times a week"]}|
+
+      {display_text, _updates, saves} = Chat.parse_response_metadata(text)
+
+      assert String.trim(display_text) == "Some text."
+      assert saves == ["User exercises 3 times a week"]
+    end
+
+    test "filters non-string values from memory_saves" do
+      text = """
+      Response.
+
+      ```json
+      {"memory_saves": ["Valid fact", 123, null, "Another fact"]}
+      ```
+      """
+
+      {_display_text, _updates, saves} = Chat.parse_response_metadata(text)
+
+      assert saves == ["Valid fact", "Another fact"]
     end
   end
 
@@ -88,13 +149,13 @@ defmodule Meddie.Conversations.ChatTest do
     end
   end
 
-  describe "apply_memory_updates/5" do
+  describe "apply_profile_updates/5" do
     test "returns empty list when updates is empty" do
-      assert Chat.apply_memory_updates(nil, nil, nil, nil, []) == []
+      assert Chat.apply_profile_updates(nil, nil, nil, nil, []) == []
     end
 
     test "returns empty list when person is nil" do
-      assert Chat.apply_memory_updates(nil, nil, nil, nil, [%{"field" => "health_notes"}]) == []
+      assert Chat.apply_profile_updates(nil, nil, nil, nil, [%{"field" => "health_notes"}]) == []
     end
 
     test "applies valid memory update and creates system message", %{} do
@@ -107,7 +168,7 @@ defmodule Meddie.Conversations.ChatTest do
         %{"field" => "health_notes", "action" => "append", "text" => "Hypothyroidism diagnosed"}
       ]
 
-      system_messages = Chat.apply_memory_updates(scope, conv, person, msg, updates)
+      system_messages = Chat.apply_profile_updates(scope, conv, person, msg, updates)
 
       assert length(system_messages) == 1
       assert hd(system_messages).role == "system"
@@ -128,7 +189,7 @@ defmodule Meddie.Conversations.ChatTest do
         %{"field" => "invalid_field", "action" => "append", "text" => "something"}
       ]
 
-      system_messages = Chat.apply_memory_updates(scope, conv, person, msg, updates)
+      system_messages = Chat.apply_profile_updates(scope, conv, person, msg, updates)
       assert system_messages == []
     end
   end

@@ -108,11 +108,11 @@ defmodule MeddieWeb.AskMeddieLive.Show do
                 <div :if={msg.role == "system"} class="flex items-center gap-2">
                   <.icon name="hero-information-circle-micro" class="size-4 shrink-0" />
                   <span>{msg.content}</span>
-                  <%= if memory_update_message?(msg) do %>
+                  <%= if profile_update_message?(msg) do %>
                     <button
-                      :for={mu <- memory_updates_for_message(@memory_updates, msg.id)}
+                      :for={mu <- profile_updates_for_message(@profile_updates, msg.id)}
                       :if={!mu.reverted}
-                      phx-click="undo_memory_update"
+                      phx-click="undo_profile_update"
                       phx-value-id={mu.id}
                       class="btn btn-ghost btn-xs"
                     >
@@ -212,7 +212,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
      |> assign(selected_person: nil)
      |> assign(streaming: false)
      |> assign(streaming_text: "")
-     |> assign(memory_updates: [])
+     |> assign(profile_updates: [])
      |> assign(person_id_param: params["person_id"])}
   end
 
@@ -236,7 +236,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     |> assign(conversation: nil)
     |> assign(messages: [])
     |> assign(selected_person: selected_person)
-    |> assign(memory_updates: [])
+    |> assign(profile_updates: [])
   end
 
   defp apply_action(socket, :show, %{"id" => id}) do
@@ -249,13 +249,13 @@ defmodule MeddieWeb.AskMeddieLive.Show do
         do: Enum.find(people, &(&1.id == conversation.person_id)),
         else: nil
 
-    memory_updates = load_all_memory_updates(conversation.messages)
+    profile_updates = load_all_profile_updates(conversation.messages)
 
     socket
     |> assign(conversation: conversation)
     |> assign(messages: conversation.messages)
     |> assign(selected_person: selected_person)
-    |> assign(memory_updates: memory_updates)
+    |> assign(profile_updates: profile_updates)
   end
 
   # -- Events --
@@ -321,25 +321,25 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     {:noreply, push_navigate(socket, to: ~p"/ask-meddie")}
   end
 
-  def handle_event("undo_memory_update", %{"id" => mu_id}, socket) do
-    case Conversations.revert_memory_update(mu_id) do
-      {:ok, mu} ->
+  def handle_event("undo_profile_update", %{"id" => pu_id}, socket) do
+    case Conversations.revert_profile_update(pu_id) do
+      {:ok, pu} ->
         # Restore previous value to person
-        person = Enum.find(socket.assigns.people, &(&1.id == mu.person_id))
+        person = Enum.find(socket.assigns.people, &(&1.id == pu.person_id))
 
         if person do
           People.update_person(socket.assigns.current_scope, person, %{
-            mu.field => mu.previous_value
+            pu.field => pu.previous_value
           })
         end
 
-        # Refresh memory_updates list
-        memory_updates =
-          Enum.map(socket.assigns.memory_updates, fn existing ->
-            if existing.id == mu.id, do: %{existing | reverted: true}, else: existing
+        # Refresh profile_updates list
+        profile_updates =
+          Enum.map(socket.assigns.profile_updates, fn existing ->
+            if existing.id == pu.id, do: %{existing | reverted: true}, else: existing
           end)
 
-        {:noreply, assign(socket, memory_updates: memory_updates)}
+        {:noreply, assign(socket, profile_updates: profile_updates)}
 
       {:error, _} ->
         {:noreply, put_flash(socket, :error, gettext("Could not revert update."))}
@@ -359,25 +359,30 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   def handle_info({:chat_complete}, socket) do
     full_text = socket.assigns.streaming_text
 
-    # Parse and strip memory_updates JSON
-    {display_text, memory_updates_data} = Chat.parse_memory_updates(full_text)
+    # Parse and strip metadata JSON block
+    {display_text, profile_updates_data, memory_saves_data} = Chat.parse_response_metadata(full_text)
 
     # Save assistant message
     conversation = socket.assigns.conversation
     {:ok, assistant_msg} = Conversations.create_message(conversation, %{"role" => "assistant", "content" => display_text})
 
-    # Apply memory updates
-    Chat.apply_memory_updates(
-      socket.assigns.current_scope,
+    scope = socket.assigns.current_scope
+
+    # Apply profile updates (person profile fields)
+    Chat.apply_profile_updates(
+      scope,
       conversation,
       socket.assigns.selected_person,
       assistant_msg,
-      memory_updates_data
+      profile_updates_data
     )
+
+    # Apply memory saves (semantic facts)
+    Chat.apply_memory_saves(scope, memory_saves_data)
 
     # Reload messages
     messages = Conversations.list_messages(conversation)
-    memory_updates = load_all_memory_updates(messages)
+    profile_updates = load_all_profile_updates(messages)
 
     conversations = Conversations.list_conversations(socket.assigns.current_scope)
 
@@ -385,7 +390,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
       socket
       |> assign(streaming: false, streaming_text: "")
       |> assign(messages: messages)
-      |> assign(memory_updates: memory_updates)
+      |> assign(profile_updates: profile_updates)
       |> assign(conversations: conversations)
       |> push_event("chat:complete", %{})
 
@@ -443,7 +448,8 @@ defmodule MeddieWeb.AskMeddieLive.Show do
 
     Task.start(fn ->
       try do
-        system_prompt = Chat.build_system_prompt(scope, selected_person)
+        memory_facts = Meddie.Memory.search_for_prompt(scope, content)
+        system_prompt = Chat.build_system_prompt(scope, selected_person, memory_facts)
         ai_messages = Chat.prepare_ai_messages(messages)
 
         callback = fn %{content: chunk} ->
@@ -512,10 +518,10 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     end
   end
 
-  defp load_all_memory_updates(messages) do
+  defp load_all_profile_updates(messages) do
     messages
     |> Enum.flat_map(fn msg ->
-      Conversations.list_memory_updates_for_message(msg.id)
+      Conversations.list_profile_updates_for_message(msg.id)
     end)
   end
 
@@ -574,14 +580,14 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   defp message_style("system"), do: "bg-warning/10 text-warning-content text-xs"
   defp message_style(_), do: "bg-base-200"
 
-  defp memory_update_message?(msg) do
+  defp profile_update_message?(msg) do
     msg.role == "system" and
       (String.contains?(msg.content, gettext("Saved to")) or
          String.contains?(msg.content, gettext("Moved from")))
   end
 
-  defp memory_updates_for_message(memory_updates, message_id) do
-    Enum.filter(memory_updates, &(&1.message_id == message_id))
+  defp profile_updates_for_message(profile_updates, message_id) do
+    Enum.filter(profile_updates, &(&1.message_id == message_id))
   end
 
   defp render_markdown(nil), do: ""

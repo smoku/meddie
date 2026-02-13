@@ -8,7 +8,7 @@ defmodule Meddie.Conversations do
   alias Meddie.Repo
 
   alias Meddie.Accounts.Scope
-  alias Meddie.Conversations.{Conversation, Message, MemoryUpdate}
+  alias Meddie.Conversations.{Conversation, Message, ProfileUpdate}
 
   # -- Conversations --
 
@@ -130,36 +130,36 @@ defmodule Meddie.Conversations do
     |> Repo.one()
   end
 
-  # -- Memory Updates --
+  # -- Profile Updates --
 
   @doc """
-  Creates a memory update record for undo tracking.
+  Creates a profile update record for undo tracking.
   """
-  def create_memory_update(attrs) do
-    %MemoryUpdate{inserted_at: DateTime.utc_now() |> DateTime.truncate(:second)}
-    |> MemoryUpdate.changeset(attrs)
+  def create_profile_update(attrs) do
+    %ProfileUpdate{inserted_at: DateTime.utc_now() |> DateTime.truncate(:second)}
+    |> ProfileUpdate.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Reverts a memory update by setting reverted to true.
-  Returns the memory update with previous_value for restoring the person field.
+  Reverts a profile update by setting reverted to true.
+  Returns the profile update with previous_value for restoring the person field.
   """
-  def revert_memory_update(memory_update_id) do
-    memory_update = Repo.get!(MemoryUpdate, memory_update_id)
+  def revert_profile_update(profile_update_id) do
+    profile_update = Repo.get!(ProfileUpdate, profile_update_id)
 
-    memory_update
+    profile_update
     |> Ecto.Changeset.change(reverted: true)
     |> Repo.update()
   end
 
   @doc """
-  Gets memory updates for a message.
+  Gets profile updates for a message.
   """
-  def list_memory_updates_for_message(message_id) do
-    from(mu in MemoryUpdate,
-      where: mu.message_id == ^message_id,
-      order_by: [asc: mu.inserted_at]
+  def list_profile_updates_for_message(message_id) do
+    from(pu in ProfileUpdate,
+      where: pu.message_id == ^message_id,
+      order_by: [asc: pu.inserted_at]
     )
     |> Repo.all()
   end
@@ -188,9 +188,18 @@ defmodule Meddie.Conversations do
     end
   end
 
+  # Telegram conversations auto-close after 8 hours of inactivity
+  @telegram_idle_timeout_hours 8
+
+  # Number of messages to carry forward from the previous conversation
+  @previous_conversation_messages 30
+
   @doc """
   Gets or creates the active Telegram conversation for a telegram_link (no user required).
   Queries by telegram_link_id instead of user_id.
+
+  If the most recent conversation has been idle for more than #{@telegram_idle_timeout_hours} hours,
+  a new conversation is created automatically.
   """
   def get_or_create_telegram_link_conversation(space, telegram_link, person_id \\ nil) do
     query =
@@ -205,17 +214,59 @@ defmodule Meddie.Conversations do
       )
 
     case Repo.one(query) do
-      %Conversation{} = conv ->
-        {:ok, conv}
+      %Conversation{updated_at: updated_at} = conv ->
+        cutoff = DateTime.add(DateTime.utc_now(), -@telegram_idle_timeout_hours, :hour)
+
+        if DateTime.compare(updated_at, cutoff) == :lt do
+          create_telegram_conversation(space, telegram_link, person_id)
+        else
+          {:ok, conv}
+        end
 
       nil ->
-        %Conversation{
-          space_id: space.id,
-          telegram_link_id: telegram_link.id,
-          user_id: telegram_link.user_id
-        }
-        |> Conversation.changeset(%{"source" => "telegram", "person_id" => person_id})
-        |> Repo.insert()
+        create_telegram_conversation(space, telegram_link, person_id)
+    end
+  end
+
+  @doc """
+  Creates a new Telegram conversation for a telegram_link.
+  """
+  def create_telegram_conversation(space, telegram_link, person_id \\ nil) do
+    %Conversation{
+      space_id: space.id,
+      telegram_link_id: telegram_link.id,
+      user_id: telegram_link.user_id
+    }
+    |> Conversation.changeset(%{"source" => "telegram", "person_id" => person_id})
+    |> Repo.insert()
+  end
+
+  @doc """
+  Returns the last N user/assistant messages from the previous Telegram conversation
+  for the same link. Used to carry forward context after auto-close.
+
+  Returns an empty list if no previous conversation exists.
+  """
+  def get_previous_conversation_messages(space, telegram_link, limit \\ @previous_conversation_messages) do
+    query =
+      from(c in Conversation,
+        where:
+          c.space_id == ^space.id and
+            c.telegram_link_id == ^telegram_link.id and
+            c.source == "telegram",
+        order_by: [desc: c.updated_at],
+        offset: 1,
+        limit: 1
+      )
+
+    case Repo.one(query) do
+      %Conversation{} = conv ->
+        list_messages(conv)
+        |> Enum.filter(&(&1.role in ["user", "assistant"]))
+        |> Enum.take(-limit)
+
+      nil ->
+        []
     end
   end
 end

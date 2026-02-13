@@ -11,7 +11,7 @@ defmodule Meddie.AI.PromptsTest do
       prompt = Prompts.chat_system_prompt()
       assert prompt =~ "You are Meddie"
       assert prompt =~ "friendly health assistant"
-      assert prompt =~ "memory_updates"
+      assert prompt =~ "profile_updates"
     end
 
     test "includes person context when provided" do

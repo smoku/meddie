@@ -68,9 +68,10 @@ defmodule Meddie.AI.Prompts do
 
   @doc """
   Returns the system prompt for Ask Meddie chat conversations.
-  Includes person context if a person is selected, plus memory detection instructions.
+  Includes person context if a person is selected, memory facts from previous
+  conversations, and memory detection instructions.
   """
-  def chat_system_prompt(person_context \\ nil) do
+  def chat_system_prompt(person_context \\ nil, memory_facts \\ []) do
     base = """
     You are Meddie, a friendly health assistant. You help users understand their medical test results. You speak in the same language as the user.
 
@@ -86,6 +87,17 @@ defmodule Meddie.AI.Prompts do
     base =
       if person_context do
         base <> "\n" <> person_context
+      else
+        base
+      end
+
+    base =
+      if memory_facts != [] do
+        facts_text = Enum.map_join(memory_facts, "\n", &("- " <> &1.content))
+
+        base <>
+          "\n\n## Remembered Facts\nThings you know about this user from previous conversations:\n" <>
+          facts_text
       else
         base
       end
@@ -213,15 +225,25 @@ defmodule Meddie.AI.Prompts do
 
   defp memory_detection_instructions do
     """
-    IMPORTANT: If the user mentions health-relevant information worth remembering (diagnoses, new supplements, starting/stopping medications, health conditions), you MUST append a JSON block at the very end of your response (after your text response) in this exact format:
+    IMPORTANT: If the user mentions health-relevant information worth remembering, you MUST append a JSON block at the very end of your response (after your text response) in this exact format:
 
     ```json
-    {"memory_updates": [{"field": "health_notes|supplements|medications", "action": "append|remove", "text": "what to save"}]}
+    {"profile_updates": [{"field": "health_notes|supplements|medications", "action": "append|remove", "text": "what to save"}], "memory_saves": ["concise fact 1", "concise fact 2"]}
     ```
 
-    Only include memory_updates when the user clearly states factual health information. Do not include it for questions or general discussion.
+    Include whichever keys are relevant. Omit keys with empty arrays. Only include when the user clearly states factual information.
+
+    **profile_updates** — for structured person profile data:
+    - Only for health_notes, supplements, medications fields
     - "append" adds text to the field's Current section
     - "remove" moves text from Current to Previous section
+
+    **memory_saves** — for broader facts worth remembering across conversations:
+    - Preferences, lifestyle, family history, goals, key dates, doctor names, reactions to treatments
+    - Each fact: concise, self-contained sentence (max 500 chars)
+    - Write in the user's language
+    - ONLY save facts the USER stated or confirmed — NEVER save medical knowledge or explanations YOU provided
+    - Do NOT save biomarker values (stored separately) or supplement/medication lists (handled by profile_updates)
     """
   end
 
