@@ -227,8 +227,8 @@ defmodule MeddieWeb.PeopleLive.Show do
 
         <%!-- Biomarkers tab --%>
         <div :if={@tab == "biomarkers"} class="space-y-6">
-          <%!-- Summary stats --%>
-          <div :if={@biomarkers_total > 0} class="flex flex-wrap gap-3 text-sm">
+          <%!-- Summary stats + search --%>
+          <div :if={@biomarkers_total > 0} class="flex flex-wrap items-center gap-3 text-sm">
             <span class="font-medium">
               {ngettext("1 biomarker", "%{count} biomarkers", @biomarkers_total)}
             </span>
@@ -241,6 +241,16 @@ defmodule MeddieWeb.PeopleLive.Show do
             <span :if={@biomarker_status_counts["low"]} class="text-info">
               {@biomarker_status_counts["low"]} {gettext("low")}
             </span>
+            <form phx-change="filter-biomarkers" class="ml-auto">
+              <input
+                type="text"
+                name="biomarker_filter"
+                value={@biomarker_filter}
+                placeholder={gettext("Search biomarkers...")}
+                phx-debounce="200"
+                class="input input-sm input-bordered w-48"
+              />
+            </form>
           </div>
 
           <%!-- Empty state --%>
@@ -254,7 +264,7 @@ defmodule MeddieWeb.PeopleLive.Show do
 
           <%!-- Categorized biomarker cards --%>
           <div
-            :for={{category, biomarkers} <- @biomarker_groups || []}
+            :for={{category, biomarkers} <- @filtered_biomarker_groups || []}
             class="card bg-base-100 shadow-elevated border border-base-300/20"
           >
             <div class="card-body">
@@ -505,6 +515,8 @@ defmodule MeddieWeb.PeopleLive.Show do
      |> assign(biomarker_status_counts: biomarker_status_counts)
      |> assign(biomarkers_total: biomarkers_total)
      |> assign(biomarker_groups: nil)
+     |> assign(filtered_biomarker_groups: nil)
+     |> assign(biomarker_filter: "")
      |> assign(expanded_biomarker: nil)
      |> stream(:documents, [])
      |> allow_upload(:document,
@@ -566,6 +578,11 @@ defmodule MeddieWeb.PeopleLive.Show do
     {:noreply, cancel_upload(socket, :document, ref)}
   end
 
+  def handle_event("filter-biomarkers", %{"biomarker_filter" => filter}, socket) do
+    filtered = filter_biomarker_groups(socket.assigns.biomarker_groups, filter)
+    {:noreply, assign(socket, biomarker_filter: filter, filtered_biomarker_groups: filtered)}
+  end
+
   def handle_event("toggle-trend", %{"key" => key}, socket) do
     expanded =
       if socket.assigns.expanded_biomarker == key, do: nil, else: key
@@ -592,7 +609,7 @@ defmodule MeddieWeb.PeopleLive.Show do
      |> assign(documents_count: documents_count)
      |> assign(biomarker_status_counts: biomarker_status_counts)
      |> assign(biomarkers_total: biomarkers_total)
-     |> assign(biomarker_groups: nil, expanded_biomarker: nil)}
+     |> assign(biomarker_groups: nil, filtered_biomarker_groups: nil, expanded_biomarker: nil)}
   end
 
   # -- Upload progress callback --
@@ -697,8 +714,28 @@ defmodule MeddieWeb.PeopleLive.Show do
 
     all_biomarkers = Documents.list_person_biomarkers(scope, person_id)
     biomarker_groups = aggregate_biomarkers(all_biomarkers)
+    filtered = filter_biomarker_groups(biomarker_groups, socket.assigns.biomarker_filter)
 
-    assign(socket, biomarker_groups: biomarker_groups)
+    assign(socket, biomarker_groups: biomarker_groups, filtered_biomarker_groups: filtered)
+  end
+
+  defp filter_biomarker_groups(nil, _filter), do: nil
+  defp filter_biomarker_groups(groups, ""), do: groups
+
+  defp filter_biomarker_groups(groups, filter) do
+    filter_down = String.downcase(filter)
+
+    groups
+    |> Enum.map(fn {category, biomarkers} ->
+      filtered =
+        Enum.filter(biomarkers, fn bm ->
+          String.contains?(String.downcase(bm.name), filter_down) ||
+            String.contains?(String.downcase(category || ""), filter_down)
+        end)
+
+      {category, filtered}
+    end)
+    |> Enum.reject(fn {_cat, bms} -> bms == [] end)
   end
 
   defp aggregate_biomarkers(biomarkers) do
