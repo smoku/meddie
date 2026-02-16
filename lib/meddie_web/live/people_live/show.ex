@@ -147,18 +147,18 @@ defmodule MeddieWeb.PeopleLive.Show do
           <%!-- Upload zone --%>
           <form phx-change="validate-upload" phx-submit="save-upload" class="space-y-4">
             <div
-              class="border-2 border-dashed border-base-300 rounded-xl p-10 text-center hover:border-primary/50 hover:bg-primary/3 transition-all duration-200"
+              class="border-2 border-dashed border-base-300 rounded-xl p-5 text-center hover:border-primary/50 hover:bg-primary/3 transition-all duration-200"
               phx-drop-target={@uploads.document.ref}
             >
-              <.icon name="hero-cloud-arrow-up" class="size-10 mx-auto mb-3 text-base-content/40" />
-              <p class="text-sm text-base-content/60 mb-3">
+              <.icon name="hero-cloud-arrow-up" class="size-8 mx-auto mb-2 text-base-content/40" />
+              <p class="text-sm text-base-content/60 mb-2">
                 {gettext("Drag and drop files here, or")}
               </p>
               <.live_file_input upload={@uploads.document} class="hidden" />
               <label for={@uploads.document.ref} class="btn btn-primary btn-sm cursor-pointer">
                 {gettext("Browse files")}
               </label>
-              <p class="text-xs text-base-content/40 mt-2">
+              <p class="text-xs text-base-content/40 mt-1.5">
                 {gettext("PDF, JPG, PNG up to 20 MB")}
               </p>
             </div>
