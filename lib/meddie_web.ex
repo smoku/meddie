@@ -17,7 +17,9 @@ defmodule MeddieWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images uploads favicon.ico robots.txt)
+  def static_paths,
+    do:
+      ~w(assets fonts images uploads favicon-16x16.png favicon-32x32.png apple-touch-icon.png icon-192.png icon-512.png robots.txt)
 
   def router do
     quote do

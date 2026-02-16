@@ -136,10 +136,10 @@
 
 /* Gradient brand background */
 .bg-gradient-brand {
-  background: linear-gradient(135deg, oklch(55% 0.20 255) 0%, oklch(62% 0.17 175) 100%);
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
 }
 [data-theme="dark"] .bg-gradient-brand {
-  background: linear-gradient(135deg, oklch(45% 0.18 260) 0%, oklch(50% 0.15 175) 100%);
+  background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
 }
 
 /* Subtle glass effect for overlays */

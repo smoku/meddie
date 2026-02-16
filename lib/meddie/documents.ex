@@ -130,6 +130,17 @@ defmodule Meddie.Documents do
   end
 
   @doc """
+  Returns the date of the most recent document for a person, or nil if none exist.
+  """
+  def latest_document_date(%Scope{space: space}, person_id) do
+    from(d in Document,
+      where: d.space_id == ^space.id and d.person_id == ^person_id,
+      select: max(d.document_date)
+    )
+    |> Repo.one()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking document changes.
   """
   def change_document(%Document{} = document, attrs \\ %{}) do

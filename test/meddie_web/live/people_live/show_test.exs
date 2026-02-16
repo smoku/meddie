@@ -30,7 +30,6 @@ defmodule MeddieWeb.PeopleLive.ShowTest do
         |> live(~p"/people/#{person}")
 
       assert html =~ person.name
-      assert html =~ "Female"
       assert html =~ "170 cm"
       assert html =~ "65.5 kg"
       assert html =~ "1990-05-15"

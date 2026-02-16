@@ -44,9 +44,7 @@ defmodule MeddieWeb.Layouts do
         <%!-- Logo --%>
         <div class="px-5 py-5">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center">
-              <span class="text-white font-bold text-sm">M</span>
-            </div>
+            <img src={~p"/images/icon.svg"} alt="Meddie" class="w-12 h-12" />
             <span class="text-lg font-bold tracking-tight">Meddie</span>
           </div>
         </div>

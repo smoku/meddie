@@ -97,12 +97,13 @@ defmodule MeddieWeb.SettingsLive.Index do
                 <%!-- Invite form --%>
                 <div class="mt-4">
                   <h4 class="font-semibold text-sm mb-2">{gettext("Invite to Space")}</h4>
-                  <.form for={@invite_form} phx-submit="invite_to_space" class="flex gap-2">
-                    <.input
-                      field={@invite_form[:email]}
+                  <.form for={@invite_form} phx-submit="invite_to_space" class="flex gap-2 items-center">
+                    <input
                       type="email"
+                      name={@invite_form[:email].name}
+                      value={@invite_form[:email].value}
                       placeholder="email@example.com"
-                      class="input input-bordered input-sm flex-1"
+                      class="input input-bordered input-sm w-64"
                       required
                     />
                     <button type="submit" class="btn btn-primary btn-sm">
@@ -123,21 +124,23 @@ defmodule MeddieWeb.SettingsLive.Index do
                 <p class="text-sm text-base-content/60 mb-2">
                   {gettext("Create a bot via @BotFather on Telegram and paste the token here.")}
                 </p>
-                <.form for={@telegram_token_form} phx-submit="save_telegram_token" class="flex gap-2 items-end">
-                  <div class="flex-1">
-                    <.input
-                      field={@telegram_token_form[:telegram_bot_token]}
+                <div class="space-y-2">
+                  <.form for={@telegram_token_form} phx-submit="save_telegram_token" class="flex gap-2 items-center">
+                    <input
                       type="text"
+                      name={@telegram_token_form[:telegram_bot_token].name}
+                      value={@telegram_token_form[:telegram_bot_token].value}
                       placeholder="123456:ABC-DEF..."
-                      class="input input-bordered input-sm w-full font-mono"
+                      class="input input-bordered input-sm flex-1 font-mono"
                     />
-                  </div>
-                  <button type="submit" class="btn btn-primary btn-sm">
-                    {gettext("Save")}
-                  </button>
-                </.form>
-                <div :if={@current_scope.space.telegram_bot_token && @current_scope.space.telegram_bot_token != ""} class="mt-2">
-                  <span class="badge badge-success badge-sm gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      {gettext("Save")}
+                    </button>
+                  </.form>
+                  <span
+                    :if={@current_scope.space.telegram_bot_token && @current_scope.space.telegram_bot_token != ""}
+                    class="badge badge-success badge-sm gap-1"
+                  >
                     <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
                     {gettext("Bot connected")}
                   </span>

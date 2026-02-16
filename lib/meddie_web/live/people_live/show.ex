@@ -15,7 +15,7 @@ defmodule MeddieWeb.PeopleLive.Show do
       active_person_id={@person.id}
       page_title={@person.name}
     >
-      <div class="max-w-4xl space-y-6">
+      <div class="space-y-4">
         <%!-- Header --%>
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-bold">{@person.name}</h1>
@@ -91,39 +91,55 @@ defmodule MeddieWeb.PeopleLive.Show do
 
         <%!-- Overview tab --%>
         <div :if={@tab == "overview"} class="space-y-6">
-          <%!-- Profile card --%>
-          <div class="card bg-base-100 shadow-elevated border border-base-300/20">
-            <div class="card-body">
-              <h3 class="card-title text-base">{gettext("Profile")}</h3>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-2">
-                <.info_item label={gettext("Sex")} value={display_sex(@person.sex)} />
-                <.info_item
-                  label={gettext("Date of birth")}
-                  value={
-                    if @person.date_of_birth,
-                      do: Calendar.strftime(@person.date_of_birth, "%Y-%m-%d"),
-                      else: "—"
-                  }
-                />
-                <.info_item
-                  label={gettext("Age")}
-                  value={if @person.date_of_birth, do: "#{age(@person.date_of_birth)}", else: "—"}
-                />
-                <.info_item
-                  label={gettext("Height")}
-                  value={if @person.height_cm, do: "#{@person.height_cm} cm", else: "—"}
-                />
-                <.info_item
-                  label={gettext("Weight")}
-                  value={if @person.weight_kg, do: "#{@person.weight_kg} kg", else: "—"}
-                />
-              </div>
-            </div>
+          <%!-- Stat cards row --%>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <.stat_card
+              icon="hero-scale"
+              icon_bg="bg-accent/10"
+              icon_color="text-accent"
+              label={gettext("BMI")}
+              value={format_bmi(@person.weight_kg, @person.height_cm)}
+              detail={bmi_detail(@person)}
+            />
+            <.stat_card
+              icon="hero-heart"
+              icon_bg="bg-error/10"
+              icon_color="text-error"
+              label={gettext("Age")}
+              value={if @person.date_of_birth, do: "#{age(@person.date_of_birth)}", else: "—"}
+              detail={
+                if @person.date_of_birth,
+                  do: Calendar.strftime(@person.date_of_birth, "%Y-%m-%d"),
+                  else: nil
+              }
+            />
+            <.stat_card
+              icon="hero-beaker"
+              icon_bg="bg-secondary/10"
+              icon_color="text-secondary"
+              label={gettext("Biomarkers")}
+              value={to_string(@biomarkers_total)}
+              detail={biomarker_status_summary(@biomarker_status_counts)}
+              href={~p"/people/#{@person}?tab=biomarkers"}
+            />
+            <.stat_card
+              icon="hero-document-text"
+              icon_bg="bg-primary/10"
+              icon_color="text-primary"
+              label={gettext("Documents")}
+              value={to_string(@documents_count)}
+              href={~p"/people/#{@person}?tab=documents"}
+            />
           </div>
 
-          <.markdown_card title={gettext("Health Notes")} content={@person.health_notes} />
-          <.markdown_card title={gettext("Supplements")} content={@person.supplements} />
-          <.markdown_card title={gettext("Medications")} content={@person.medications} />
+          <%!-- Health Notes / Supplements / Medications --%>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <.markdown_card title={gettext("Health Notes")} content={@person.health_notes} />
+            <div class="space-y-6">
+              <.markdown_card title={gettext("Supplements")} content={@person.supplements} />
+              <.markdown_card title={gettext("Medications")} content={@person.medications} />
+            </div>
+          </div>
         </div>
 
         <%!-- Documents tab --%>
@@ -397,14 +413,46 @@ defmodule MeddieWeb.PeopleLive.Show do
     """
   end
 
+  attr :icon, :string, required: true
+  attr :icon_bg, :string, required: true
+  attr :icon_color, :string, required: true
   attr :label, :string, required: true
   attr :value, :string, required: true
+  attr :detail, :string, default: nil
+  attr :href, :string, default: nil
 
-  defp info_item(assigns) do
+  defp stat_card(assigns) do
     ~H"""
-    <div class="pl-3 border-l-2 border-base-300">
-      <dt class="text-xs text-base-content/40 uppercase tracking-wider font-medium">{@label}</dt>
-      <dd class="mt-0.5 text-sm font-semibold">{@value}</dd>
+    <.link
+      :if={@href}
+      patch={@href}
+      class="card bg-base-100 shadow-elevated border border-base-300/20 hover:shadow-elevated-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+    >
+      <div class="card-body p-4 flex-row items-center gap-4">
+        <div class={["p-2.5 rounded-xl", @icon_bg]}>
+          <.icon name={@icon} class={["size-5", @icon_color]} />
+        </div>
+        <div>
+          <p class="text-xs text-base-content/50 font-medium">{@label}</p>
+          <p class="text-xl font-bold mt-0.5">{@value}</p>
+          <p :if={@detail} class="text-xs text-base-content/40 mt-0.5">{@detail}</p>
+        </div>
+      </div>
+    </.link>
+    <div
+      :if={!@href}
+      class="card bg-base-100 shadow-elevated border border-base-300/20"
+    >
+      <div class="card-body p-4 flex-row items-center gap-4">
+        <div class={["p-2.5 rounded-xl", @icon_bg]}>
+          <.icon name={@icon} class={["size-5", @icon_color]} />
+        </div>
+        <div>
+          <p class="text-xs text-base-content/50 font-medium">{@label}</p>
+          <p class="text-xl font-bold mt-0.5">{@value}</p>
+          <p :if={@detail} class="text-xs text-base-content/40 mt-0.5">{@detail}</p>
+        </div>
+      </div>
     </div>
     """
   end
@@ -696,10 +744,6 @@ defmodule MeddieWeb.PeopleLive.Show do
     |> Phoenix.HTML.raw()
   end
 
-  defp display_sex("male"), do: gettext("Male")
-  defp display_sex("female"), do: gettext("Female")
-  defp display_sex(_), do: ""
-
   defp upload_error_to_string(:too_large), do: gettext("File is too large (max 20 MB)")
   defp upload_error_to_string(:too_many_files), do: gettext("Too many files")
 
@@ -707,6 +751,62 @@ defmodule MeddieWeb.PeopleLive.Show do
     do: gettext("Unsupported file format. Accepted: PDF, JPG, PNG")
 
   defp upload_error_to_string(_), do: gettext("Upload error")
+
+  defp biomarker_status_summary(counts) when map_size(counts) == 0, do: nil
+
+  defp biomarker_status_summary(counts) do
+    parts =
+      []
+      |> then(fn p -> if counts["normal"], do: ["#{counts["normal"]} #{gettext("normal")}" | p], else: p end)
+      |> then(fn p -> if counts["high"], do: ["#{counts["high"]} #{gettext("high")}" | p], else: p end)
+      |> then(fn p -> if counts["low"], do: ["#{counts["low"]} #{gettext("low")}" | p], else: p end)
+      |> Enum.reverse()
+
+    case parts do
+      [] -> nil
+      parts -> Enum.join(parts, ", ")
+    end
+  end
+
+  defp calculate_bmi(weight_kg, height_cm)
+       when is_number(weight_kg) and is_number(height_cm) and height_cm > 0 do
+    height_m = height_cm / 100
+    Float.round(weight_kg / (height_m * height_m), 1)
+  end
+
+  defp calculate_bmi(_weight, _height), do: nil
+
+  defp format_bmi(weight_kg, height_cm) do
+    case calculate_bmi(weight_kg, height_cm) do
+      nil -> "—"
+      bmi -> to_string(bmi)
+    end
+  end
+
+  defp bmi_category(weight_kg, height_cm) do
+    case calculate_bmi(weight_kg, height_cm) do
+      nil -> nil
+      bmi when bmi < 18.5 -> gettext("Underweight")
+      bmi when bmi < 25.0 -> gettext("Normal")
+      bmi when bmi < 30.0 -> gettext("Overweight")
+      _ -> gettext("Obese")
+    end
+  end
+
+  defp bmi_detail(person) do
+    parts =
+      [
+        bmi_category(person.weight_kg, person.height_cm),
+        if(person.height_cm, do: "#{person.height_cm} cm"),
+        if(person.weight_kg, do: "#{person.weight_kg} kg")
+      ]
+      |> Enum.reject(&is_nil/1)
+
+    case parts do
+      [] -> nil
+      parts -> Enum.join(parts, " · ")
+    end
+  end
 
   # -- Biomarker helpers --
 

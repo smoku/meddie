@@ -10,9 +10,7 @@ defmodule MeddieWeb.SpaceLive.New do
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="text-center mb-8">
         <div class="flex items-center justify-center gap-2.5 mb-4">
-          <div class="w-10 h-10 rounded-lg bg-gradient-brand flex items-center justify-center">
-            <span class="text-white font-bold text-lg">M</span>
-          </div>
+          <img src={~p"/images/icon.svg"} alt="Meddie" class="w-14 h-14" />
           <span class="text-2xl font-bold tracking-tight">Meddie</span>
         </div>
         <h1 class="text-2xl font-bold">{gettext("Welcome to Meddie!")}</h1>

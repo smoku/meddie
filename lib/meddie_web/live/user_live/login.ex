@@ -8,9 +8,7 @@ defmodule MeddieWeb.UserLive.Login do
       <div class="mx-auto max-w-sm space-y-6">
         <div class="text-center">
           <div class="flex items-center justify-center gap-2.5 mb-6">
-            <div class="w-10 h-10 rounded-lg bg-gradient-brand flex items-center justify-center">
-              <span class="text-white font-bold text-lg">M</span>
-            </div>
+            <img src={~p"/images/icon.svg"} alt="Meddie" class="w-14 h-14" />
             <span class="text-2xl font-bold tracking-tight">Meddie</span>
           </div>
           <.header>

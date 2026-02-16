@@ -38,7 +38,7 @@ defmodule MeddieWeb.PeopleLive.ShowDocumentsTest do
         |> log_in_user(user, space: space)
         |> live(~p"/people/#{person}")
 
-      html = lv |> element(~s|a[href*="tab=documents"]|) |> render_click()
+      html = lv |> element(~s|a[href*="tab=documents"].px-4|) |> render_click()
 
       assert html =~ "No documents yet."
       assert html =~ "Upload a medical document to get started."
@@ -52,7 +52,7 @@ defmodule MeddieWeb.PeopleLive.ShowDocumentsTest do
         |> log_in_user(user, space: space)
         |> live(~p"/people/#{person}")
 
-      assert html =~ "Profile"
+      assert html =~ "Health Notes"
       assert html =~ "Anna Nowak"
     end
 
