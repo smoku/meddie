@@ -12,6 +12,8 @@ defmodule MeddieWeb.PeopleLive.Form do
       flash={@flash}
       current_scope={@current_scope}
       user_spaces={@user_spaces}
+      people={@people}
+      active_person_id={if @person, do: @person.id}
       page_title={@page_title}
     >
       <div class="max-w-2xl">
@@ -146,6 +148,12 @@ defmodule MeddieWeb.PeopleLive.Form do
 
   def handle_event("save", %{"person" => person_params}, socket) do
     save_person(socket, socket.assigns.live_action, person_params)
+  end
+
+  @impl true
+  def handle_info(:people_changed, socket) do
+    people = People.list_people(socket.assigns.current_scope)
+    {:noreply, assign(socket, :people, people)}
   end
 
   defp save_person(socket, :new, person_params) do

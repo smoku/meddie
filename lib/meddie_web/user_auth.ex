@@ -252,11 +252,17 @@ defmodule MeddieWeb.UserAuth do
 
       if space do
         scope = Scope.put_space(socket.assigns.current_scope, space)
+        people = Meddie.People.list_people(scope)
+
+        if Phoenix.LiveView.connected?(socket) do
+          Meddie.People.subscribe_people(space.id)
+        end
 
         {:cont,
          socket
          |> Phoenix.Component.assign(:current_scope, scope)
-         |> Phoenix.Component.assign(:user_spaces, user_spaces)}
+         |> Phoenix.Component.assign(:user_spaces, user_spaces)
+         |> Phoenix.Component.assign(:people, people)}
       else
         {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/spaces/new")}
       end
@@ -296,7 +302,7 @@ defmodule MeddieWeb.UserAuth do
 
   @doc "Returns the path to redirect to after log in."
   def signed_in_path(%Plug.Conn{assigns: %{current_scope: %Scope{user: %Accounts.User{}}}}) do
-    ~p"/people"
+    ~p"/ask-meddie"
   end
 
   def signed_in_path(_), do: ~p"/"

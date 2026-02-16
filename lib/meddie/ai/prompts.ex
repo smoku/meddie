@@ -17,7 +17,9 @@ defmodule Meddie.AI.Prompts do
 
     Then, for ALL document types:
     - Extract the document date if visible
-    - Write a brief summary (2-4 sentences) of the document contents and key findings. Write the summary in the same language as the document.
+    - Write the summary in the same language as the document:
+      - For lab_results: Write a brief summary (2-4 sentences) of the document contents and key findings.
+      - For medical_report and other: Write a detailed summary covering all key findings, diagnoses, recommendations, measurements, and conclusions. Be thorough — this summary is the primary stored representation of the document.
 
     Additionally, for lab_results ONLY, extract every biomarker/test result:
     - name: The biomarker or test name exactly as written on the document (keep original language, do NOT translate)
@@ -36,7 +38,7 @@ defmodule Meddie.AI.Prompts do
     {
       "document_type": "lab_results | medical_report | other",
       "document_date": "YYYY-MM-DD or null",
-      "summary": "Brief summary of document contents and key findings",
+      "summary": "Summary of document contents and key findings (brief for lab_results, detailed for others)",
       "biomarkers": [
         {
           "name": "string",

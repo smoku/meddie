@@ -13,40 +13,27 @@ defmodule MeddieWeb.PeopleLive.IndexTest do
   describe "Index" do
     setup [:create_user_with_space]
 
-    test "renders empty state when no people exist", %{conn: conn, user: user, space: space} do
-      {:ok, _lv, html} =
-        conn
-        |> log_in_user(user, space: space)
-        |> live(~p"/people")
-
-      assert html =~ "People"
-      assert html =~ "No people yet."
-      assert html =~ "Add your first person to start tracking health data."
+    test "redirects to /people/new when no people exist", %{conn: conn, user: user, space: space} do
+      assert {:error, {:live_redirect, %{to: "/people/new"}}} =
+               conn
+               |> log_in_user(user, space: space)
+               |> live(~p"/people")
     end
 
-    test "lists people", %{conn: conn, user: user, space: space, scope: scope} do
+    test "redirects to first person when people exist", %{
+      conn: conn,
+      user: user,
+      space: space,
+      scope: scope
+    } do
       person = person_fixture(scope, %{"name" => "Jan Kowalski", "sex" => "male"})
 
-      {:ok, _lv, html} =
-        conn
-        |> log_in_user(user, space: space)
-        |> live(~p"/people")
+      assert {:error, {:live_redirect, %{to: "/people/" <> id}}} =
+               conn
+               |> log_in_user(user, space: space)
+               |> live(~p"/people")
 
-      assert html =~ person.name
-      assert html =~ "Male"
-    end
-
-    test "navigates to person show page", %{conn: conn, user: user, space: space, scope: scope} do
-      person = person_fixture(scope)
-
-      {:ok, lv, _html} =
-        conn
-        |> log_in_user(user, space: space)
-        |> live(~p"/people")
-
-      assert lv
-             |> element("#people-#{person.id}")
-             |> has_element?()
+      assert id == person.id
     end
 
     test "redirects to login if not authenticated", %{conn: conn} do

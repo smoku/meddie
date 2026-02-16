@@ -11,17 +11,14 @@ defmodule MeddieWeb.PeopleLive.Show do
       flash={@flash}
       current_scope={@current_scope}
       user_spaces={@user_spaces}
+      people={@people}
+      active_person_id={@person.id}
       page_title={@person.name}
     >
       <div class="max-w-4xl space-y-6">
         <%!-- Header --%>
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <.link navigate={~p"/people"} class="btn btn-ghost btn-sm">
-              <.icon name="hero-arrow-left-micro" class="size-4" />
-            </.link>
-            <h1 class="text-2xl font-bold">{@person.name}</h1>
-          </div>
+          <h1 class="text-2xl font-bold">{@person.name}</h1>
           <div class="flex gap-2">
             <.link navigate={~p"/people/#{@person}/edit"} class="btn btn-ghost btn-sm">
               <.icon name="hero-pencil-square-micro" class="size-4" />
@@ -213,13 +210,13 @@ defmodule MeddieWeb.PeopleLive.Show do
                       else: Calendar.strftime(doc.inserted_at, "%Y-%m-%d")}
                   </p>
                 </div>
-                <.status_badge status={doc.status} />
                 <span
                   :if={doc.status == "parsed" && doc.document_type == "lab_results"}
                   class="text-xs text-base-content/50"
                 >
                   {ngettext("1 biomarker", "%{count} biomarkers", length(doc.biomarkers))}
                 </span>
+                <.status_badge status={doc.status} />
               </div>
             </.link>
           </div>
@@ -593,6 +590,11 @@ defmodule MeddieWeb.PeopleLive.Show do
   # -- PubSub --
 
   @impl true
+  def handle_info(:people_changed, socket) do
+    people = People.list_people(socket.assigns.current_scope)
+    {:noreply, assign(socket, :people, people)}
+  end
+
   def handle_info({:document_updated, document}, socket) do
     document = Meddie.Repo.preload(document, :biomarkers)
     scope = socket.assigns.current_scope

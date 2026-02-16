@@ -31,6 +31,8 @@ defmodule MeddieWeb.Layouts do
   attr :flash, :map, required: true
   attr :current_scope, :map, required: true
   attr :user_spaces, :list, default: []
+  attr :people, :list, default: []
+  attr :active_person_id, :string, default: nil
   attr :page_title, :string, default: nil
   slot :inner_block, required: true
 
@@ -38,7 +40,8 @@ defmodule MeddieWeb.Layouts do
     ~H"""
     <div class="flex h-screen overflow-hidden">
       <%!-- Sidebar --%>
-      <aside class="hidden lg:flex flex-col w-60 bg-base-200 shadow-elevated">
+      <aside class="hidden lg:flex flex-col w-72 bg-base-200 shadow-elevated">
+        <%!-- Logo --%>
         <div class="px-5 py-5">
           <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center">
@@ -48,29 +51,58 @@ defmodule MeddieWeb.Layouts do
           </div>
         </div>
 
-        <nav class="flex-1 px-3 space-y-0.5">
-          <.sidebar_link
-            href={~p"/people"}
-            icon="hero-users"
-            label={gettext("People")}
-            active={@page_title == gettext("People")}
-          />
+        <%!-- Ask Meddie --%>
+        <nav class="px-3 space-y-0.5">
           <.sidebar_link
             href={~p"/ask-meddie"}
             icon="hero-chat-bubble-left-right"
             label={gettext("Ask Meddie")}
             active={@page_title == gettext("Ask Meddie")}
           />
+        </nav>
+
+        <%!-- People section --%>
+        <div class="flex-1 flex flex-col min-h-0 mt-4">
+          <div class="flex items-center justify-between px-5 mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-base-content/40">
+              {gettext("People")}
+            </span>
+            <.link navigate={~p"/people/new"} class="btn btn-ghost btn-xs btn-square">
+              <.icon name="hero-plus-micro" class="size-3.5" />
+            </.link>
+          </div>
+
+          <nav class="flex-1 overflow-y-auto px-3 space-y-0.5">
+            <div :if={@people == []} class="text-center py-6 text-base-content/40 text-xs">
+              {gettext("No people yet.")}
+            </div>
+            <.link
+              :for={person <- @people}
+              navigate={~p"/people/#{person}"}
+              class={[
+                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150",
+                @active_person_id == person.id &&
+                  "bg-primary/10 text-primary font-semibold",
+                @active_person_id != person.id && "hover:bg-base-300/50"
+              ]}
+              data-person-name={String.downcase(person.name)}
+            >
+              <div class="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center text-white font-semibold text-xs shrink-0">
+                {String.first(person.name)}
+              </div>
+              <span class="truncate">{person.name}</span>
+            </.link>
+          </nav>
+        </div>
+
+        <%!-- Bottom: Settings --%>
+        <div class="mt-auto px-3 pb-4">
           <.sidebar_link
             href={~p"/settings"}
             icon="hero-cog-6-tooth"
             label={gettext("Settings")}
             active={@page_title == gettext("Settings")}
           />
-        </nav>
-
-        <div class="mt-auto px-3 pb-4">
-          <div class="px-3 py-2 text-xs text-base-content/30">v0.1</div>
         </div>
       </aside>
 

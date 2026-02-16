@@ -9,6 +9,8 @@ defmodule MeddieWeb.UserLive.Settings do
     <Layouts.sidebar
       flash={@flash}
       current_scope={@current_scope}
+      user_spaces={@user_spaces}
+      people={@people}
       page_title={gettext("Account Settings")}
     >
       <div class="max-w-4xl space-y-8">
@@ -224,5 +226,11 @@ defmodule MeddieWeb.UserLive.Settings do
       changeset ->
         {:noreply, assign(socket, password_form: to_form(changeset, action: :insert))}
     end
+  end
+
+  @impl true
+  def handle_info(:people_changed, socket) do
+    people = Meddie.People.list_people(socket.assigns.current_scope)
+    {:noreply, assign(socket, :people, people)}
   end
 end

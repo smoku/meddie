@@ -16,6 +16,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
       flash={@flash}
       current_scope={@current_scope}
       user_spaces={@user_spaces}
+      people={@people}
       page_title={gettext("Ask Meddie")}
     >
       <div class="flex h-[calc(100vh-4.25rem)] -m-4 sm:-m-6 lg:-m-8">
@@ -197,14 +198,12 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   @impl true
   def mount(params, _session, socket) do
     scope = socket.assigns.current_scope
-    people = People.list_people(scope)
     linked_person = People.get_linked_person(scope)
     conversations = Conversations.list_conversations(scope)
 
     {:ok,
      socket
      |> assign(page_title: gettext("Ask Meddie"))
-     |> assign(people: people)
      |> assign(linked_person: linked_person)
      |> assign(conversations: conversations)
      |> assign(conversation: nil)
@@ -418,6 +417,11 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     else
       {:noreply, socket}
     end
+  end
+
+  def handle_info(:people_changed, socket) do
+    people = People.list_people(socket.assigns.current_scope)
+    {:noreply, assign(socket, :people, people)}
   end
 
   def handle_info(_msg, socket) do

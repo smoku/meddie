@@ -1,7 +1,6 @@
 defmodule MeddieWeb.SettingsLive.Index do
   use MeddieWeb, :live_view
 
-  alias Meddie.People
   alias Meddie.Spaces
   alias Meddie.Invitations
   alias Meddie.Telegram
@@ -13,6 +12,7 @@ defmodule MeddieWeb.SettingsLive.Index do
       flash={@flash}
       current_scope={@current_scope}
       user_spaces={@user_spaces}
+      people={@people}
       page_title={gettext("Settings")}
     >
       <div class="max-w-4xl space-y-8">
@@ -250,7 +250,6 @@ defmodule MeddieWeb.SettingsLive.Index do
 
     members = if is_admin, do: Spaces.list_space_members(scope), else: []
     telegram_links = if is_admin, do: Telegram.Links.list_links(scope.space.id), else: []
-    people = if is_admin, do: People.list_people(scope), else: []
 
     {:ok,
      socket
@@ -259,7 +258,6 @@ defmodule MeddieWeb.SettingsLive.Index do
        is_admin: is_admin,
        members: members,
        telegram_links: telegram_links,
-       people: people,
        tab: "members"
      )
      |> assign(invite_form: to_form(%{"email" => ""}, as: "invite"))
@@ -425,6 +423,12 @@ defmodule MeddieWeb.SettingsLive.Index do
   end
 
   defp parse_integer(val), do: val
+
+  @impl true
+  def handle_info(:people_changed, socket) do
+    people = Meddie.People.list_people(socket.assigns.current_scope)
+    {:noreply, assign(socket, :people, people)}
+  end
 
   defp blank_to_nil(nil), do: nil
   defp blank_to_nil(""), do: nil

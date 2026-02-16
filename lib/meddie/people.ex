@@ -9,6 +9,19 @@ defmodule Meddie.People do
   alias Meddie.Accounts.Scope
   alias Meddie.People.Person
 
+  @topic_prefix "space_people:"
+
+  @doc """
+  Subscribes to people changes for the given space.
+  """
+  def subscribe_people(space_id) do
+    Phoenix.PubSub.subscribe(Meddie.PubSub, @topic_prefix <> space_id)
+  end
+
+  defp broadcast_people_change(space_id) do
+    Phoenix.PubSub.broadcast(Meddie.PubSub, @topic_prefix <> space_id, :people_changed)
+  end
+
   @doc """
   Returns the list of people for the given scope's space, ordered by name.
   """
@@ -42,10 +55,18 @@ defmodule Meddie.People do
   def create_person(%Scope{space: space}, attrs) do
     {user_id, attrs} = Map.pop(attrs, "user_id")
 
-    %Person{space_id: space.id}
-    |> maybe_set_user_id(user_id)
-    |> Person.changeset(attrs)
-    |> Repo.insert()
+    result =
+      %Person{space_id: space.id}
+      |> maybe_set_user_id(user_id)
+      |> Person.changeset(attrs)
+      |> Repo.insert()
+
+    case result do
+      {:ok, _person} -> broadcast_people_change(space.id)
+      _ -> :ok
+    end
+
+    result
   end
 
   @doc """
@@ -67,7 +88,14 @@ defmodule Meddie.People do
   Deletes a person.
   """
   def delete_person(%Scope{}, %Person{} = person) do
-    Repo.delete(person)
+    result = Repo.delete(person)
+
+    case result do
+      {:ok, _} -> broadcast_people_change(person.space_id)
+      _ -> :ok
+    end
+
+    result
   end
 
   @doc """

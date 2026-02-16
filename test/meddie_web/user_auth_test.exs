@@ -73,13 +73,13 @@ defmodule MeddieWeb.UserAuthTest do
       assert max_age == @remember_me_cookie_max_age
     end
 
-    test "redirects to people when user is already logged in", %{conn: conn, user: user} do
+    test "redirects to ask-meddie when user is already logged in", %{conn: conn, user: user} do
       conn =
         conn
         |> assign(:current_scope, Scope.for_user(user))
         |> UserAuth.log_in_user(user)
 
-      assert redirected_to(conn) == ~p"/people"
+      assert redirected_to(conn) == ~p"/ask-meddie"
     end
   end
 

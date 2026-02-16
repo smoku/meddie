@@ -11,6 +11,8 @@ defmodule MeddieWeb.DocumentLive.Show do
       flash={@flash}
       current_scope={@current_scope}
       user_spaces={@user_spaces}
+      people={@people}
+      active_person_id={@person.id}
       page_title={@document.filename}
     >
       <div class="max-w-7xl">
@@ -311,6 +313,11 @@ defmodule MeddieWeb.DocumentLive.Show do
   # -- PubSub --
 
   @impl true
+  def handle_info(:people_changed, socket) do
+    people = Meddie.People.list_people(socket.assigns.current_scope)
+    {:noreply, assign(socket, :people, people)}
+  end
+
   def handle_info({:document_updated, document}, socket) do
     if document.id == socket.assigns.document.id do
       document = Meddie.Repo.preload(document, :biomarkers, force: true)

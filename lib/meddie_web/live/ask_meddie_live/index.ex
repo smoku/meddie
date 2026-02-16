@@ -2,7 +2,6 @@ defmodule MeddieWeb.AskMeddieLive.Index do
   use MeddieWeb, :live_view
 
   alias Meddie.Conversations
-  alias Meddie.People
 
   @impl true
   def render(assigns) do
@@ -11,6 +10,7 @@ defmodule MeddieWeb.AskMeddieLive.Index do
       flash={@flash}
       current_scope={@current_scope}
       user_spaces={@user_spaces}
+      people={@people}
       page_title={gettext("Ask Meddie")}
     >
       <div class="flex h-[calc(100vh-4.25rem)] -m-4 sm:-m-6 lg:-m-8">
@@ -79,13 +79,17 @@ defmodule MeddieWeb.AskMeddieLive.Index do
   def mount(_params, _session, socket) do
     scope = socket.assigns.current_scope
     conversations = Conversations.list_conversations(scope)
-    people = People.list_people(scope)
 
     {:ok,
      socket
      |> assign(page_title: gettext("Ask Meddie"))
-     |> assign(conversations: conversations)
-     |> assign(people: people)}
+     |> assign(conversations: conversations)}
+  end
+
+  @impl true
+  def handle_info(:people_changed, socket) do
+    people = Meddie.People.list_people(socket.assigns.current_scope)
+    {:noreply, assign(socket, :people, people)}
   end
 
   defp conv_person_name(conv, people) do
