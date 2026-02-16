@@ -15,7 +15,7 @@ defmodule MeddieWeb.DocumentLive.Show do
       active_person_id={@person.id}
       page_title={@document.filename}
     >
-      <div class="max-w-7xl">
+      <div>
         <%!-- Header --%>
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center gap-3">
@@ -113,7 +113,7 @@ defmodule MeddieWeb.DocumentLive.Show do
 
           <%!-- Right: Parsed results --%>
           <div class={["lg:w-1/2 lg:block", if(@panel != "results", do: "hidden")]}>
-            <.document_results document={@document} biomarker_history={@biomarker_history} />
+            <.document_results document={@document} biomarker_history={@biomarker_history} person={@person} />
           </div>
         </div>
       </div>
@@ -166,7 +166,14 @@ defmodule MeddieWeb.DocumentLive.Show do
                   :for={bm <- biomarkers}
                   class={biomarker_row_class(bm.status)}
                 >
-                  <td>{bm.name}</td>
+                  <td>
+                    <.link
+                      navigate={~p"/people/#{@person}?tab=biomarkers&biomarker=#{bm.name <> "::" <> (Documents.normalize_unit(bm.unit) || "")}"}
+                      class="link link-primary"
+                    >
+                      {bm.name}
+                    </.link>
+                  </td>
                   <td>
                     <.sparkline
                       :if={length(Map.get(@sparklines, {bm.name, Meddie.Documents.normalize_unit(bm.unit)}, [])) > 1}

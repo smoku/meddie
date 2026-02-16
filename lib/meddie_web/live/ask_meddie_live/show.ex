@@ -587,7 +587,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   defp profile_update_message?(msg) do
     msg.role == "system" and
       (String.contains?(msg.content, gettext("Saved to")) or
-         String.contains?(msg.content, gettext("Moved from")))
+         String.contains?(msg.content, gettext("Removed from")))
   end
 
   defp profile_updates_for_message(profile_updates, message_id) do

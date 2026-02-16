@@ -90,7 +90,7 @@ defmodule Meddie.Conversations.Chat do
         action_text =
           case action do
             "append" -> gettext("Saved to %{field}: %{text}", field: display_field_name(field), text: text)
-            "remove" -> gettext("Moved from %{field}: %{text}", field: display_field_name(field), text: text)
+            "remove" -> gettext("Removed from %{field}: %{text}", field: display_field_name(field), text: text)
           end
 
         {:ok, sys_msg} =

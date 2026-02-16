@@ -28,8 +28,8 @@ msgstr "Ustawienia konta"
 msgid "Actions"
 msgstr "Akcje"
 
-#: lib/meddie_web/components/layouts.ex:238
-#: lib/meddie_web/components/layouts.ex:250
+#: lib/meddie_web/components/layouts.ex:236
+#: lib/meddie_web/components/layouts.ex:248
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr "Próba ponownego połączenia"
@@ -58,8 +58,8 @@ msgstr "Potwierdź nowe hasło"
 #: lib/meddie_web/controllers/invitation_html/new.html.heex:18
 #: lib/meddie_web/live/platform_live/index.ex:40
 #: lib/meddie_web/live/settings_live/index.ex:63
-#: lib/meddie_web/live/user_live/login.ex:35
-#: lib/meddie_web/live/user_live/registration.ex:36
+#: lib/meddie_web/live/user_live/login.ex:33
+#: lib/meddie_web/live/user_live/registration.ex:34
 #: lib/meddie_web/live/user_live/settings.ex:46
 #: lib/meddie_web/live/user_live/settings.ex:56
 #, elixir-autogen, elixir-format
@@ -96,7 +96,7 @@ msgid "New password"
 msgstr "Nowe hasło"
 
 #: lib/meddie_web/controllers/invitation_html/new.html.heex:28
-#: lib/meddie_web/live/user_live/login.ex:43
+#: lib/meddie_web/live/user_live/login.ex:41
 #: lib/meddie_web/live/user_live/settings.ex:70
 #, elixir-autogen, elixir-format
 msgid "Password"
@@ -113,7 +113,7 @@ msgid "Profile updated successfully."
 msgstr "Profil został zaktualizowany."
 
 #: lib/meddie_web/live/people_live/form.ex:98
-#: lib/meddie_web/live/settings_live/index.ex:136
+#: lib/meddie_web/live/settings_live/index.ex:137
 #: lib/meddie_web/live/user_live/settings.ex:37
 #, elixir-autogen, elixir-format
 msgid "Save"
@@ -125,12 +125,12 @@ msgstr "Zapisz"
 msgid "Saving..."
 msgstr "Zapisywanie..."
 
-#: lib/meddie_web/components/layouts.ex:245
+#: lib/meddie_web/components/layouts.ex:243
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr "Coś poszło nie tak!"
 
-#: lib/meddie_web/components/layouts.ex:233
+#: lib/meddie_web/components/layouts.ex:231
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr "Nie można połączyć się z internetem"
@@ -145,8 +145,7 @@ msgstr "zamknij"
 msgid "Add person"
 msgstr "Dodaj osobę"
 
-#: lib/meddie_web/live/people_live/show.ex:58
-#: lib/meddie_web/live/people_live/show.ex:150
+#: lib/meddie_web/live/people_live/show.ex:108
 #, elixir-autogen, elixir-format
 msgid "Age"
 msgstr "Wiek"
@@ -162,7 +161,6 @@ msgid "Biological sex"
 msgstr "Płeć biologiczna"
 
 #: lib/meddie_web/live/people_live/form.ex:43
-#: lib/meddie_web/live/people_live/show.ex:50
 #, elixir-autogen, elixir-format
 msgid "Date of birth"
 msgstr "Data urodzenia"
@@ -184,14 +182,13 @@ msgid "Edit person"
 msgstr "Edytuj osobę"
 
 #: lib/meddie_web/live/people_live/form.ex:37
-#: lib/meddie_web/live/people_live/show.ex:785
 #, elixir-autogen, elixir-format
 msgid "Female"
 msgstr "Kobieta"
 
 #: lib/meddie/conversations/chat.ex:229
 #: lib/meddie_web/live/people_live/form.ex:73
-#: lib/meddie_web/live/people_live/show.ex:162
+#: lib/meddie_web/live/people_live/show.ex:137
 #, elixir-autogen, elixir-format
 msgid "Health Notes"
 msgstr "Notatki zdrowotne"
@@ -201,42 +198,36 @@ msgstr "Notatki zdrowotne"
 msgid "Health information"
 msgstr "Informacje zdrowotne"
 
-#: lib/meddie_web/live/people_live/show.ex:62
-#, elixir-autogen, elixir-format
-msgid "Height"
-msgstr "Wzrost"
-
 #: lib/meddie_web/live/people_live/form.ex:48
 #, elixir-autogen, elixir-format
 msgid "Height (cm)"
 msgstr "Wzrost (cm)"
 
-#: lib/meddie_web/live/user_live/login.ex:17
-#: lib/meddie_web/live/user_live/login.ex:48
-#: lib/meddie_web/live/user_live/registration.ex:24
+#: lib/meddie_web/live/user_live/login.ex:15
+#: lib/meddie_web/live/user_live/login.ex:46
+#: lib/meddie_web/live/user_live/registration.ex:22
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr "Zaloguj się"
 
 #: lib/meddie_web/live/people_live/form.ex:37
-#: lib/meddie_web/live/people_live/show.ex:784
 #, elixir-autogen, elixir-format
 msgid "Male"
 msgstr "Mężczyzna"
 
 #: lib/meddie/conversations/chat.ex:231
 #: lib/meddie_web/live/people_live/form.ex:89
-#: lib/meddie_web/live/people_live/show.ex:165
+#: lib/meddie_web/live/people_live/show.ex:140
 #, elixir-autogen, elixir-format
 msgid "Medications"
 msgstr "Leki"
 
-#: lib/meddie_web/components/layouts.ex:77
+#: lib/meddie_web/components/layouts.ex:75
 #, elixir-autogen, elixir-format
 msgid "No people yet."
 msgstr "Brak osób."
 
-#: lib/meddie_web/components/layouts.ex:68
+#: lib/meddie_web/components/layouts.ex:66
 #: lib/meddie_web/live/people_live/index.ex:12
 #, elixir-autogen, elixir-format
 msgid "People"
@@ -247,7 +238,7 @@ msgstr "Osoby"
 msgid "Person created successfully."
 msgstr "Osoba została utworzona."
 
-#: lib/meddie_web/live/people_live/show.ex:647
+#: lib/meddie_web/live/people_live/show.ex:624
 #, elixir-autogen, elixir-format
 msgid "Person deleted successfully."
 msgstr "Osoba została usunięta."
@@ -262,19 +253,14 @@ msgstr "Osoba została zaktualizowana."
 msgid "Select..."
 msgstr "Wybierz..."
 
-#: lib/meddie_web/live/people_live/show.ex:48
-#, elixir-autogen, elixir-format
-msgid "Sex"
-msgstr "Płeć"
-
-#: lib/meddie_web/live/user_live/login.ex:19
+#: lib/meddie_web/live/user_live/login.ex:17
 #, elixir-autogen, elixir-format
 msgid "Sign in to your Meddie account."
 msgstr "Zaloguj się do swojego konta Meddie."
 
 #: lib/meddie/conversations/chat.ex:230
 #: lib/meddie_web/live/people_live/form.ex:81
-#: lib/meddie_web/live/people_live/show.ex:164
+#: lib/meddie_web/live/people_live/show.ex:139
 #, elixir-autogen, elixir-format
 msgid "Supplements"
 msgstr "Suplementy"
@@ -283,11 +269,6 @@ msgstr "Suplementy"
 #, elixir-autogen, elixir-format
 msgid "This will permanently delete this person and all their documents, biomarkers, and conversations. This action cannot be undone."
 msgstr "To trwale usunie tę osobę i wszystkie jej dokumenty, biomarkery oraz konwersacje. Tej operacji nie można cofnąć."
-
-#: lib/meddie_web/live/people_live/show.ex:66
-#, elixir-autogen, elixir-format
-msgid "Weight"
-msgstr "Waga"
 
 #: lib/meddie_web/live/people_live/form.ex:53
 #, elixir-autogen, elixir-format
@@ -300,23 +281,23 @@ msgid "Linked user"
 msgstr "Powiązany użytkownik"
 
 #: lib/meddie_web/live/people_live/form.ex:60
-#: lib/meddie_web/live/settings_live/index.ex:218
-#: lib/meddie_web/live/settings_live/index.ex:225
+#: lib/meddie_web/live/settings_live/index.ex:221
+#: lib/meddie_web/live/settings_live/index.ex:228
 #, elixir-autogen, elixir-format
 msgid "None"
 msgstr "Brak"
 
-#: lib/meddie_web/live/space_live/new.ex:33
+#: lib/meddie_web/live/space_live/new.ex:31
 #, elixir-autogen, elixir-format
 msgid "A space groups people, documents and results. You can create your personal space or a family space."
 msgstr "Przestrzeń grupuje osoby, dokumenty i wyniki. Możesz utworzyć swoją osobistą przestrzeń lub przestrzeń rodzinną."
 
-#: lib/meddie_web/live/user_live/registration.ex:70
+#: lib/meddie_web/live/user_live/registration.ex:68
 #, elixir-autogen, elixir-format
 msgid "Account created successfully."
 msgstr "Konto utworzone pomyślnie."
 
-#: lib/meddie_web/components/layouts.ex:176
+#: lib/meddie_web/components/layouts.ex:174
 #, elixir-autogen, elixir-format
 msgid "Account settings"
 msgstr "Ustawienia konta"
@@ -326,7 +307,7 @@ msgstr "Ustawienia konta"
 msgid "All Spaces"
 msgstr "Wszystkie Przestrzenie"
 
-#: lib/meddie_web/live/user_live/registration.ex:22
+#: lib/meddie_web/live/user_live/registration.ex:20
 #, elixir-autogen, elixir-format
 msgid "Already registered?"
 msgstr "Masz już konto?"
@@ -352,12 +333,12 @@ msgid "Confirm password"
 msgstr "Potwierdź hasło"
 
 #: lib/meddie_web/live/platform_live/index.ex:123
-#: lib/meddie_web/live/settings_live/index.ex:308
+#: lib/meddie_web/live/settings_live/index.ex:311
 #, elixir-autogen, elixir-format
 msgid "Could not send invitation."
 msgstr "Nie udało się wysłać zaproszenia."
 
-#: lib/meddie_web/live/space_live/new.ex:38
+#: lib/meddie_web/live/space_live/new.ex:36
 #, elixir-autogen, elixir-format
 msgid "Create Space"
 msgstr "Utwórz Przestrzeń"
@@ -367,7 +348,7 @@ msgstr "Utwórz Przestrzeń"
 msgid "Create account"
 msgstr "Utwórz konto"
 
-#: lib/meddie_web/live/user_live/registration.ex:43
+#: lib/meddie_web/live/user_live/registration.ex:41
 #, elixir-autogen, elixir-format
 msgid "Create an account"
 msgstr "Utwórz konto"
@@ -382,7 +363,7 @@ msgstr "Utwórz nową Przestrzeń"
 msgid "Create your account"
 msgstr "Utwórz swoje konto"
 
-#: lib/meddie_web/live/space_live/new.ex:20
+#: lib/meddie_web/live/space_live/new.ex:18
 #, elixir-autogen, elixir-format
 msgid "Create your first Space to get started."
 msgstr "Utwórz swoją pierwszą Przestrzeń, aby rozpocząć."
@@ -392,12 +373,12 @@ msgstr "Utwórz swoją pierwszą Przestrzeń, aby rozpocząć."
 msgid "Created"
 msgstr "Utworzono"
 
-#: lib/meddie_web/live/user_live/registration.ex:42
+#: lib/meddie_web/live/user_live/registration.ex:40
 #, elixir-autogen, elixir-format
 msgid "Creating account..."
 msgstr "Tworzenie konta..."
 
-#: lib/meddie_web/live/space_live/new.ex:37
+#: lib/meddie_web/live/space_live/new.ex:35
 #, elixir-autogen, elixir-format
 msgid "Creating..."
 msgstr "Tworzenie..."
@@ -408,7 +389,7 @@ msgid "Expires"
 msgstr "Wygasa"
 
 #: lib/meddie_web/live/platform_live/index.ex:113
-#: lib/meddie_web/live/settings_live/index.ex:297
+#: lib/meddie_web/live/settings_live/index.ex:300
 #, elixir-autogen, elixir-format
 msgid "Invitation sent to %{email}."
 msgstr "Zaproszenie wysłane do %{email}."
@@ -428,7 +409,7 @@ msgstr "Zaproś do Przestrzeni"
 msgid "Invited by"
 msgstr "Zaproszony przez"
 
-#: lib/meddie_web/live/settings_live/index.ex:278
+#: lib/meddie_web/live/settings_live/index.ex:281
 #, elixir-autogen, elixir-format
 msgid "Member removed."
 msgstr "Członek usunięty."
@@ -460,13 +441,13 @@ msgstr "Platforma"
 msgid "Platform Admin"
 msgstr "Administrator platformy"
 
-#: lib/meddie_web/live/user_live/registration.ex:20
+#: lib/meddie_web/live/user_live/registration.ex:18
 #, elixir-autogen, elixir-format
 msgid "Register for an account"
 msgstr "Zarejestruj konto"
 
 #: lib/meddie_web/live/settings_live/index.ex:89
-#: lib/meddie_web/live/settings_live/index.ex:189
+#: lib/meddie_web/live/settings_live/index.ex:192
 #, elixir-autogen, elixir-format
 msgid "Remove"
 msgstr "Usuń"
@@ -477,20 +458,20 @@ msgid "Role"
 msgstr "Rola"
 
 #: lib/meddie_web/live/platform_live/index.ex:26
-#: lib/meddie_web/live/settings_live/index.ex:109
+#: lib/meddie_web/live/settings_live/index.ex:110
 #, elixir-autogen, elixir-format
 msgid "Send invitation"
 msgstr "Wyślij zaproszenie"
 
-#: lib/meddie_web/components/layouts.ex:103
-#: lib/meddie_web/components/layouts.ex:104
+#: lib/meddie_web/components/layouts.ex:101
+#: lib/meddie_web/components/layouts.ex:102
 #: lib/meddie_web/live/settings_live/index.ex:16
-#: lib/meddie_web/live/settings_live/index.ex:257
+#: lib/meddie_web/live/settings_live/index.ex:260
 #, elixir-autogen, elixir-format
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: lib/meddie_web/components/layouts.ex:179
+#: lib/meddie_web/components/layouts.ex:177
 #, elixir-autogen, elixir-format
 msgid "Sign out"
 msgstr "Wyloguj się"
@@ -500,27 +481,27 @@ msgstr "Wyloguj się"
 msgid "Space Settings"
 msgstr "Ustawienia Przestrzeni"
 
-#: lib/meddie_web/live/space_live/new.ex:70
+#: lib/meddie_web/live/space_live/new.ex:68
 #, elixir-autogen, elixir-format
 msgid "Space created!"
 msgstr "Przestrzeń utworzona!"
 
-#: lib/meddie_web/live/space_live/new.ex:29
+#: lib/meddie_web/live/space_live/new.ex:27
 #, elixir-autogen, elixir-format
 msgid "Space name"
 msgstr "Nazwa przestrzeni"
 
-#: lib/meddie_web/live/settings_live/index.ex:302
+#: lib/meddie_web/live/settings_live/index.ex:305
 #, elixir-autogen, elixir-format
 msgid "This user is already a member of this space."
 msgstr "Ten użytkownik jest już członkiem tej przestrzeni."
 
-#: lib/meddie_web/live/space_live/new.ex:18
+#: lib/meddie_web/live/space_live/new.ex:16
 #, elixir-autogen, elixir-format
 msgid "Welcome to Meddie!"
 msgstr "Witamy w Meddie!"
 
-#: lib/meddie_web/live/settings_live/index.ex:285
+#: lib/meddie_web/live/settings_live/index.ex:288
 #, elixir-autogen, elixir-format
 msgid "You are the only admin. Transfer admin role to another member before leaving."
 msgstr "Jesteś jedynym administratorem. Przekaż rolę administratora innemu członkowi przed opuszczeniem."
@@ -530,23 +511,23 @@ msgstr "Jesteś jedynym administratorem. Przekaż rolę administratora innemu cz
 msgid "You've been invited to join Meddie."
 msgstr "Zostałeś zaproszony do Meddie."
 
-#: lib/meddie_web/live/settings_live/index.ex:411
+#: lib/meddie_web/live/settings_live/index.ex:414
 #, elixir-autogen, elixir-format
 msgid "admin"
 msgstr "administrator"
 
-#: lib/meddie_web/live/settings_live/index.ex:412
+#: lib/meddie_web/live/settings_live/index.ex:415
 #, elixir-autogen, elixir-format
 msgid "member"
 msgstr "członek"
 
-#: lib/meddie_web/live/user_live/registration.ex:26
+#: lib/meddie_web/live/user_live/registration.ex:24
 #, elixir-autogen, elixir-format
 msgid "to your account now."
 msgstr "do swojego konta."
 
-#: lib/meddie_web/live/people_live/show.ex:258
-#: lib/meddie_web/live/people_live/show.ex:271
+#: lib/meddie_web/live/people_live/show.ex:233
+#: lib/meddie_web/live/people_live/show.ex:246
 #, elixir-autogen, elixir-format
 msgid "1 biomarker"
 msgid_plural "%{count} biomarkers"
@@ -555,43 +536,43 @@ msgstr[1] "%{count} biomarkery"
 msgstr[2] "%{count} biomarkerów"
 
 #: lib/meddie_web/live/document_live/show.ex:156
-#: lib/meddie_web/live/people_live/show.ex:314
+#: lib/meddie_web/live/people_live/show.ex:289
 #, elixir-autogen, elixir-format
 msgid "Biomarker"
 msgstr "Biomarker"
 
-#: lib/meddie_web/live/people_live/show.ex:184
+#: lib/meddie_web/live/people_live/show.ex:159
 #, elixir-autogen, elixir-format
 msgid "Browse files"
 msgstr "Przeglądaj pliki"
 
-#: lib/meddie_web/live/document_live/show.ex:305
+#: lib/meddie_web/live/document_live/show.ex:312
 #, elixir-autogen, elixir-format
 msgid "Document deleted successfully."
 msgstr "Dokument został usunięty."
 
-#: lib/meddie_web/live/people_live/show.ex:110
-#: lib/meddie_web/live/people_live/show.ex:125
+#: lib/meddie_web/live/people_live/show.ex:85
+#: lib/meddie_web/live/people_live/show.ex:129
 #, elixir-autogen, elixir-format
 msgid "Documents"
 msgstr "Dokumenty"
 
-#: lib/meddie_web/live/people_live/show.ex:180
+#: lib/meddie_web/live/people_live/show.ex:155
 #, elixir-autogen, elixir-format
 msgid "Drag and drop files here, or"
 msgstr "Przeciągnij i upuść pliki tutaj, lub"
 
-#: lib/meddie_web/live/people_live/show.ex:539
+#: lib/meddie_web/live/people_live/show.ex:505
 #, elixir-autogen, elixir-format
 msgid "Failed"
 msgstr "Niepowodzenie"
 
-#: lib/meddie_web/live/people_live/show.ex:788
+#: lib/meddie_web/live/people_live/show.ex:761
 #, elixir-autogen, elixir-format
 msgid "File is too large (max 20 MB)"
 msgstr "Plik jest za duży (maks. 20 MB)"
 
-#: lib/meddie_web/live/people_live/show.ex:232
+#: lib/meddie_web/live/people_live/show.ex:207
 #, elixir-autogen, elixir-format
 msgid "No documents yet."
 msgstr "Brak dokumentów."
@@ -602,59 +583,59 @@ msgid "Original"
 msgstr "Oryginał"
 
 #: lib/meddie_web/live/document_live/show.ex:151
-#: lib/meddie_web/live/people_live/show.ex:309
+#: lib/meddie_web/live/people_live/show.ex:284
 #, elixir-autogen, elixir-format
 msgid "Other"
 msgstr "Inne"
 
-#: lib/meddie_web/live/people_live/show.ex:83
+#: lib/meddie_web/live/people_live/show.ex:58
 #, elixir-autogen, elixir-format
 msgid "Overview"
 msgstr "Przegląd"
 
-#: lib/meddie_web/live/people_live/show.ex:187
+#: lib/meddie_web/live/people_live/show.ex:162
 #, elixir-autogen, elixir-format
 msgid "PDF, JPG, PNG up to 20 MB"
 msgstr "PDF, JPG, PNG do 20 MB"
 
-#: lib/meddie_web/live/people_live/show.ex:519
+#: lib/meddie_web/live/people_live/show.ex:485
 #, elixir-autogen, elixir-format
 msgid "Parsed"
 msgstr "Przeanalizowany"
 
-#: lib/meddie_web/live/people_live/show.ex:526
+#: lib/meddie_web/live/people_live/show.ex:492
 #, elixir-autogen, elixir-format
 msgid "Parsing"
 msgstr "Analizowanie"
 
-#: lib/meddie_web/live/document_live/show.ex:222
+#: lib/meddie_web/live/document_live/show.ex:229
 #, elixir-autogen, elixir-format
 msgid "Parsing document..."
 msgstr "Analizowanie dokumentu..."
 
-#: lib/meddie_web/live/document_live/show.ex:232
+#: lib/meddie_web/live/document_live/show.ex:239
 #, elixir-autogen, elixir-format
 msgid "Parsing failed"
 msgstr "Analiza nie powiodła się"
 
-#: lib/meddie_web/live/document_live/show.ex:292
+#: lib/meddie_web/live/document_live/show.ex:299
 #, elixir-autogen, elixir-format
 msgid "Parsing job enqueued. The document will be re-analyzed shortly."
 msgstr "Zlecono ponowną analizę. Dokument zostanie przeanalizowany wkrótce."
 
-#: lib/meddie_web/live/people_live/show.ex:533
+#: lib/meddie_web/live/people_live/show.ex:499
 #, elixir-autogen, elixir-format
 msgid "Pending"
 msgstr "Oczekujący"
 
 #: lib/meddie_web/live/document_live/show.ex:160
-#: lib/meddie_web/live/people_live/show.ex:318
+#: lib/meddie_web/live/people_live/show.ex:293
 #, elixir-autogen, elixir-format
 msgid "Reference"
 msgstr "Referencja"
 
 #: lib/meddie_web/live/document_live/show.ex:72
-#: lib/meddie_web/live/people_live/show.ex:95
+#: lib/meddie_web/live/people_live/show.ex:70
 #, elixir-autogen, elixir-format
 msgid "Results"
 msgstr "Wyniki"
@@ -665,13 +646,13 @@ msgid "Retry"
 msgstr "Ponów"
 
 #: lib/meddie_web/live/document_live/show.ex:161
-#: lib/meddie_web/live/people_live/show.ex:319
+#: lib/meddie_web/live/people_live/show.ex:294
 #, elixir-autogen, elixir-format
 msgid "Status"
 msgstr "Status"
 
 #: lib/meddie_web/live/document_live/show.ex:144
-#: lib/meddie_web/live/document_live/show.ex:207
+#: lib/meddie_web/live/document_live/show.ex:214
 #, elixir-autogen, elixir-format
 msgid "Summary"
 msgstr "Podsumowanie"
@@ -681,29 +662,29 @@ msgstr "Podsumowanie"
 msgid "This will permanently delete this document and all extracted data. This action cannot be undone."
 msgstr "To trwale usunie ten dokument i wszystkie wyekstrahowane dane. Tej operacji nie można cofnąć."
 
-#: lib/meddie_web/live/people_live/show.ex:789
+#: lib/meddie_web/live/people_live/show.ex:762
 #, elixir-autogen, elixir-format
 msgid "Too many files"
 msgstr "Za dużo plików"
 
 #: lib/meddie_web/live/document_live/show.ex:159
-#: lib/meddie_web/live/people_live/show.ex:317
-#: lib/meddie_web/live/people_live/show.ex:413
+#: lib/meddie_web/live/people_live/show.ex:292
+#: lib/meddie_web/live/people_live/show.ex:391
 #, elixir-autogen, elixir-format
 msgid "Unit"
 msgstr "Jednostka"
 
-#: lib/meddie_web/live/people_live/show.ex:792
+#: lib/meddie_web/live/people_live/show.ex:765
 #, elixir-autogen, elixir-format
 msgid "Unsupported file format. Accepted: PDF, JPG, PNG"
 msgstr "Nieobsługiwany format pliku. Akceptowane: PDF, JPG, PNG"
 
-#: lib/meddie_web/live/people_live/show.ex:234
+#: lib/meddie_web/live/people_live/show.ex:209
 #, elixir-autogen, elixir-format
 msgid "Upload a medical document to get started."
 msgstr "Prześlij dokument medyczny, aby rozpocząć."
 
-#: lib/meddie_web/live/people_live/show.ex:794
+#: lib/meddie_web/live/people_live/show.ex:767
 #, elixir-autogen, elixir-format
 msgid "Upload error"
 msgstr "Błąd przesyłania"
@@ -714,34 +695,34 @@ msgid "Uploaded"
 msgstr "Przesłano"
 
 #: lib/meddie_web/live/document_live/show.ex:158
-#: lib/meddie_web/live/people_live/show.ex:316
-#: lib/meddie_web/live/people_live/show.ex:412
+#: lib/meddie_web/live/people_live/show.ex:291
+#: lib/meddie_web/live/people_live/show.ex:390
 #, elixir-autogen, elixir-format
 msgid "Value"
 msgstr "Wartość"
 
-#: lib/meddie_web/live/document_live/show.ex:243
+#: lib/meddie_web/live/document_live/show.ex:250
 #, elixir-autogen, elixir-format
 msgid "Waiting to be parsed..."
 msgstr "Oczekiwanie na analizę..."
 
 #: lib/meddie_web/components/biomarker_components.ex:107
-#: lib/meddie_web/live/people_live/show.ex:277
-#: lib/meddie_web/live/people_live/show.ex:802
+#: lib/meddie_web/live/people_live/show.ex:252
+#: lib/meddie_web/live/people_live/show.ex:775
 #, elixir-autogen, elixir-format
 msgid "high"
 msgstr "wysoki"
 
 #: lib/meddie_web/components/biomarker_components.ex:101
-#: lib/meddie_web/live/people_live/show.ex:280
-#: lib/meddie_web/live/people_live/show.ex:803
+#: lib/meddie_web/live/people_live/show.ex:255
+#: lib/meddie_web/live/people_live/show.ex:776
 #, elixir-autogen, elixir-format
 msgid "low"
 msgstr "niski"
 
 #: lib/meddie_web/components/biomarker_components.ex:95
-#: lib/meddie_web/live/people_live/show.ex:274
-#: lib/meddie_web/live/people_live/show.ex:801
+#: lib/meddie_web/live/people_live/show.ex:249
+#: lib/meddie_web/live/people_live/show.ex:774
 #, elixir-autogen, elixir-format
 msgid "normal"
 msgstr "prawidłowy"
@@ -751,40 +732,40 @@ msgstr "prawidłowy"
 msgid "unknown"
 msgstr "nieznany"
 
-#: lib/meddie_web/live/people_live/show.ex:747
+#: lib/meddie_web/live/people_live/show.ex:724
 #, elixir-autogen, elixir-format
 msgid "This document has already been uploaded."
 msgstr "Ten dokument został już przesłany."
 
-#: lib/meddie_web/live/people_live/show.ex:320
-#: lib/meddie_web/live/people_live/show.ex:411
+#: lib/meddie_web/live/people_live/show.ex:295
+#: lib/meddie_web/live/people_live/show.ex:389
 #, elixir-autogen, elixir-format
 msgid "Date"
 msgstr "Data"
 
-#: lib/meddie_web/live/people_live/show.ex:414
+#: lib/meddie_web/live/people_live/show.ex:392
 #, elixir-autogen, elixir-format
 msgid "Document"
 msgstr "Dokument"
 
-#: lib/meddie_web/live/people_live/show.ex:297
+#: lib/meddie_web/live/people_live/show.ex:272
 #, elixir-autogen, elixir-format
 msgid "No biomarkers yet."
 msgstr "Brak biomarkerów."
 
 #: lib/meddie_web/live/document_live/show.ex:157
-#: lib/meddie_web/live/people_live/show.ex:315
+#: lib/meddie_web/live/people_live/show.ex:290
 #, elixir-autogen, elixir-format
 msgid "Trend"
 msgstr "Trend"
 
-#: lib/meddie_web/live/people_live/show.ex:299
+#: lib/meddie_web/live/people_live/show.ex:274
 #, elixir-autogen, elixir-format
 msgid "Upload lab results to start tracking biomarkers."
 msgstr "Prześlij wyniki badań, aby rozpocząć śledzenie biomarkerów."
 
-#: lib/meddie_web/components/layouts.ex:59
-#: lib/meddie_web/components/layouts.ex:60
+#: lib/meddie_web/components/layouts.ex:57
+#: lib/meddie_web/components/layouts.ex:58
 #: lib/meddie_web/live/ask_meddie_live/index.ex:14
 #: lib/meddie_web/live/ask_meddie_live/index.ex:20
 #: lib/meddie_web/live/ask_meddie_live/index.ex:47
@@ -837,16 +818,6 @@ msgstr "Meddie pisze..."
 #, elixir-autogen, elixir-format
 msgid "Meddie provides informational responses only. This is not medical advice."
 msgstr "Meddie udziela jedynie informacji ogólnych. To nie jest porada medyczna."
-
-#: lib/meddie_web/live/ask_meddie_live/show.ex:590
-#, elixir-autogen, elixir-format
-msgid "Moved from"
-msgstr "Przeniesiono z"
-
-#: lib/meddie/conversations/chat.ex:93
-#, elixir-autogen, elixir-format
-msgid "Moved from %{field}: %{text}"
-msgstr "Przeniesiono z %{field}: %{text}"
 
 #: lib/meddie_web/live/ask_meddie_live/index.ex:53
 #, elixir-autogen, elixir-format
@@ -923,33 +894,33 @@ msgstr "Osiągnięto dzienny limit wiadomości. Spróbuj ponownie jutro."
 msgid "Recent conversations"
 msgstr "Ostatnie rozmowy"
 
-#: lib/meddie_web/live/settings_live/index.ex:122
+#: lib/meddie_web/live/settings_live/index.ex:123
 #, elixir-autogen, elixir-format
 msgid "Bot Token"
 msgstr "Token bota"
 
-#: lib/meddie_web/live/settings_live/index.ex:142
+#: lib/meddie_web/live/settings_live/index.ex:145
 #, elixir-autogen, elixir-format
 msgid "Bot connected"
 msgstr "Bot połączony"
 
-#: lib/meddie_web/live/settings_live/index.ex:332
+#: lib/meddie_web/live/settings_live/index.ex:335
 #, elixir-autogen, elixir-format
 msgid "Could not save bot token."
 msgstr "Nie udało się zapisać tokenu bota."
 
-#: lib/meddie_web/live/settings_live/index.ex:124
+#: lib/meddie_web/live/settings_live/index.ex:125
 #, elixir-autogen, elixir-format
 msgid "Create a bot via @BotFather on Telegram and paste the token here."
 msgstr "Utwórz bota przez @BotFather na Telegramie i wklej token tutaj."
 
-#: lib/meddie_web/live/settings_live/index.ex:161
-#: lib/meddie_web/live/settings_live/index.ex:206
+#: lib/meddie_web/live/settings_live/index.ex:164
+#: lib/meddie_web/live/settings_live/index.ex:209
 #, elixir-autogen, elixir-format
 msgid "Telegram ID"
 msgstr "Telegram ID"
 
-#: lib/meddie_web/live/settings_live/index.ex:329
+#: lib/meddie_web/live/settings_live/index.ex:332
 #, elixir-autogen, elixir-format
 msgid "Telegram bot token saved."
 msgstr "Token bota Telegram zapisany."
@@ -959,107 +930,117 @@ msgstr "Token bota Telegram zapisany."
 msgid "Telegram integration"
 msgstr "Integracja z Telegramem"
 
-#: lib/meddie_web/live/settings_live/index.ex:232
+#: lib/meddie_web/live/settings_live/index.ex:235
 #, elixir-autogen, elixir-format
 msgid "Add"
 msgstr "Dodaj"
 
-#: lib/meddie_web/live/settings_live/index.ex:203
+#: lib/meddie_web/live/settings_live/index.ex:206
 #, elixir-autogen, elixir-format
 msgid "Add Telegram Link"
 msgstr "Dodaj powiązanie Telegram"
 
-#: lib/meddie_web/live/settings_live/index.ex:359
+#: lib/meddie_web/live/settings_live/index.ex:362
 #, elixir-autogen, elixir-format
 msgid "Could not add Telegram link. The ID may already be linked in this space."
 msgstr "Nie udało się dodać powiązania Telegram. Ten ID może być już powiązany w tej przestrzeni."
 
-#: lib/meddie_web/live/settings_live/index.ex:377
+#: lib/meddie_web/live/settings_live/index.ex:380
 #, elixir-autogen, elixir-format
 msgid "Could not remove Telegram link."
 msgstr "Nie udało się usunąć powiązania Telegram."
 
-#: lib/meddie_web/live/settings_live/index.ex:153
+#: lib/meddie_web/live/settings_live/index.ex:156
 #, elixir-autogen, elixir-format
 msgid "Link Telegram accounts to people or users. Telegram users can find their ID by messaging @userinfobot."
 msgstr "Powiąż konta Telegram z osobami lub użytkownikami. Użytkownicy Telegrama mogą znaleźć swoje ID pisząc do @userinfobot."
 
-#: lib/meddie_web/live/settings_live/index.ex:162
+#: lib/meddie_web/live/settings_live/index.ex:165
 #, elixir-autogen, elixir-format
 msgid "Linked Person"
 msgstr "Powiązana osoba"
 
-#: lib/meddie_web/live/settings_live/index.ex:163
+#: lib/meddie_web/live/settings_live/index.ex:166
 #, elixir-autogen, elixir-format
 msgid "Linked User"
 msgstr "Powiązany użytkownik"
 
-#: lib/meddie_web/live/settings_live/index.ex:198
+#: lib/meddie_web/live/settings_live/index.ex:201
 #, elixir-autogen, elixir-format
 msgid "No Telegram links yet."
 msgstr "Brak powiązań Telegram."
 
-#: lib/meddie_web/live/settings_live/index.ex:216
+#: lib/meddie_web/live/settings_live/index.ex:219
 #, elixir-autogen, elixir-format
 msgid "Person"
 msgstr "Osoba"
 
-#: lib/meddie_web/live/settings_live/index.ex:186
+#: lib/meddie_web/live/settings_live/index.ex:189
 #, elixir-autogen, elixir-format
 msgid "Remove this Telegram link?"
 msgstr "Usunąć to powiązanie Telegram?"
 
-#: lib/meddie_web/live/settings_live/index.ex:151
+#: lib/meddie_web/live/settings_live/index.ex:154
 #, elixir-autogen, elixir-format
 msgid "Telegram Links"
 msgstr "Powiązania Telegram"
 
-#: lib/meddie_web/live/settings_live/index.ex:352
+#: lib/meddie_web/live/settings_live/index.ex:355
 #, elixir-autogen, elixir-format
 msgid "Telegram link added."
 msgstr "Powiązanie Telegram dodane."
 
-#: lib/meddie_web/live/settings_live/index.ex:374
+#: lib/meddie_web/live/settings_live/index.ex:377
 #, elixir-autogen, elixir-format
 msgid "Telegram link removed."
 msgstr "Powiązanie Telegram usunięte."
 
-#: lib/meddie_web/live/settings_live/index.ex:223
+#: lib/meddie_web/live/settings_live/index.ex:226
 #, elixir-autogen, elixir-format
 msgid "User"
 msgstr "Użytkownik"
 
-#: lib/meddie_web/live/people_live/show.ex:287
+#: lib/meddie_web/live/people_live/show.ex:262
 #, elixir-autogen, elixir-format
 msgid "Search biomarkers..."
 msgstr "Szukaj biomarkerów..."
 
-#: lib/meddie_web/live/people_live/show.ex:133
+#: lib/meddie_web/live/people_live/show.ex:120
 #, elixir-autogen, elixir-format
 msgid "Biomarkers"
 msgstr "Biomarkery"
 
-#: lib/meddie_web/live/people_live/show.ex:142
+#: lib/meddie_web/live/people_live/show.ex:100
 #, elixir-autogen, elixir-format
 msgid "BMI"
 msgstr "BMI"
 
-#: lib/meddie_web/live/people_live/show.ex:831
+#: lib/meddie_web/live/people_live/show.ex:804
 #, elixir-autogen, elixir-format
 msgid "Normal"
 msgstr "Norma"
 
-#: lib/meddie_web/live/people_live/show.ex:833
+#: lib/meddie_web/live/people_live/show.ex:806
 #, elixir-autogen, elixir-format
 msgid "Obese"
 msgstr "Otyłość"
 
-#: lib/meddie_web/live/people_live/show.ex:832
+#: lib/meddie_web/live/people_live/show.ex:805
 #, elixir-autogen, elixir-format
 msgid "Overweight"
 msgstr "Nadwaga"
 
-#: lib/meddie_web/live/people_live/show.ex:830
+#: lib/meddie_web/live/people_live/show.ex:803
 #, elixir-autogen, elixir-format
 msgid "Underweight"
 msgstr "Niedowaga"
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:590
+#, elixir-autogen, elixir-format
+msgid "Removed from"
+msgstr "Usunięto z"
+
+#: lib/meddie/conversations/chat.ex:93
+#, elixir-autogen, elixir-format
+msgid "Removed from %{field}: %{text}"
+msgstr "Usunięto z %{field}: %{text}"

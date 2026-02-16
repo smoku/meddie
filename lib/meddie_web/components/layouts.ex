@@ -40,7 +40,7 @@ defmodule MeddieWeb.Layouts do
     ~H"""
     <div class="flex h-screen overflow-hidden">
       <%!-- Sidebar --%>
-      <aside class="hidden lg:flex flex-col w-72 bg-base-200 shadow-elevated">
+      <aside class="hidden lg:flex flex-col w-60 bg-base-200 shadow-elevated">
         <%!-- Logo --%>
         <div class="px-5 py-5">
           <div class="flex items-center gap-2.5">
@@ -130,19 +130,21 @@ defmodule MeddieWeb.Layouts do
                     method="post"
                     class={[space.id == @current_scope.space.id && "active"]}
                   >
-                    <.icon
-                      :if={space.id == @current_scope.space.id}
-                      name="hero-check-micro"
-                      class="size-4"
-                    />
-                    <span class={[space.id != @current_scope.space.id && "ml-8"]}>
-                      {space.name}
+                    <span class="w-4 inline-flex justify-center shrink-0">
+                      <.icon
+                        :if={space.id == @current_scope.space.id}
+                        name="hero-check-micro"
+                        class="size-4"
+                      />
                     </span>
+                    <span>{space.name}</span>
                   </.link>
                 </li>
                 <li class="border-t border-base-300 mt-1 pt-1">
                   <.link navigate={~p"/spaces/new"}>
-                    <.icon name="hero-plus-micro" class="size-4" />
+                    <span class="w-4 inline-flex justify-center shrink-0">
+                      <.icon name="hero-plus-micro" class="size-4" />
+                    </span>
                     <span>{gettext("Create new Space")}</span>
                   </.link>
                 </li>
@@ -158,8 +160,6 @@ defmodule MeddieWeb.Layouts do
             >
               {gettext("Platform")}
             </.link>
-
-            <.theme_toggle />
 
             <div :if={@current_scope && @current_scope.user} class="dropdown dropdown-end">
               <div tabindex="0" role="button" class="btn btn-ghost btn-sm">
@@ -248,38 +248,6 @@ defmodule MeddieWeb.Layouts do
         {gettext("Attempting to reconnect")}
         <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
-    </div>
-    """
-  end
-
-  @doc """
-  Provides dark vs light theme toggle.
-  """
-  def theme_toggle(assigns) do
-    ~H"""
-    <div class="card relative flex flex-row items-center border-2 border-base-300 bg-base-300 rounded-full">
-      <div class="absolute w-1/3 h-full rounded-full border-1 border-base-200 bg-base-100 brightness-200 left-0 [[data-theme=light]_&]:left-1/3 [[data-theme=dark]_&]:left-2/3 transition-[left]" />
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="system"
-      >
-        <.icon name="hero-computer-desktop-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="light"
-      >
-        <.icon name="hero-sun-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="dark"
-      >
-        <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
     </div>
     """
   end

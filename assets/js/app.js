@@ -41,6 +41,11 @@ topbar.config({barColors: {0: "oklch(0.55 0.20 255)"}, shadowColor: "rgba(0, 0, 
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
+// Scroll to element on phx:scroll-into-view event (used by biomarker deep links)
+window.addEventListener("phx:scroll-into-view", e =>
+  e.target.scrollIntoView({behavior: "smooth", block: "center"})
+)
+
 // connect if there are any LiveViews on the page
 liveSocket.connect()
 

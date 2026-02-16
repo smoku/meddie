@@ -343,7 +343,10 @@ defmodule MeddieWeb.PeopleLive.Show do
                       </tr>
                       <%!-- Inline trend expansion --%>
                       <%= if @expanded_biomarker == bm.key do %>
-                        <tr id={"trend-#{bm.latest.id}"}>
+                        <tr
+                          id={"trend-#{bm.latest.id}"}
+                          phx-mounted={@scroll_to_biomarker == bm.key && JS.dispatch("phx:scroll-into-view")}
+                        >
                           <td colspan="7" class="p-4 bg-base-200/20 border-l-4 border-primary/30">
                             <.trend_detail biomarker={bm} person={@person} />
                           </td>
@@ -563,6 +566,7 @@ defmodule MeddieWeb.PeopleLive.Show do
      |> assign(filtered_biomarker_groups: nil)
      |> assign(biomarker_filter: "")
      |> assign(expanded_biomarker: nil)
+     |> assign(scroll_to_biomarker: nil)
      |> stream(:documents, [])
      |> allow_upload(:document,
        accept: ~w(.jpg .jpeg .png .pdf),
@@ -586,10 +590,20 @@ defmodule MeddieWeb.PeopleLive.Show do
           stream(socket, :documents, documents, reset: true)
 
         "biomarkers" ->
-          if socket.assigns.biomarker_groups do
-            socket
-          else
-            load_biomarker_groups(socket)
+          socket =
+            if socket.assigns.biomarker_groups do
+              socket
+            else
+              load_biomarker_groups(socket)
+            end
+
+          case params["biomarker"] do
+            nil ->
+              assign(socket, scroll_to_biomarker: nil)
+
+            key ->
+              socket
+              |> assign(expanded_biomarker: key, scroll_to_biomarker: key)
           end
 
         _ ->
@@ -632,7 +646,7 @@ defmodule MeddieWeb.PeopleLive.Show do
     expanded =
       if socket.assigns.expanded_biomarker == key, do: nil, else: key
 
-    {:noreply, assign(socket, :expanded_biomarker, expanded)}
+    {:noreply, assign(socket, expanded_biomarker: expanded, scroll_to_biomarker: nil)}
   end
 
   # -- PubSub --
