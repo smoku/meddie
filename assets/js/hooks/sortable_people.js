@@ -5,7 +5,6 @@ const SortablePeople = {
     this.sortable = new Sortable(this.el, {
       animation: 150,
       ghostClass: "opacity-30",
-      handle: "[data-drag-handle]",
       onEnd: () => {
         const ids = [...this.el.querySelectorAll("[data-person-id]")]
           .map(el => el.dataset.personId)
