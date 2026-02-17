@@ -97,7 +97,7 @@ defmodule MeddieWeb.SettingsLive.Index do
                 <%!-- Invite form --%>
                 <div class="mt-4">
                   <h4 class="font-semibold text-sm mb-2">{gettext("Invite to Space")}</h4>
-                  <.form for={@invite_form} phx-submit="invite_to_space" class="flex gap-2 items-center">
+                  <.form for={@invite_form} phx-submit="invite_to_space" id={"invite-form-#{@invite_form_id}"} class="flex gap-2 items-center">
                     <input
                       type="email"
                       name={@invite_form[:email].name}
@@ -106,7 +106,7 @@ defmodule MeddieWeb.SettingsLive.Index do
                       class="input input-bordered input-sm w-64"
                       required
                     />
-                    <select name="invite[role]" class="select select-bordered select-sm">
+                    <select name="invite[role]" class="select select-bordered select-sm w-auto">
                       <option value="member" selected>{gettext("member")}</option>
                       <option value="admin">{gettext("admin")}</option>
                     </select>
@@ -320,7 +320,7 @@ defmodule MeddieWeb.SettingsLive.Index do
        telegram_links: telegram_links,
        tab: "members"
      )
-     |> assign(invite_form: to_form(%{"email" => ""}, as: "invite"))
+     |> assign(invite_form: to_form(%{"email" => ""}, as: "invite"), invite_form_id: 0)
      |> assign_telegram_forms()}
   end
 
@@ -362,6 +362,7 @@ defmodule MeddieWeb.SettingsLive.Index do
          |> put_flash(:info, gettext("Invitation sent to %{email}.", email: email))
          |> assign(
            invite_form: to_form(%{"email" => ""}, as: "invite"),
+           invite_form_id: socket.assigns.invite_form_id + 1,
            pending_invitations: pending_invitations
          )}
 
