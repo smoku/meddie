@@ -205,6 +205,40 @@ defmodule Meddie.AI.Providers.Anthropic do
     end
   end
 
+  @impl true
+  def format_profile_field(current_value, action, text) do
+    system_prompt = Meddie.AI.Prompts.profile_field_format_prompt(action, text, current_value)
+
+    body = %{
+      "model" => @fast_model,
+      "system" => system_prompt,
+      "messages" => [
+        %{"role" => "user", "content" => "Update the field now."}
+      ],
+      "max_tokens" => 500
+    }
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [
+             {"x-api-key", api_key()},
+             {"anthropic-version", "2023-06-01"}
+           ],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: %{"content" => [%{"text" => content} | _]}}} ->
+        {:ok, String.trim(content)}
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("Anthropic format_profile_field error: status=#{status} body=#{inspect(body)}")
+        {:error, "Anthropic API error: #{status}"}
+
+      {:error, reason} ->
+        Logger.error("Anthropic format_profile_field failed: #{inspect(reason)}")
+        {:error, "Anthropic format_profile_field failed: #{inspect(reason)}"}
+    end
+  end
+
   defp parse_response(%{"content" => [%{"type" => "text", "text" => text} | _]}) do
     text = strip_code_fences(text)
 

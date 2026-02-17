@@ -188,6 +188,37 @@ defmodule Meddie.AI.Providers.OpenAI do
     end
   end
 
+  @impl true
+  def format_profile_field(current_value, action, text) do
+    system_prompt = Meddie.AI.Prompts.profile_field_format_prompt(action, text, current_value)
+
+    body = %{
+      "model" => @fast_model,
+      "messages" => [
+        %{"role" => "system", "content" => system_prompt},
+        %{"role" => "user", "content" => "Update the field now."}
+      ],
+      "max_tokens" => 500
+    }
+
+    case Req.post(@api_url,
+           json: body,
+           headers: [{"authorization", "Bearer #{api_key()}"}],
+           receive_timeout: @timeout
+         ) do
+      {:ok, %{status: 200, body: %{"choices" => [%{"message" => %{"content" => content}} | _]}}} ->
+        {:ok, String.trim(content)}
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("OpenAI format_profile_field error: status=#{status} body=#{inspect(body)}")
+        {:error, "OpenAI API error: #{status}"}
+
+      {:error, reason} ->
+        Logger.error("OpenAI format_profile_field failed: #{inspect(reason)}")
+        {:error, "OpenAI format_profile_field failed: #{inspect(reason)}"}
+    end
+  end
+
   defp parse_response(%{"choices" => [%{"message" => %{"content" => content}} | _]}) do
     case Jason.decode(content) do
       {:ok, parsed} -> {:ok, parsed}

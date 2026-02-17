@@ -77,6 +77,15 @@ defmodule Meddie.AI do
     result
   end
 
+  def format_profile_field(current_value, action, text) do
+    provider = chat_provider()
+    Logger.debug("[AI] format_profile_field via #{provider_name(provider)} action=#{action} text=#{text}")
+
+    result = provider.format_profile_field(current_value, action, text)
+    Logger.debug("[AI] format_profile_field result: #{inspect(result, limit: 500)}")
+    result
+  end
+
   defp parsing_provider do
     config()[:parsing_provider] || raise "No AI parsing provider configured"
   end

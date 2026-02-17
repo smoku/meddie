@@ -59,4 +59,10 @@ defmodule Meddie.AI.Providers.Mock do
   def generate_title(_user_message, _assistant_message) do
     {:ok, "Mock Conversation Title"}
   end
+
+  @impl true
+  def format_profile_field(nil, "append", text), do: {:ok, "- #{text}"}
+  def format_profile_field("", "append", text), do: {:ok, "- #{text}"}
+  def format_profile_field(current, "append", text), do: {:ok, current <> "\n- #{text}"}
+  def format_profile_field(current, "remove", _text), do: {:ok, current || ""}
 end

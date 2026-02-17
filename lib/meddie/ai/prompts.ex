@@ -279,6 +279,61 @@ defmodule Meddie.AI.Prompts do
     """
   end
 
+  @doc """
+  Returns the system prompt for formatting a profile field update.
+  Used by the fast model to produce clean markdown when appending or removing items.
+  """
+  def profile_field_format_prompt(action, text, current_value) do
+    current_desc =
+      case current_value do
+        nil -> "The field is currently empty."
+        "" -> "The field is currently empty."
+        val -> "Current field content:\n#{val}"
+      end
+
+    today = Date.utc_today() |> to_string()
+
+    case action do
+      "append" ->
+        """
+        You are a profile field formatter. Your job is to merge new information into an existing markdown field.
+
+        #{current_desc}
+
+        New information to add: #{text}
+
+        Rules:
+        - Return ONLY the updated field content as markdown. No explanation, no commentary.
+        - Use `- ` bullet lists for individual items (supplements, medications, notes).
+        - If the field already has a `## Current` section, add the new item there. If not, just add it to the existing list.
+        - If a similar item already exists (same name but different dose, frequency, or details), UPDATE it in place instead of adding a duplicate.
+        - Preserve any existing `## Previous` section unchanged.
+        - Preserve the language of the existing content. If the field is empty, use the language of the new information.
+        - Keep it concise — no extra formatting or headers unless they already exist.
+        """
+
+      "remove" ->
+        """
+        You are a profile field formatter. Your job is to move an item from the active list to a Previous section.
+
+        #{current_desc}
+
+        Item to remove: #{text}
+        Today's date: #{today}
+
+        Rules:
+        - Return ONLY the updated field content as markdown. No explanation, no commentary.
+        - Find the item matching "#{text}" and move it from the active/current list to a `## Previous` section.
+        - In the Previous section, add it as `- #{text} (stopped #{today})`.
+        - If there is no `## Previous` section yet, create one at the bottom.
+        - If the field uses `## Current` / `## Previous` headers, maintain that structure. If it's just a flat list, add `## Previous` at the bottom.
+        - If the remaining active list is under a `## Current` header, keep that header. If it was a flat list and is now split, add `## Current` above the remaining items.
+        - If the item is not found, return the content unchanged.
+        - Preserve the language of the existing content.
+        """
+    end
+  end
+
   defp status_icon("normal"), do: "✓"
   defp status_icon("high"), do: "⚠"
   defp status_icon("low"), do: "⚠"

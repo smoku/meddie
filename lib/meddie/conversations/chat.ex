@@ -71,7 +71,12 @@ defmodule Meddie.Conversations.Chat do
 
       if field in ~w(health_notes supplements medications) and action in ~w(append remove) and text do
         previous_value = Map.get(person, String.to_existing_atom(field))
-        new_value = apply_field_update(previous_value, action, text)
+
+        new_value =
+          case Meddie.AI.format_profile_field(previous_value, action, text) do
+            {:ok, formatted} -> formatted
+            {:error, _} -> apply_field_update(previous_value, action, text)
+          end
 
         # Update person
         People.update_person(scope, person, %{field => new_value})

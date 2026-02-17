@@ -46,4 +46,15 @@ defmodule Meddie.AI.Provider do
   """
   @callback generate_title(user_message :: String.t(), assistant_message :: String.t()) ::
               {:ok, String.t()} | {:error, String.t()}
+
+  @doc """
+  Format a profile field update using a fast model.
+  Merges the update into the existing field content producing clean markdown.
+  Uses a fast, cheap model. Non-streaming.
+  """
+  @callback format_profile_field(
+              current_value :: String.t() | nil,
+              action :: String.t(),
+              text :: String.t()
+            ) :: {:ok, String.t()} | {:error, String.t()}
 end
