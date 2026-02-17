@@ -25,11 +25,18 @@ defmodule Meddie.PeopleTest do
       assert People.list_people(scope2) == []
     end
 
-    test "returns people ordered by name" do
+    test "returns people ordered by position then name" do
       %{scope: scope} = user_with_space_fixture()
       person_fixture(scope, %{"name" => "Zofia"})
       person_fixture(scope, %{"name" => "Anna"})
 
+      # Same position (auto-incremented 0, 1) — ordered by creation
+      people = People.list_people(scope)
+      names = Enum.map(people, & &1.name)
+      assert names == ["Zofia", "Anna"]
+
+      # After reorder, position takes priority
+      People.reorder_people(scope, [List.last(people).id, List.first(people).id])
       names = scope |> People.list_people() |> Enum.map(& &1.name)
       assert names == ["Anna", "Zofia"]
     end
@@ -177,6 +184,30 @@ defmodule Meddie.PeopleTest do
       assert_raise Ecto.NoResultsError, fn ->
         People.get_person!(scope, person.id)
       end
+    end
+  end
+
+  describe "reorder_people/2" do
+    test "updates positions based on ordered ids" do
+      %{scope: scope} = user_with_space_fixture()
+      p1 = person_fixture(scope, %{"name" => "First"})
+      p2 = person_fixture(scope, %{"name" => "Second"})
+      p3 = person_fixture(scope, %{"name" => "Third"})
+
+      # Reverse the order
+      People.reorder_people(scope, [p3.id, p1.id, p2.id])
+
+      names = scope |> People.list_people() |> Enum.map(& &1.name)
+      assert names == ["Third", "First", "Second"]
+    end
+
+    test "new people get position at the end" do
+      %{scope: scope} = user_with_space_fixture()
+      {:ok, p1} = People.create_person(scope, valid_person_attributes(%{"name" => "First"}))
+      {:ok, p2} = People.create_person(scope, valid_person_attributes(%{"name" => "Second"}))
+
+      assert p1.position == 0
+      assert p2.position == 1
     end
   end
 

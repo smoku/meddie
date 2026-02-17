@@ -23,10 +23,10 @@ defmodule Meddie.People do
   end
 
   @doc """
-  Returns the list of people for the given scope's space, ordered by name.
+  Returns the list of people for the given scope's space, ordered by position then name.
   """
   def list_people(%Scope{space: space}) do
-    from(p in Person, where: p.space_id == ^space.id, order_by: [asc: p.name])
+    from(p in Person, where: p.space_id == ^space.id, order_by: [asc: p.position, asc: p.name])
     |> Repo.all()
   end
 
@@ -48,15 +48,37 @@ defmodule Meddie.People do
   end
 
   @doc """
+  Reorders people in the given space by updating their positions.
+  `ordered_ids` is a list of person IDs in the desired order.
+  """
+  def reorder_people(%Scope{space: space}, ordered_ids) when is_list(ordered_ids) do
+    Repo.transaction(fn ->
+      Enum.with_index(ordered_ids, fn id, index ->
+        from(p in Person, where: p.id == ^id and p.space_id == ^space.id)
+        |> Repo.update_all(set: [position: index])
+      end)
+    end)
+
+    broadcast_people_change(space.id)
+    :ok
+  end
+
+  @doc """
   Creates a person in the given scope's space.
 
   If `"user_id"` is present in attrs, links the person to that user.
+  New people are placed at the end of the list.
   """
   def create_person(%Scope{space: space}, attrs) do
     {user_id, attrs} = Map.pop(attrs, "user_id")
 
+    next_position =
+      from(p in Person, where: p.space_id == ^space.id, select: coalesce(max(p.position), -1))
+      |> Repo.one()
+      |> Kernel.+(1)
+
     result =
-      %Person{space_id: space.id}
+      %Person{space_id: space.id, position: next_position}
       |> maybe_set_user_id(user_id)
       |> Person.changeset(attrs)
       |> Repo.insert()

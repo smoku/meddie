@@ -17,6 +17,7 @@ defmodule Meddie.People.Person do
     field :health_notes, :string
     field :supplements, :string
     field :medications, :string
+    field :position, :integer, default: 0
 
     belongs_to :space, Space
     belongs_to :user, User

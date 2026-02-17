@@ -255,9 +255,21 @@ defmodule MeddieWeb.UserAuth do
         scope = Scope.put_space(socket.assigns.current_scope, space)
         people = Meddie.People.list_people(scope)
 
-        if Phoenix.LiveView.connected?(socket) do
-          Meddie.People.subscribe_people(space.id)
-        end
+        socket =
+          if Phoenix.LiveView.connected?(socket) do
+            Meddie.People.subscribe_people(space.id)
+
+            Phoenix.LiveView.attach_hook(socket, :reorder_people, :handle_event, fn
+              "reorder_people", %{"ids" => ids}, socket ->
+                Meddie.People.reorder_people(socket.assigns.current_scope, ids)
+                {:halt, socket}
+
+              _event, _params, socket ->
+                {:cont, socket}
+            end)
+          else
+            socket
+          end
 
         {:cont,
          socket

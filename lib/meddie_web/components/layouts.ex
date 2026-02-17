@@ -70,26 +70,30 @@ defmodule MeddieWeb.Layouts do
             </.link>
           </div>
 
-          <nav class="flex-1 overflow-y-auto px-3 space-y-0.5">
+          <nav id="people-list" phx-hook="SortablePeople" class="flex-1 overflow-y-auto px-3 space-y-0.5">
             <div :if={@people == []} class="text-center py-6 text-base-content/40 text-xs">
               {gettext("No people yet.")}
             </div>
-            <.link
-              :for={person <- @people}
-              navigate={~p"/people/#{person}"}
-              class={[
-                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150",
-                @active_person_id == person.id &&
-                  "bg-primary/10 text-primary font-semibold",
-                @active_person_id != person.id && "hover:bg-base-300/50"
-              ]}
-              data-person-name={String.downcase(person.name)}
-            >
-              <div class="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center text-white font-semibold text-xs shrink-0">
-                {String.first(person.name)}
-              </div>
-              <span class="truncate">{person.name}</span>
-            </.link>
+            <div :for={person <- @people} data-person-id={person.id}>
+              <.link
+                navigate={~p"/people/#{person}"}
+                class={[
+                  "group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150",
+                  @active_person_id == person.id &&
+                    "bg-primary/10 text-primary font-semibold",
+                  @active_person_id != person.id && "hover:bg-base-300/50"
+                ]}
+                data-person-name={String.downcase(person.name)}
+              >
+                <span class="opacity-0 group-hover:opacity-40 cursor-grab shrink-0" data-drag-handle>
+                  <.icon name="hero-bars-2-micro" class="size-3.5" />
+                </span>
+                <div class="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center text-white font-semibold text-xs shrink-0">
+                  {String.first(person.name)}
+                </div>
+                <span class="truncate">{person.name}</span>
+              </.link>
+            </div>
           </nav>
         </div>
 
