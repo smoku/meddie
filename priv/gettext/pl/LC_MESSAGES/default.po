@@ -28,8 +28,8 @@ msgstr "Ustawienia konta"
 msgid "Actions"
 msgstr "Akcje"
 
-#: lib/meddie_web/components/layouts.ex:236
-#: lib/meddie_web/components/layouts.ex:248
+#: lib/meddie_web/components/layouts.ex:234
+#: lib/meddie_web/components/layouts.ex:246
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr "Próba ponownego połączenia"
@@ -125,12 +125,12 @@ msgstr "Zapisz"
 msgid "Saving..."
 msgstr "Zapisywanie..."
 
-#: lib/meddie_web/components/layouts.ex:243
+#: lib/meddie_web/components/layouts.ex:241
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr "Coś poszło nie tak!"
 
-#: lib/meddie_web/components/layouts.ex:231
+#: lib/meddie_web/components/layouts.ex:229
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr "Nie można połączyć się z internetem"
@@ -798,13 +798,8 @@ msgstr "Nie udało się cofnąć zmiany."
 msgid "Delete this conversation?"
 msgstr "Usunąć tę konwersację?"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:610
-#, elixir-autogen, elixir-format
-msgid "Explain my out-of-range values"
-msgstr "Wyjaśnij moje wyniki poza normą"
-
 #: lib/meddie_web/live/ask_meddie_live/index.ex:97
-#: lib/meddie_web/live/ask_meddie_live/show.ex:620
+#: lib/meddie_web/live/ask_meddie_live/show.ex:637
 #, elixir-autogen, elixir-format
 msgid "General"
 msgstr "Ogólne"
@@ -869,7 +864,7 @@ msgstr "Rozpocznij konwersację z Meddie"
 msgid "Start a new chat to ask Meddie about your health data."
 msgstr "Rozpocznij nowy czat, aby zapytać Meddie o swoje dane zdrowotne."
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:608
+#: lib/meddie_web/live/ask_meddie_live/show.ex:609
 #, elixir-autogen, elixir-format
 msgid "Summarize my latest results"
 msgstr "Podsumuj moje ostatnie wyniki"
@@ -878,11 +873,6 @@ msgstr "Podsumuj moje ostatnie wyniki"
 #, elixir-autogen, elixir-format
 msgid "Undo"
 msgstr "Cofnij"
-
-#: lib/meddie_web/live/ask_meddie_live/show.ex:609
-#, elixir-autogen, elixir-format
-msgid "What should I watch out for?"
-msgstr "Na co powinienem zwrócić uwagę?"
 
 #: lib/meddie_web/live/ask_meddie_live/show.ex:274
 #, elixir-autogen, elixir-format
@@ -1044,3 +1034,23 @@ msgstr "Usunięto z"
 #, elixir-autogen, elixir-format
 msgid "Removed from %{field}: %{text}"
 msgstr "Usunięto z %{field}: %{text}"
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:615
+#, elixir-autogen, elixir-format
+msgid "Any interactions between my supplements and medications?"
+msgstr "Czy moje suplementy i leki mogą na siebie wpływać?"
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:608
+#, elixir-autogen, elixir-format
+msgid "How am I doing overall?"
+msgstr "Jak ogólnie wygląda moje zdrowie?"
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:618
+#, elixir-autogen, elixir-format
+msgid "What should I monitor given my health history?"
+msgstr "Na co zwracać uwagę biorąc pod uwagę moją historię zdrowia?"
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:621
+#, elixir-autogen, elixir-format
+msgid "What should I pay attention to?"
+msgstr "Na co powinienem zwrócić uwagę?"

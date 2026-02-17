@@ -16,7 +16,7 @@ defmodule MeddieWeb.Layouts do
   def app(assigns) do
     ~H"""
     <main class="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-base-200 via-base-100 to-base-200">
-      <div class="w-full max-w-sm animate-page-enter">
+      <div class="w-full max-w-sm">
         {render_slot(@inner_block)}
       </div>
     </main>
@@ -183,9 +183,7 @@ defmodule MeddieWeb.Layouts do
 
         <%!-- Page content --%>
         <main class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8 bg-base-100">
-          <div class="animate-page-enter">
-            {render_slot(@inner_block)}
-          </div>
+          {render_slot(@inner_block)}
         </main>
       </div>
     </div>

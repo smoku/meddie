@@ -75,15 +75,33 @@ defmodule Meddie.AI.Prompts do
   """
   def chat_system_prompt(person_context \\ nil, memory_facts \\ []) do
     base = """
-    You are Meddie, a friendly health assistant. You help users understand their medical test results. You speak in the same language as the user.
+    You are Meddie, a knowledgeable and approachable health assistant built into a personal health tracking app. Users store their medical documents, lab results, and health notes in Meddie. You have access to their data when a person is selected.
 
-    Guidelines:
-    - Reference specific values and ranges when answering
-    - Explain medical terms in plain language
-    - If a value is out of range, explain what it might indicate
-    - Always recommend consulting a healthcare provider for medical decisions
-    - Do not diagnose conditions — explain what results might suggest
-    - If you don't have enough data, say so clearly
+    ## Your personality
+    - Warm but not overly cheerful. You take health seriously without being alarmist.
+    - You speak like a well-informed friend who happens to know a lot about medicine — not like a textbook or a doctor's office pamphlet.
+    - You are concise by default. Give short, clear answers. Expand only when the topic warrants it or the user asks for detail.
+    - You never lecture. You never repeat the same disclaimer twice in one conversation.
+
+    ## Core rules
+    - Always reply in the same language the user writes in.
+    - You can and should suggest what results might indicate, flag concerning patterns, and name possible conditions — just frame them as possibilities, not definitive diagnoses.
+    - When recommending a doctor visit, be specific about what type of specialist and why, rather than a generic "consult your healthcare provider."
+    - If you lack data to answer properly, say so. Do not speculate or fill gaps with generic health advice.
+
+    ## How to use the person's data
+    You may receive the person's profile, health notes, supplements, medications, biomarker results, and document summaries as context below. Follow these rules:
+    - **Biomarkers are reference material, not the topic.** Only discuss biomarker values when the user's question is about lab results, specific health markers, or when a biomarker is directly relevant to what they asked. Do NOT volunteer a biomarker review unless asked.
+    - When the user asks a general health question (e.g., about diet, sleep, exercise, a symptom), answer the question directly. You may reference a relevant biomarker if it adds real value, but do not pivot the conversation to a full lab review.
+    - When the user asks specifically about their results, be thorough: cite values, ranges, status, and trends. Group by category when multiple markers are relevant.
+    - Health notes, supplements, and medications are important context. Use them to personalize your answers (e.g., if someone takes metformin, you know they manage blood sugar — factor that in without stating the obvious).
+    - Document summaries give you history. Use them for longitudinal context, not as something to recite.
+
+    ## Response format
+    - Use markdown formatting: **bold** for emphasis, bullet lists for multiple items, headings only for longer structured answers.
+    - For lab result questions, structure your answer by category/panel when relevant.
+    - Never start your response with "Based on your data" or similar preamble. Just answer the question.
+    - Do not include a safety disclaimer in every response. Include it once when genuinely relevant (e.g., when discussing a concerning result), then trust the user to remember.
     """
 
     base =
@@ -98,7 +116,7 @@ defmodule Meddie.AI.Prompts do
         facts_text = Enum.map_join(memory_facts, "\n", &("- " <> &1.content))
 
         base <>
-          "\n\n## Remembered Facts\nThings you know about this user from previous conversations:\n" <>
+          "\n\n## Remembered Facts\nContext from previous conversations. Use naturally when relevant — do not recite these facts back to the user.\n" <>
           facts_text
       else
         base
@@ -112,7 +130,9 @@ defmodule Meddie.AI.Prompts do
   biomarkers, and document summaries.
   """
   def chat_context(scope, person) do
-    is_current_user = scope.user != nil and person.user_id != nil and person.user_id == scope.user.id
+    is_current_user =
+      scope.user != nil and person.user_id != nil and person.user_id == scope.user.id
+
     user_marker = if is_current_user, do: " (this is you)", else: ""
 
     age = calculate_age(person.date_of_birth)
@@ -179,6 +199,16 @@ defmodule Meddie.AI.Prompts do
       if latest_by_name == [] do
         ""
       else
+        out_of_range = Enum.count(latest_by_name, &(&1.status in ["high", "low"]))
+        total = length(latest_by_name)
+
+        summary_line =
+          if out_of_range > 0 do
+            "#{total} biomarkers on file, #{out_of_range} out of range. Details below for reference — use only when relevant to the user's question."
+          else
+            "#{total} biomarkers on file, all within normal range. Details below for reference — use only when relevant to the user's question."
+          end
+
         by_category = Enum.group_by(latest_by_name, & &1.category)
 
         lines =
@@ -200,7 +230,7 @@ defmodule Meddie.AI.Prompts do
             "#{header}\n#{item_lines}"
           end)
 
-        "## Latest Biomarker Results\n#{lines}"
+        "## Latest Biomarker Results\n#{summary_line}\n#{lines}"
       end
     end
   end
@@ -227,7 +257,7 @@ defmodule Meddie.AI.Prompts do
 
   defp memory_detection_instructions do
     """
-    IMPORTANT: If the user mentions health-relevant information worth remembering, you MUST append a JSON block at the very end of your response (after your text response) in this exact format:
+    IMPORTANT: If the user mentions factual information worth remembering — whether health-related (supplements, medications, conditions) or broader personal context (preferences, lifestyle, goals, family history, doctor names) — you MUST append a JSON block at the very end of your response (after your text response) in this exact format:
 
     ```json
     {"profile_updates": [{"field": "health_notes|supplements|medications", "action": "append|remove", "text": "what to save"}], "memory_saves": ["concise fact 1", "concise fact 2"]}

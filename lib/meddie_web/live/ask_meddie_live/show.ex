@@ -87,7 +87,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
               <p class="text-base-content/50 text-sm">{gettext("Ask Meddie about %{name}'s health data", name: @selected_person.name)}</p>
               <div class="flex flex-wrap justify-center gap-2">
                 <button
-                  :for={q <- quick_questions()}
+                  :for={q <- quick_questions(@selected_person)}
                   phx-click="quick_question"
                   phx-value-text={q}
                   class="btn btn-outline btn-sm"
@@ -603,13 +603,30 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     |> Phoenix.HTML.raw()
   end
 
-  defp quick_questions do
-    [
-      gettext("Summarize my latest results"),
-      gettext("What should I watch out for?"),
-      gettext("Explain my out-of-range values")
+  defp quick_questions(person) do
+    base = [
+      gettext("How am I doing overall?"),
+      gettext("Summarize my latest results")
     ]
+
+    extra =
+      cond do
+        has_content?(person.medications) and has_content?(person.supplements) ->
+          [gettext("Any interactions between my supplements and medications?")]
+
+        has_content?(person.health_notes) ->
+          [gettext("What should I monitor given my health history?")]
+
+        true ->
+          [gettext("What should I pay attention to?")]
+      end
+
+    base ++ extra
   end
+
+  defp has_content?(nil), do: false
+  defp has_content?(""), do: false
+  defp has_content?(_), do: true
 
   defp active_conversation?(current, conv) do
     current && current.id == conv.id

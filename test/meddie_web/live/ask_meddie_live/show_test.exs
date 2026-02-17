@@ -48,9 +48,9 @@ defmodule MeddieWeb.AskMeddieLive.ShowTest do
         |> log_in_user(user, space: space)
         |> live(~p"/ask-meddie/new?person_id=#{person.id}")
 
+      assert html =~ "How am I doing overall?"
       assert html =~ "Summarize my latest results"
-      assert html =~ "What should I watch out for?"
-      assert html =~ "Explain my out-of-range values"
+      assert html =~ "What should I pay attention to?"
     end
 
     test "person picker lists all people", %{conn: conn, user: user, space: space, scope: scope, person: person} do

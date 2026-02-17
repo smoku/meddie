@@ -28,8 +28,8 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: lib/meddie_web/components/layouts.ex:236
-#: lib/meddie_web/components/layouts.ex:248
+#: lib/meddie_web/components/layouts.ex:234
+#: lib/meddie_web/components/layouts.ex:246
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr ""
@@ -125,12 +125,12 @@ msgstr ""
 msgid "Saving..."
 msgstr ""
 
-#: lib/meddie_web/components/layouts.ex:243
+#: lib/meddie_web/components/layouts.ex:241
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/meddie_web/components/layouts.ex:231
+#: lib/meddie_web/components/layouts.ex:229
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr ""
@@ -797,13 +797,8 @@ msgstr ""
 msgid "Delete this conversation?"
 msgstr ""
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:610
-#, elixir-autogen, elixir-format
-msgid "Explain my out-of-range values"
-msgstr ""
-
 #: lib/meddie_web/live/ask_meddie_live/index.ex:97
-#: lib/meddie_web/live/ask_meddie_live/show.ex:620
+#: lib/meddie_web/live/ask_meddie_live/show.ex:637
 #, elixir-autogen, elixir-format
 msgid "General"
 msgstr ""
@@ -868,7 +863,7 @@ msgstr ""
 msgid "Start a new chat to ask Meddie about your health data."
 msgstr ""
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:608
+#: lib/meddie_web/live/ask_meddie_live/show.ex:609
 #, elixir-autogen, elixir-format
 msgid "Summarize my latest results"
 msgstr ""
@@ -876,11 +871,6 @@ msgstr ""
 #: lib/meddie_web/live/ask_meddie_live/show.ex:120
 #, elixir-autogen, elixir-format
 msgid "Undo"
-msgstr ""
-
-#: lib/meddie_web/live/ask_meddie_live/show.ex:609
-#, elixir-autogen, elixir-format
-msgid "What should I watch out for?"
 msgstr ""
 
 #: lib/meddie_web/live/ask_meddie_live/show.ex:274
@@ -1042,4 +1032,24 @@ msgstr ""
 #: lib/meddie/conversations/chat.ex:93
 #, elixir-autogen, elixir-format
 msgid "Removed from %{field}: %{text}"
+msgstr ""
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:615
+#, elixir-autogen, elixir-format
+msgid "Any interactions between my supplements and medications?"
+msgstr ""
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:608
+#, elixir-autogen, elixir-format
+msgid "How am I doing overall?"
+msgstr ""
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:618
+#, elixir-autogen, elixir-format
+msgid "What should I monitor given my health history?"
+msgstr ""
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:621
+#, elixir-autogen, elixir-format, fuzzy
+msgid "What should I pay attention to?"
 msgstr ""

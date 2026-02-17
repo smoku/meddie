@@ -10,7 +10,7 @@ defmodule Meddie.AI.PromptsTest do
     test "returns base prompt without person context" do
       prompt = Prompts.chat_system_prompt()
       assert prompt =~ "You are Meddie"
-      assert prompt =~ "friendly health assistant"
+      assert prompt =~ "health assistant"
       assert prompt =~ "profile_updates"
     end
 
