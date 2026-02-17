@@ -283,7 +283,16 @@ defmodule MeddieWeb.PeopleLive.Show do
             <div class="card-body">
               <h3 class="card-title text-sm">{category || gettext("Other")}</h3>
               <div class="overflow-x-auto">
-                <table class="table table-sm">
+                <table class="table table-sm table-fixed">
+                  <colgroup>
+                    <col class="w-[35%]" />
+                    <col class="w-[7%]" />
+                    <col class="w-[10%]" />
+                    <col class="w-[10%]" />
+                    <col class="w-[15%]" />
+                    <col class="w-[10%]" />
+                    <col class="w-[13%]" />
+                  </colgroup>
                   <thead>
                     <tr>
                       <th>{gettext("Biomarker")}</th>
@@ -307,7 +316,7 @@ defmodule MeddieWeb.PeopleLive.Show do
                         phx-click="toggle-trend"
                         phx-value-key={bm.key}
                       >
-                        <td class="font-medium">
+                        <td class="font-medium truncate" title={bm.name}>
                           {bm.name}
                           <span
                             :if={bm.data_point_count > 1}
@@ -326,13 +335,19 @@ defmodule MeddieWeb.PeopleLive.Show do
                         <td class="text-base-content/60">{bm.latest.unit}</td>
                         <td class="text-base-content/60 text-xs">
                           <.reference_range_bar
-                            :if={bm.latest.reference_range_low && bm.latest.reference_range_high && bm.latest.numeric_value}
+                            :if={
+                              bm.latest.reference_range_low && bm.latest.reference_range_high &&
+                                bm.latest.numeric_value
+                            }
                             value={bm.latest.numeric_value}
                             low={bm.latest.reference_range_low}
                             high={bm.latest.reference_range_high}
                             status={bm.latest.status}
                           />
-                          <span :if={!bm.latest.reference_range_low || !bm.latest.reference_range_high || !bm.latest.numeric_value}>
+                          <span :if={
+                            !bm.latest.reference_range_low || !bm.latest.reference_range_high ||
+                              !bm.latest.numeric_value
+                          }>
                             {bm.latest.reference_range_text}
                           </span>
                         </td>
@@ -345,7 +360,9 @@ defmodule MeddieWeb.PeopleLive.Show do
                       <%= if @expanded_biomarker == bm.key do %>
                         <tr
                           id={"trend-#{bm.latest.id}"}
-                          phx-mounted={@scroll_to_biomarker == bm.key && JS.dispatch("phx:scroll-into-view")}
+                          phx-mounted={
+                            @scroll_to_biomarker == bm.key && JS.dispatch("phx:scroll-into-view")
+                          }
                         >
                           <td colspan="7" class="p-4 bg-base-200/20 border-l-4 border-primary/30">
                             <.trend_detail biomarker={bm} person={@person} />
@@ -771,9 +788,15 @@ defmodule MeddieWeb.PeopleLive.Show do
   defp biomarker_status_summary(counts) do
     parts =
       []
-      |> then(fn p -> if counts["normal"], do: ["#{counts["normal"]} #{gettext("normal")}" | p], else: p end)
-      |> then(fn p -> if counts["high"], do: ["#{counts["high"]} #{gettext("high")}" | p], else: p end)
-      |> then(fn p -> if counts["low"], do: ["#{counts["low"]} #{gettext("low")}" | p], else: p end)
+      |> then(fn p ->
+        if counts["normal"], do: ["#{counts["normal"]} #{gettext("normal")}" | p], else: p
+      end)
+      |> then(fn p ->
+        if counts["high"], do: ["#{counts["high"]} #{gettext("high")}" | p], else: p
+      end)
+      |> then(fn p ->
+        if counts["low"], do: ["#{counts["low"]} #{gettext("low")}" | p], else: p
+      end)
       |> Enum.reverse()
 
     case parts do
@@ -859,9 +882,13 @@ defmodule MeddieWeb.PeopleLive.Show do
     |> Enum.group_by(&{&1.name, Documents.normalize_unit(&1.unit)})
     |> Enum.map(fn {{name, unit}, entries} ->
       entries =
-        Enum.sort_by(entries, fn e ->
-          e.document.document_date || DateTime.to_date(e.document.inserted_at)
-        end, Date)
+        Enum.sort_by(
+          entries,
+          fn e ->
+            e.document.document_date || DateTime.to_date(e.document.inserted_at)
+          end,
+          Date
+        )
 
       latest = List.last(entries)
       history = Enum.filter(entries, & &1.numeric_value)
