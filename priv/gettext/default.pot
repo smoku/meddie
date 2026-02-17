@@ -186,7 +186,7 @@ msgstr ""
 msgid "Female"
 msgstr ""
 
-#: lib/meddie/conversations/chat.ex:229
+#: lib/meddie/conversations/chat.ex:234
 #: lib/meddie_web/live/people_live/form.ex:73
 #: lib/meddie_web/live/people_live/show.ex:137
 #, elixir-autogen, elixir-format
@@ -215,7 +215,7 @@ msgstr ""
 msgid "Male"
 msgstr ""
 
-#: lib/meddie/conversations/chat.ex:231
+#: lib/meddie/conversations/chat.ex:236
 #: lib/meddie_web/live/people_live/form.ex:89
 #: lib/meddie_web/live/people_live/show.ex:140
 #, elixir-autogen, elixir-format
@@ -258,7 +258,7 @@ msgstr ""
 msgid "Sign in to your Meddie account."
 msgstr ""
 
-#: lib/meddie/conversations/chat.ex:230
+#: lib/meddie/conversations/chat.ex:235
 #: lib/meddie_web/live/people_live/form.ex:81
 #: lib/meddie_web/live/people_live/show.ex:139
 #, elixir-autogen, elixir-format
@@ -843,7 +843,7 @@ msgstr ""
 msgid "Saved to"
 msgstr ""
 
-#: lib/meddie/conversations/chat.ex:92
+#: lib/meddie/conversations/chat.ex:97
 #, elixir-autogen, elixir-format
 msgid "Saved to %{field}: %{text}"
 msgstr ""
@@ -1029,7 +1029,7 @@ msgstr ""
 msgid "Removed from"
 msgstr ""
 
-#: lib/meddie/conversations/chat.ex:93
+#: lib/meddie/conversations/chat.ex:98
 #, elixir-autogen, elixir-format
 msgid "Removed from %{field}: %{text}"
 msgstr ""
@@ -1052,4 +1052,20 @@ msgstr ""
 #: lib/meddie_web/live/ask_meddie_live/show.ex:621
 #, elixir-autogen, elixir-format
 msgid "What should I pay attention to?"
+msgstr ""
+
+#: lib/meddie_web/user_auth.ex:321
+#, elixir-autogen, elixir-format
+msgid "You don't have permission to access this page."
+msgstr ""
+
+#: lib/meddie_web/user_auth.ex:224
+#: lib/meddie_web/user_auth.ex:342
+#, elixir-autogen, elixir-format
+msgid "You must log in to access this page."
+msgstr ""
+
+#: lib/meddie_web/user_auth.ex:239
+#, elixir-autogen, elixir-format
+msgid "You must re-authenticate to access this page."
 msgstr ""

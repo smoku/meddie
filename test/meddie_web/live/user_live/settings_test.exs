@@ -33,7 +33,7 @@ defmodule MeddieWeb.UserLive.SettingsTest do
 
       assert {:redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/log-in"
-      assert %{"error" => "You must log in to access this page."} = flash
+      assert %{"error" => "Musisz się zalogować, aby uzyskać dostęp do tej strony."} = flash
     end
   end
 
@@ -270,7 +270,7 @@ defmodule MeddieWeb.UserLive.SettingsTest do
       assert {:redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/log-in"
       assert %{"error" => message} = flash
-      assert message == "You must log in to access this page."
+      assert message == "Musisz się zalogować, aby uzyskać dostęp do tej strony."
     end
   end
 end

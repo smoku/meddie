@@ -186,7 +186,7 @@ msgstr "Edytuj osobę"
 msgid "Female"
 msgstr "Kobieta"
 
-#: lib/meddie/conversations/chat.ex:229
+#: lib/meddie/conversations/chat.ex:234
 #: lib/meddie_web/live/people_live/form.ex:73
 #: lib/meddie_web/live/people_live/show.ex:137
 #, elixir-autogen, elixir-format
@@ -215,7 +215,7 @@ msgstr "Zaloguj się"
 msgid "Male"
 msgstr "Mężczyzna"
 
-#: lib/meddie/conversations/chat.ex:231
+#: lib/meddie/conversations/chat.ex:236
 #: lib/meddie_web/live/people_live/form.ex:89
 #: lib/meddie_web/live/people_live/show.ex:140
 #, elixir-autogen, elixir-format
@@ -258,7 +258,7 @@ msgstr "Wybierz..."
 msgid "Sign in to your Meddie account."
 msgstr "Zaloguj się do swojego konta Meddie."
 
-#: lib/meddie/conversations/chat.ex:230
+#: lib/meddie/conversations/chat.ex:235
 #: lib/meddie_web/live/people_live/form.ex:81
 #: lib/meddie_web/live/people_live/show.ex:139
 #, elixir-autogen, elixir-format
@@ -844,7 +844,7 @@ msgstr "Bez osoby"
 msgid "Saved to"
 msgstr "Zapisano w"
 
-#: lib/meddie/conversations/chat.ex:92
+#: lib/meddie/conversations/chat.ex:97
 #, elixir-autogen, elixir-format
 msgid "Saved to %{field}: %{text}"
 msgstr "Zapisano w %{field}: %{text}"
@@ -1030,7 +1030,7 @@ msgstr "Niedowaga"
 msgid "Removed from"
 msgstr "Usunięto z"
 
-#: lib/meddie/conversations/chat.ex:93
+#: lib/meddie/conversations/chat.ex:98
 #, elixir-autogen, elixir-format
 msgid "Removed from %{field}: %{text}"
 msgstr "Usunięto z %{field}: %{text}"
@@ -1054,3 +1054,19 @@ msgstr "Na co zwracać uwagę biorąc pod uwagę moją historię zdrowia?"
 #, elixir-autogen, elixir-format
 msgid "What should I pay attention to?"
 msgstr "Na co powinienem zwrócić uwagę?"
+
+#: lib/meddie_web/user_auth.ex:321
+#, elixir-autogen, elixir-format
+msgid "You don't have permission to access this page."
+msgstr "Nie masz uprawnień do tej strony."
+
+#: lib/meddie_web/user_auth.ex:224
+#: lib/meddie_web/user_auth.ex:342
+#, elixir-autogen, elixir-format
+msgid "You must log in to access this page."
+msgstr "Musisz się zalogować, aby uzyskać dostęp do tej strony."
+
+#: lib/meddie_web/user_auth.ex:239
+#, elixir-autogen, elixir-format
+msgid "You must re-authenticate to access this page."
+msgstr "Musisz się ponownie uwierzytelnić, aby uzyskać dostęp do tej strony."
