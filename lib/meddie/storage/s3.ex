@@ -41,7 +41,7 @@ defmodule Meddie.Storage.S3 do
   @impl true
   def presigned_url(path, expires_in) do
     config = ExAws.Config.new(:s3)
-    ExAws.S3.presigned_url(config, bucket(), path, :get, expires_in: expires_in)
+    ExAws.S3.presigned_url(config, :get, bucket(), path, expires_in: expires_in)
   end
 
   defp bucket do
