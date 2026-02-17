@@ -98,15 +98,6 @@
   -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
 
-/* Page enter animation */
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-page-enter {
-  animation: fadeSlideIn 0.3s ease-out;
-}
-
 /* Error shake animation */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
