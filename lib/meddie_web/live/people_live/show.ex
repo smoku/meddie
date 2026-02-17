@@ -571,7 +571,7 @@ defmodule MeddieWeb.PeopleLive.Show do
      |> allow_upload(:document,
        accept: ~w(.jpg .jpeg .png .pdf),
        max_file_size: 20_000_000,
-       max_entries: 5,
+       max_entries: 100,
        auto_upload: true,
        progress: &handle_progress/3
      )}
