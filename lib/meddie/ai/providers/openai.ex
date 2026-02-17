@@ -63,9 +63,7 @@ defmodule Meddie.AI.Providers.OpenAI do
       "model" => @model,
       "messages" =>
         [%{"role" => "system", "content" => system_prompt}] ++
-          Enum.map(messages, fn msg ->
-            %{"role" => msg.role, "content" => msg.content}
-          end),
+          Enum.map(messages, &format_chat_message/1),
       "stream" => true
     }
 
@@ -98,9 +96,7 @@ defmodule Meddie.AI.Providers.OpenAI do
       "model" => @model,
       "messages" =>
         [%{"role" => "system", "content" => system_prompt}] ++
-          Enum.map(messages, fn msg ->
-            %{"role" => msg.role, "content" => msg.content}
-          end)
+          Enum.map(messages, &format_chat_message/1)
     }
 
     case Req.post(@api_url,
@@ -228,6 +224,30 @@ defmodule Meddie.AI.Providers.OpenAI do
 
   defp parse_response(response) do
     {:error, "Unexpected OpenAI response format: #{inspect(response)}"}
+  end
+
+  defp format_chat_message(%{images: images} = msg) when is_list(images) and images != [] do
+    text_block =
+      if msg.content && msg.content != "",
+        do: [%{"type" => "text", "text" => msg.content}],
+        else: []
+
+    image_blocks =
+      Enum.map(images, fn {image_data, content_type} ->
+        mime = content_type_to_mime(content_type)
+        base64 = Base.encode64(image_data)
+
+        %{
+          "type" => "image_url",
+          "image_url" => %{"url" => "data:#{mime};base64,#{base64}"}
+        }
+      end)
+
+    %{"role" => msg.role, "content" => text_block ++ image_blocks}
+  end
+
+  defp format_chat_message(msg) do
+    %{"role" => msg.role, "content" => msg.content}
   end
 
   defp content_type_to_mime("image/jpeg"), do: "image/jpeg"

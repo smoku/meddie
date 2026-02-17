@@ -193,7 +193,7 @@ defmodule Meddie.Telegram.HandlerTest do
   describe "handle/3 - no message" do
     test "ignores updates without message field", %{space: space} do
       update = %{"update_id" => 1}
-      assert Handler.handle(update, space, "test:token") == nil
+      assert Handler.handle(update, space, "test:token") == :ok
     end
   end
 end

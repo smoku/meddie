@@ -70,6 +70,80 @@ defmodule Meddie.Telegram.Client do
     :ok
   end
 
+  @doc """
+  Gets file info from Telegram using the getFile API.
+  Returns the file_path needed to download the file.
+  """
+  def get_file(token, file_id) do
+    url = "#{@base_url}/bot#{token}/getFile"
+
+    case Req.post(url, json: %{"file_id" => file_id}, receive_timeout: @timeout) do
+      {:ok, %{status: 200, body: %{"ok" => true, "result" => result}}} ->
+        {:ok, result}
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("Telegram getFile error: status=#{status} body=#{inspect(body)}")
+        {:error, "Telegram API error: #{status}"}
+
+      {:error, reason} ->
+        Logger.error("Telegram getFile failed: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+
+  @doc """
+  Downloads a file from Telegram servers given the file_path from getFile.
+  """
+  def download_file(token, file_path) do
+    url = "#{@base_url}/file/bot#{token}/#{file_path}"
+
+    case Req.get(url, receive_timeout: @timeout) do
+      {:ok, %{status: 200, body: body}} when is_binary(body) ->
+        {:ok, body}
+
+      {:ok, %{status: status}} ->
+        Logger.error("Telegram download error: status=#{status}")
+        {:error, "Telegram download error: #{status}"}
+
+      {:error, reason} ->
+        Logger.error("Telegram download failed: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+
+  @doc """
+  Acknowledges a callback query (inline keyboard button press).
+  """
+  def answer_callback_query(token, callback_query_id) do
+    url = "#{@base_url}/bot#{token}/answerCallbackQuery"
+
+    Req.post(url,
+      json: %{"callback_query_id" => callback_query_id},
+      receive_timeout: @timeout
+    )
+
+    :ok
+  end
+
+  @doc """
+  Edits the text of an existing message.
+  """
+  def edit_message_text(token, chat_id, message_id, text) do
+    url = "#{@base_url}/bot#{token}/editMessageText"
+
+    body = %{
+      "chat_id" => chat_id,
+      "message_id" => message_id,
+      "text" => text,
+      "parse_mode" => "Markdown"
+    }
+
+    case Req.post(url, json: body, receive_timeout: @timeout) do
+      {:ok, %{status: 200, body: %{"ok" => true}}} -> :ok
+      _ -> :ok
+    end
+  end
+
   defp maybe_add_reply_markup(body, nil), do: body
   defp maybe_add_reply_markup(body, markup), do: Map.put(body, "reply_markup", markup)
 end

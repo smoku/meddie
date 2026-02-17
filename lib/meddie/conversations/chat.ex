@@ -183,6 +183,66 @@ defmodule Meddie.Conversations.Chat do
     |> Enum.filter(&(&1.role in ["user", "assistant"]))
   end
 
+  @max_image_messages 3
+
+  @doc """
+  Prepares messages for AI context with image data loaded from storage.
+  Returns a list of maps with `role`, `content`, and optionally `images` (list of `{binary, content_type}`).
+  Only the last #{@max_image_messages} attachment messages have their images loaded; older ones get a text fallback.
+  """
+  def prepare_ai_messages_with_images(messages) do
+    filtered = prepare_ai_messages(messages)
+
+    # Find indexes of the most recent messages with attachments
+    attachment_indexes =
+      filtered
+      |> Enum.with_index()
+      |> Enum.filter(fn {msg, _idx} -> has_attachment?(msg) end)
+      |> Enum.map(fn {_msg, idx} -> idx end)
+      |> Enum.take(-@max_image_messages)
+      |> MapSet.new()
+
+    filtered
+    |> Enum.with_index()
+    |> Enum.map(fn {msg, idx} ->
+      cond do
+        has_attachment?(msg) and MapSet.member?(attachment_indexes, idx) ->
+          load_message_images(msg)
+
+        has_attachment?(msg) ->
+          %{role: msg.role, content: "[#{gettext("File")}: #{msg.attachment_name}]\n#{msg.content || ""}"}
+
+        true ->
+          %{role: msg.role, content: msg.content || ""}
+      end
+    end)
+  end
+
+  defp has_attachment?(%{attachment_path: path}) when not is_nil(path), do: true
+  defp has_attachment?(_), do: false
+
+  defp load_message_images(msg) do
+    content_type = msg.attachment_type || "image/jpeg"
+
+    images =
+      case Meddie.Storage.get(msg.attachment_path) do
+        {:ok, file_data} ->
+          if content_type == "application/pdf" do
+            case Meddie.Documents.PdfRenderer.render_pages(file_data) do
+              {:ok, pages} -> Enum.map(pages, fn {_page, data} -> {data, "image/png"} end)
+              {:error, _} -> []
+            end
+          else
+            [{file_data, content_type}]
+          end
+
+        {:error, _} ->
+          []
+      end
+
+    %{role: msg.role, content: msg.content || "", images: images}
+  end
+
   @doc """
   Splits a long text into chunks at paragraph boundaries, respecting max_length.
   """

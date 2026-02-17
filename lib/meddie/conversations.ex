@@ -110,6 +110,20 @@ defmodule Meddie.Conversations do
     |> Repo.one()
   end
 
+  @doc """
+  Gets a single message by ID. Returns nil if not found.
+  """
+  def get_message(id) do
+    Repo.get(Message, id)
+  end
+
+  @doc """
+  Gets a conversation by ID without scope. Returns nil if not found.
+  """
+  def get_conversation_by_id(id) do
+    Repo.get(Conversation, id)
+  end
+
   # -- Rate Limiting --
 
   @doc """

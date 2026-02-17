@@ -102,7 +102,9 @@ defmodule Meddie.AI do
 
   defp format_messages(messages) do
     Enum.map_join(messages, "\n---\n", fn msg ->
-      "[#{msg.role}] #{String.slice(msg.content, 0..500)}"
+      images = if Map.has_key?(msg, :images), do: " [#{length(msg.images)} image(s)]", else: ""
+      content = msg.content || ""
+      "[#{msg.role}] #{String.slice(content, 0..500)}#{images}"
     end)
   end
 end

@@ -71,10 +71,7 @@ defmodule Meddie.AI.Providers.Anthropic do
     body = %{
       "model" => @chat_model,
       "system" => system_prompt,
-      "messages" =>
-        Enum.map(messages, fn msg ->
-          %{"role" => msg.role, "content" => msg.content}
-        end),
+      "messages" => Enum.map(messages, &format_chat_message/1),
       "max_tokens" => 4096,
       "stream" => true
     }
@@ -110,10 +107,7 @@ defmodule Meddie.AI.Providers.Anthropic do
     body = %{
       "model" => @chat_model,
       "system" => system_prompt,
-      "messages" =>
-        Enum.map(messages, fn msg ->
-          %{"role" => msg.role, "content" => msg.content}
-        end),
+      "messages" => Enum.map(messages, &format_chat_message/1),
       "max_tokens" => 4096
     }
 
@@ -261,6 +255,34 @@ defmodule Meddie.AI.Providers.Anthropic do
       "```" <> rest -> rest |> String.trim_trailing("```") |> String.trim()
       other -> other
     end)
+  end
+
+  defp format_chat_message(%{images: images} = msg) when is_list(images) and images != [] do
+    image_blocks =
+      Enum.map(images, fn {image_data, content_type} ->
+        mime = content_type_to_media_type(content_type)
+        base64 = Base.encode64(image_data)
+
+        %{
+          "type" => "image",
+          "source" => %{
+            "type" => "base64",
+            "media_type" => mime,
+            "data" => base64
+          }
+        }
+      end)
+
+    text_block =
+      if msg.content && msg.content != "",
+        do: [%{"type" => "text", "text" => msg.content}],
+        else: []
+
+    %{"role" => msg.role, "content" => image_blocks ++ text_block}
+  end
+
+  defp format_chat_message(msg) do
+    %{"role" => msg.role, "content" => msg.content}
   end
 
   defp content_type_to_media_type("image/jpeg"), do: "image/jpeg"

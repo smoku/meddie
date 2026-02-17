@@ -3,6 +3,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
 
   alias Meddie.Conversations
   alias Meddie.Conversations.Chat
+  alias Meddie.Documents
   alias Meddie.People
 
   require Logger
@@ -121,9 +122,28 @@ defmodule MeddieWeb.AskMeddieLive.Show do
                     </button>
                   <% end %>
                 </div>
-                <div :if={msg.role != "system"} class="prose prose-sm max-w-none">
-                  {render_markdown(msg.content)}
+                <div :if={msg.role != "system"}>
+                  <div :if={msg.attachment_path && msg.attachment_type in ["image/jpeg", "image/png"]} class="mb-2">
+                    <img src={attachment_url(msg)} class="rounded-lg max-h-48 object-contain" alt={msg.attachment_name} />
+                  </div>
+                  <div :if={msg.attachment_path && msg.attachment_type == "application/pdf"} class="mb-2 flex items-center gap-2 text-xs opacity-70">
+                    <.icon name="hero-document-micro" class="size-4" />
+                    <span>{msg.attachment_name}</span>
+                  </div>
+                  <div :if={msg.content && msg.content != ""} class="prose prose-sm max-w-none">
+                    {render_markdown(msg.content)}
+                  </div>
                 </div>
+              </div>
+            </div>
+
+            <%!-- Save to documents offer --%>
+            <div :if={@pending_file_save && @selected_person} class="flex justify-center">
+              <div class="flex items-center gap-3 px-4 py-2.5 bg-info/10 rounded-xl text-sm">
+                <.icon name="hero-document-arrow-down-micro" class="size-5 text-info shrink-0" />
+                <span>{gettext("Save this file to %{name}'s documents?", name: @selected_person.name)}</span>
+                <button phx-click="save_to_documents" class="btn btn-info btn-xs">{gettext("Save")}</button>
+                <button phx-click="dismiss_save_offer" class="btn btn-ghost btn-xs">{gettext("No thanks")}</button>
               </div>
             </div>
 
@@ -140,7 +160,21 @@ defmodule MeddieWeb.AskMeddieLive.Show do
 
           <%!-- Input area with person picker --%>
           <div class="shrink-0 border-t border-base-300/50 px-4 py-3">
-            <form phx-submit="send_message" class="flex items-center gap-2">
+            <%!-- File preview --%>
+            <div :for={entry <- @uploads.chat_file.entries} class="flex items-center gap-2 mb-2 px-1">
+              <div class="badge badge-ghost gap-1">
+                <span :if={entry.progress < 100} class="loading loading-spinner loading-xs"></span>
+                <.icon :if={entry.progress == 100} name="hero-paper-clip-micro" class="size-3" />
+                <span class="text-xs truncate max-w-32">{entry.client_name}</span>
+                <button type="button" phx-click="cancel_upload" phx-value-ref={entry.ref} class="ml-1">
+                  <.icon name="hero-x-mark-micro" class="size-3 text-error" />
+                </button>
+              </div>
+              <div :for={err <- upload_errors(@uploads.chat_file, entry)} class="text-error text-xs">
+                {upload_error_to_string(err)}
+              </div>
+            </div>
+            <form phx-submit="send_message" phx-change="validate_upload" class="flex items-center gap-2">
               <%!-- Person picker (opens upward) --%>
               <div :if={can_change_person?(@conversation, @messages)} class="dropdown dropdown-top">
                 <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-square">
@@ -168,19 +202,23 @@ defmodule MeddieWeb.AskMeddieLive.Show do
                 <.icon name="hero-user-micro" class="size-3" />
                 {@selected_person.name}
               </span>
+              <%!-- File upload button --%>
+              <label class="btn btn-ghost btn-sm btn-square cursor-pointer" title={gettext("Attach file")}>
+                <.icon name="hero-paper-clip-micro" class="size-4" />
+                <.live_file_input upload={@uploads.chat_file} class="hidden" />
+              </label>
               <input
                 type="text"
                 name="message"
                 value=""
                 placeholder={if @streaming, do: gettext("Meddie is typing..."), else: gettext("Ask a question...")}
-                disabled={@streaming}
                 autocomplete="off"
                 class="input input-bordered flex-1 min-w-0"
                 phx-debounce="100"
               />
               <button
                 type="submit"
-                disabled={@streaming}
+                disabled={@streaming || uploads_in_progress?(@uploads)}
                 class="btn btn-primary btn-square"
               >
                 <.icon name="hero-paper-airplane-micro" class="size-5" />
@@ -212,7 +250,14 @@ defmodule MeddieWeb.AskMeddieLive.Show do
      |> assign(streaming: false)
      |> assign(streaming_text: "")
      |> assign(profile_updates: [])
-     |> assign(person_id_param: params["person_id"])}
+     |> assign(person_id_param: params["person_id"])
+     |> assign(pending_file_save: nil)
+     |> allow_upload(:chat_file,
+       accept: ~w(.jpg .jpeg .png .pdf),
+       max_file_size: 20_000_000,
+       max_entries: 1,
+       auto_upload: true
+     )}
   end
 
   @impl true
@@ -236,6 +281,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     |> assign(messages: [])
     |> assign(selected_person: selected_person)
     |> assign(profile_updates: [])
+    |> assign(pending_file_save: nil)
   end
 
   defp apply_action(socket, :show, %{"id" => id}) do
@@ -255,6 +301,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     |> assign(messages: conversation.messages)
     |> assign(selected_person: selected_person)
     |> assign(profile_updates: profile_updates)
+    |> assign(pending_file_save: nil)
   end
 
   # -- Events --
@@ -262,9 +309,10 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   @impl true
   def handle_event("send_message", %{"message" => content}, socket) do
     content = String.trim(content)
+    has_file = socket.assigns.uploads.chat_file.entries != []
 
     cond do
-      content == "" ->
+      content == "" and not has_file ->
         {:noreply, socket}
 
       socket.assigns.streaming ->
@@ -276,6 +324,48 @@ defmodule MeddieWeb.AskMeddieLive.Show do
       true ->
         send_message(socket, content)
     end
+  end
+
+  def handle_event("validate_upload", _params, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("cancel_upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :chat_file, ref)}
+  end
+
+  def handle_event("save_to_documents", _params, socket) do
+    msg_id = socket.assigns.pending_file_save
+    scope = socket.assigns.current_scope
+    person = socket.assigns.selected_person
+
+    if msg_id && person do
+      msg = Enum.find(socket.assigns.messages, &(&1.id == msg_id))
+
+      if msg && msg.attachment_path do
+        case save_attachment_to_documents(scope, person, msg) do
+          {:ok, _document} ->
+            {:noreply,
+             socket
+             |> assign(pending_file_save: nil)
+             |> put_flash(:info, gettext("Document saved and queued for parsing."))}
+
+          {:error, _reason} ->
+            {:noreply,
+             socket
+             |> assign(pending_file_save: nil)
+             |> put_flash(:error, gettext("Could not save document."))}
+        end
+      else
+        {:noreply, assign(socket, pending_file_save: nil)}
+      end
+    else
+      {:noreply, assign(socket, pending_file_save: nil)}
+    end
+  end
+
+  def handle_event("dismiss_save_offer", _params, socket) do
+    {:noreply, assign(socket, pending_file_save: nil)}
   end
 
   def handle_event("select_person", %{"person-id" => ""}, socket) do
@@ -440,8 +530,19 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     socket = maybe_resolve_person(socket, conversation, content)
     conversation = socket.assigns.conversation
 
+    # Handle file upload if present
+    {attachment_attrs, has_file} = consume_chat_file(socket, scope, conversation)
+
+    msg_content =
+      if content != "" do
+        content
+      else
+        if has_file, do: attachment_attrs["attachment_name"], else: ""
+      end
+
     # Save user message
-    {:ok, _user_msg} = Conversations.create_message(conversation, %{"role" => "user", "content" => content})
+    msg_attrs = Map.merge(%{"role" => "user", "content" => msg_content}, attachment_attrs)
+    {:ok, user_msg} = Conversations.create_message(conversation, msg_attrs)
 
     # Reload messages
     messages = Conversations.list_messages(conversation)
@@ -452,9 +553,9 @@ defmodule MeddieWeb.AskMeddieLive.Show do
 
     Task.start(fn ->
       try do
-        memory_facts = Meddie.Memory.search_for_prompt(scope, content)
+        memory_facts = Meddie.Memory.search_for_prompt(scope, msg_content)
         system_prompt = Chat.build_system_prompt(scope, selected_person, memory_facts)
-        ai_messages = Chat.prepare_ai_messages(messages)
+        ai_messages = Chat.prepare_ai_messages_with_images(messages)
 
         callback = fn %{content: chunk} ->
           send(lv_pid, {:chat_token, chunk})
@@ -472,10 +573,14 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     # Update conversation updated_at
     Conversations.update_conversation(conversation, %{})
 
+    # Track file message for save-to-documents offer
+    pending_save = if has_file, do: user_msg.id, else: nil
+
     {:noreply,
      socket
      |> assign(messages: messages)
-     |> assign(streaming: true, streaming_text: "")}
+     |> assign(streaming: true, streaming_text: "")
+     |> assign(pending_file_save: pending_save)}
   end
 
   defp ensure_conversation(socket) do
@@ -527,6 +632,78 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     |> Enum.flat_map(fn msg ->
       Conversations.list_profile_updates_for_message(msg.id)
     end)
+  end
+
+  # -- Private: file upload --
+
+  defp consume_chat_file(socket, scope, conversation) do
+    entries = socket.assigns.uploads.chat_file.entries
+
+    if entries == [] do
+      {%{}, false}
+    else
+      uploaded_files =
+        consume_uploaded_entries(socket, :chat_file, fn %{path: path}, entry ->
+          file_data = File.read!(path)
+          filename = entry.client_name
+          content_type = entry.client_type
+          attachment_id = Ecto.UUID.generate()
+          storage_path = "chat_attachments/#{scope.space.id}/#{conversation.id}/#{attachment_id}/#{filename}"
+
+          :ok = Meddie.Storage.put(storage_path, file_data, content_type)
+
+          {:ok, %{storage_path: storage_path, content_type: content_type, filename: filename}}
+        end)
+
+      case uploaded_files do
+        [%{storage_path: path, content_type: ct, filename: name} | _] ->
+          {%{
+             "attachment_path" => path,
+             "attachment_type" => ct,
+             "attachment_name" => name
+           }, true}
+
+        _ ->
+          {%{}, false}
+      end
+    end
+  end
+
+  defp save_attachment_to_documents(scope, person, msg) do
+    case Meddie.Storage.get(msg.attachment_path) do
+      {:ok, file_data} ->
+        content_hash = :crypto.hash(:sha256, file_data) |> Base.encode16(case: :lower)
+
+        if Documents.document_exists_by_hash?(scope, person.id, content_hash) do
+          {:error, :duplicate}
+        else
+          document_id = Ecto.UUID.generate()
+          filename = msg.attachment_name
+          doc_storage_path = "documents/#{scope.space.id}/#{person.id}/#{document_id}/#{filename}"
+
+          :ok = Meddie.Storage.put(doc_storage_path, file_data, msg.attachment_type)
+
+          attrs = %{
+            "filename" => filename,
+            "content_type" => msg.attachment_type,
+            "file_size" => byte_size(file_data),
+            "storage_path" => doc_storage_path,
+            "content_hash" => content_hash
+          }
+
+          case Documents.create_document(scope, person.id, attrs) do
+            {:ok, document} ->
+              %{document_id: document.id} |> Meddie.Workers.ParseDocument.new() |> Oban.insert()
+              {:ok, document}
+
+            error ->
+              error
+          end
+        end
+
+      error ->
+        error
+    end
   end
 
   # -- Private: title generation --
@@ -593,6 +770,22 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   defp profile_updates_for_message(profile_updates, message_id) do
     Enum.filter(profile_updates, &(&1.message_id == message_id))
   end
+
+  defp attachment_url(msg) do
+    case Meddie.Storage.presigned_url(msg.attachment_path) do
+      {:ok, url} -> url
+      _ -> "#"
+    end
+  end
+
+  defp uploads_in_progress?(uploads) do
+    Enum.any?(uploads.chat_file.entries, &(&1.progress < 100))
+  end
+
+  defp upload_error_to_string(:too_large), do: gettext("File is too large (max 20 MB)")
+  defp upload_error_to_string(:not_accepted), do: gettext("File type not supported")
+  defp upload_error_to_string(:too_many_files), do: gettext("Only one file at a time")
+  defp upload_error_to_string(_), do: gettext("Upload error")
 
   defp render_markdown(nil), do: ""
   defp render_markdown(""), do: ""
