@@ -39,7 +39,7 @@ defmodule Meddie.Telegram.Client do
     url = "#{@base_url}/bot#{token}/sendMessage"
 
     body =
-      %{"chat_id" => chat_id, "text" => text, "parse_mode" => "Markdown"}
+      %{"chat_id" => chat_id, "text" => text, "parse_mode" => "HTML"}
       |> maybe_add_reply_markup(opts[:reply_markup])
 
     case Req.post(url, json: body, receive_timeout: @timeout) do
@@ -135,7 +135,7 @@ defmodule Meddie.Telegram.Client do
       "chat_id" => chat_id,
       "message_id" => message_id,
       "text" => text,
-      "parse_mode" => "Markdown"
+      "parse_mode" => "HTML"
     }
 
     case Req.post(url, json: body, receive_timeout: @timeout) do

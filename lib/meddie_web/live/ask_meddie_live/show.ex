@@ -130,7 +130,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
                     <.icon name="hero-document-micro" class="size-4" />
                     <span>{msg.attachment_name}</span>
                   </div>
-                  <div :if={msg.content && msg.content != ""} class="prose prose-sm max-w-none">
+                  <div :if={msg.content && msg.content != ""} class="markdown-content">
                     {render_markdown(msg.content)}
                   </div>
                 </div>
@@ -150,79 +150,99 @@ defmodule MeddieWeb.AskMeddieLive.Show do
             <%!-- Streaming message --%>
             <div :if={@streaming} class="flex justify-start">
               <div class="max-w-[80%] rounded-2xl px-4 py-3 text-sm bg-base-200">
-                <div class="prose prose-sm max-w-none">
-                  <span data-streaming-target class="whitespace-pre-wrap"></span>
+                <div class="markdown-content">
+                  <div data-streaming-target></div>
                   <span class="loading loading-dots loading-xs ml-1"></span>
                 </div>
               </div>
             </div>
           </div>
 
-          <%!-- Input area with person picker --%>
-          <div class="shrink-0 border-t border-base-300/50 px-4 py-3">
-            <%!-- File preview --%>
-            <div :for={entry <- @uploads.chat_file.entries} class="flex items-center gap-2 mb-2 px-1">
-              <div class="badge badge-ghost gap-1">
-                <span :if={entry.progress < 100} class="loading loading-spinner loading-xs"></span>
-                <.icon :if={entry.progress == 100} name="hero-paper-clip-micro" class="size-3" />
-                <span class="text-xs truncate max-w-32">{entry.client_name}</span>
-                <button type="button" phx-click="cancel_upload" phx-value-ref={entry.ref} class="ml-1">
-                  <.icon name="hero-x-mark-micro" class="size-3 text-error" />
-                </button>
-              </div>
-              <div :for={err <- upload_errors(@uploads.chat_file, entry)} class="text-error text-xs">
-                {upload_error_to_string(err)}
+          <%!-- Input area --%>
+          <div class="shrink-0 border-t border-base-300/50 px-4 py-3 space-y-2">
+            <%!-- Context bar: person + file previews --%>
+            <div
+              :if={show_input_context?(@selected_person, @conversation, @messages, @uploads)}
+              class="flex items-center gap-1.5 flex-wrap justify-end px-1"
+            >
+              <%!-- Person picker --%>
+              <%= if can_change_person?(@conversation, @messages) do %>
+                <div class="dropdown dropdown-top dropdown-end">
+                  <div
+                    tabindex="0"
+                    role="button"
+                    class="badge badge-ghost badge-sm gap-1 cursor-pointer hover:bg-base-300/80 transition-colors"
+                  >
+                    <.icon name={if @selected_person, do: "hero-user-micro", else: "hero-user-plus-micro"} class="size-3" />
+                    <span class="text-xs">{if @selected_person, do: @selected_person.name, else: gettext("Select person")}</span>
+                    <.icon name="hero-chevron-up-micro" class="size-3 opacity-40" />
+                  </div>
+                  <ul
+                    tabindex="0"
+                    class="dropdown-content menu p-2 shadow-elevated-lg bg-base-100 rounded-xl w-56 z-50 border border-base-300/50 mb-2"
+                  >
+                    <li>
+                      <button type="button" phx-click="select_person" phx-value-person-id="" onclick="document.activeElement.blur()">
+                        <span class={[!@selected_person && "font-bold"]}>{gettext("No person")}</span>
+                      </button>
+                    </li>
+                    <li :for={person <- @people}>
+                      <button type="button" phx-click="select_person" phx-value-person-id={person.id} onclick="document.activeElement.blur()">
+                        <span class={[@selected_person && @selected_person.id == person.id && "font-bold"]}>
+                          {person.name}
+                        </span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              <% else %>
+                <span :if={@selected_person} class="badge badge-ghost badge-sm gap-1">
+                  <.icon name="hero-user-micro" class="size-3" />
+                  <span class="text-xs">{@selected_person.name}</span>
+                </span>
+              <% end %>
+
+              <%!-- File preview badges --%>
+              <div :for={entry <- @uploads.chat_file.entries} class="flex items-center gap-1">
+                <div class="badge badge-ghost badge-sm gap-1">
+                  <span :if={entry.progress < 100} class="loading loading-spinner loading-xs"></span>
+                  <.icon :if={entry.progress == 100} name="hero-paper-clip-micro" class="size-3" />
+                  <span class="text-xs truncate max-w-32">{entry.client_name}</span>
+                  <button type="button" phx-click="cancel_upload" phx-value-ref={entry.ref} class="ml-1 cursor-pointer hover:opacity-70 transition-opacity">
+                    <.icon name="hero-x-mark-micro" class="size-3 text-error" />
+                  </button>
+                </div>
+                <div :for={err <- upload_errors(@uploads.chat_file, entry)} class="text-error text-xs">
+                  {upload_error_to_string(err)}
+                </div>
               </div>
             </div>
-            <form phx-submit="send_message" phx-change="validate_upload" class="flex items-center gap-2">
-              <%!-- Person picker (opens upward) --%>
-              <div :if={can_change_person?(@conversation, @messages)} class="dropdown dropdown-top">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-square">
-                  <.icon name="hero-user-micro" class="size-4" />
-                </div>
-                <ul
-                  tabindex="0"
-                  class="dropdown-content menu p-2 shadow-elevated-lg bg-base-100 rounded-xl w-56 z-50 border border-base-300/50 mb-2"
-                >
-                  <li>
-                    <button type="button" phx-click="select_person" phx-value-person-id="">
-                      <span class={[!@selected_person && "font-bold"]}>{gettext("No person")}</span>
-                    </button>
-                  </li>
-                  <li :for={person <- @people}>
-                    <button type="button" phx-click="select_person" phx-value-person-id={person.id}>
-                      <span class={[@selected_person && @selected_person.id == person.id && "font-bold"]}>
-                        {person.name}
-                      </span>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              <span :if={@selected_person && !can_change_person?(@conversation, @messages)} class="badge badge-ghost badge-sm gap-1">
-                <.icon name="hero-user-micro" class="size-3" />
-                {@selected_person.name}
-              </span>
-              <%!-- File upload button --%>
-              <label class="btn btn-ghost btn-sm btn-square cursor-pointer" title={gettext("Attach file")}>
-                <.icon name="hero-paper-clip-micro" class="size-4" />
-                <.live_file_input upload={@uploads.chat_file} class="hidden" />
-              </label>
-              <input
-                type="text"
+
+            <%!-- Input row: textarea + buttons --%>
+            <form phx-submit="send_message" phx-change="validate_upload" class="flex items-end gap-2">
+              <textarea
+                id="chat-textarea"
                 name="message"
-                value=""
                 placeholder={if @streaming, do: gettext("Meddie is typing..."), else: gettext("Ask a question...")}
                 autocomplete="off"
-                class="input input-bordered flex-1 min-w-0"
+                rows="1"
+                phx-hook="AutoGrowTextarea"
                 phx-debounce="100"
-              />
-              <button
-                type="submit"
-                disabled={@streaming || uploads_in_progress?(@uploads)}
-                class="btn btn-primary btn-square"
-              >
-                <.icon name="hero-paper-airplane-micro" class="size-5" />
-              </button>
+                class="flex-1 min-w-0 resize-none overflow-hidden rounded-xl border border-base-300 bg-base-100 px-4 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              ></textarea>
+              <div class="flex gap-1 shrink-0 pb-0.5">
+                <label class="btn btn-ghost btn-sm btn-square cursor-pointer" title={gettext("Attach file")}>
+                  <.icon name="hero-paper-clip-micro" class="size-4" />
+                  <.live_file_input upload={@uploads.chat_file} class="hidden" />
+                </label>
+                <button
+                  type="submit"
+                  disabled={@streaming || uploads_in_progress?(@uploads)}
+                  class="btn btn-primary btn-sm btn-square"
+                >
+                  <.icon name="hero-paper-airplane-micro" class="size-4" />
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -236,13 +256,11 @@ defmodule MeddieWeb.AskMeddieLive.Show do
   @impl true
   def mount(params, _session, socket) do
     scope = socket.assigns.current_scope
-    linked_person = People.get_linked_person(scope)
     conversations = Conversations.list_conversations(scope)
 
     {:ok,
      socket
      |> assign(page_title: gettext("Ask Meddie"))
-     |> assign(linked_person: linked_person)
      |> assign(conversations: conversations)
      |> assign(conversation: nil)
      |> assign(messages: [])
@@ -270,11 +288,7 @@ defmodule MeddieWeb.AskMeddieLive.Show do
     people = socket.assigns.people
 
     selected_person =
-      cond do
-        person_id -> Enum.find(people, &(&1.id == person_id))
-        socket.assigns.linked_person -> socket.assigns.linked_person
-        true -> nil
-      end
+      if person_id, do: Enum.find(people, &(&1.id == person_id))
 
     socket
     |> assign(conversation: nil)
@@ -580,7 +594,8 @@ defmodule MeddieWeb.AskMeddieLive.Show do
      socket
      |> assign(messages: messages)
      |> assign(streaming: true, streaming_text: "")
-     |> assign(pending_file_save: pending_save)}
+     |> assign(pending_file_save: pending_save)
+     |> push_event("chat:reset_input", %{})}
   end
 
   defp ensure_conversation(socket) do
@@ -776,6 +791,12 @@ defmodule MeddieWeb.AskMeddieLive.Show do
       {:ok, url} -> url
       _ -> "#"
     end
+  end
+
+  defp show_input_context?(selected_person, conversation, messages, uploads) do
+    selected_person != nil ||
+      can_change_person?(conversation, messages) ||
+      uploads.chat_file.entries != []
   end
 
   defp uploads_in_progress?(uploads) do

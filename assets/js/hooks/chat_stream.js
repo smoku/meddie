@@ -1,32 +1,40 @@
+import { marked } from "marked"
+
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+  async: false,
+})
+
 const ChatStream = {
   mounted() {
-    this.streamingTarget = null
+    this.streamingText = ""
 
     this.handleEvent("chat:token", ({ text }) => {
       const target = this.el.querySelector("[data-streaming-target]")
       if (target) {
-        target.textContent += text
+        this.streamingText += text
+        target.innerHTML = marked.parse(this.streamingText)
         this.scrollToBottom()
       }
     })
 
     this.handleEvent("chat:complete", () => {
-      // Server will re-render the full message list via LiveView assigns
-      // Clear streaming target content since it will be replaced
+      this.streamingText = ""
       const target = this.el.querySelector("[data-streaming-target]")
       if (target) {
-        target.textContent = ""
+        target.innerHTML = ""
       }
     })
 
     this.handleEvent("chat:error", ({ message }) => {
+      this.streamingText = ""
       const target = this.el.querySelector("[data-streaming-target]")
       if (target) {
-        target.textContent = ""
+        target.innerHTML = ""
       }
     })
 
-    // Initial scroll to bottom
     this.scrollToBottom()
   },
 
@@ -40,7 +48,9 @@ const ChatStream = {
     })
   },
 
-  destroyed() {}
+  destroyed() {
+    this.streamingText = ""
+  }
 }
 
 export default ChatStream

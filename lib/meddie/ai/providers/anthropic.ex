@@ -225,7 +225,10 @@ defmodule Meddie.AI.Providers.Anthropic do
         {:ok, String.trim(content)}
 
       {:ok, %{status: status, body: body}} ->
-        Logger.error("Anthropic format_profile_field error: status=#{status} body=#{inspect(body)}")
+        Logger.error(
+          "Anthropic format_profile_field error: status=#{status} body=#{inspect(body)}"
+        )
+
         {:error, "Anthropic API error: #{status}"}
 
       {:error, reason} ->

@@ -568,7 +568,7 @@ msgstr "Przeciągnij i upuść pliki tutaj, lub"
 msgid "Failed"
 msgstr "Niepowodzenie"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:780
+#: lib/meddie_web/live/ask_meddie_live/show.ex:811
 #: lib/meddie_web/live/people_live/show.ex:761
 #, elixir-autogen, elixir-format
 msgid "File is too large (max 20 MB)"
@@ -686,7 +686,7 @@ msgstr "Nieobsługiwany format pliku. Akceptowane: PDF, JPG, PNG"
 msgid "Upload a medical document to get started."
 msgstr "Prześlij dokument medyczny, aby rozpocząć."
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:783
+#: lib/meddie_web/live/ask_meddie_live/show.ex:814
 #: lib/meddie_web/live/people_live/show.ex:767
 #, elixir-autogen, elixir-format
 msgid "Upload error"
@@ -775,7 +775,7 @@ msgstr "Prześlij wyniki badań, aby rozpocząć śledzenie biomarkerów."
 #: lib/meddie_web/live/ask_meddie_live/index.ex:85
 #: lib/meddie_web/live/ask_meddie_live/show.ex:21
 #: lib/meddie_web/live/ask_meddie_live/show.ex:27
-#: lib/meddie_web/live/ask_meddie_live/show.ex:244
+#: lib/meddie_web/live/ask_meddie_live/show.ex:268
 #: lib/meddie_web/live/people_live/show.ex:29
 #, elixir-autogen, elixir-format
 msgid "Ask Meddie"
@@ -786,12 +786,12 @@ msgstr "Zapytaj Meddie"
 msgid "Ask Meddie about %{name}'s health data"
 msgstr "Zapytaj Meddie o dane zdrowotne %{name}"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:213
+#: lib/meddie_web/live/ask_meddie_live/show.ex:168
 #, elixir-autogen, elixir-format
 msgid "Ask a question..."
 msgstr "Zadaj pytanie..."
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:433
+#: lib/meddie_web/live/ask_meddie_live/show.ex:453
 #, elixir-autogen, elixir-format
 msgid "Could not revert update."
 msgstr "Nie udało się cofnąć zmiany."
@@ -802,12 +802,12 @@ msgid "Delete this conversation?"
 msgstr "Usunąć tę konwersację?"
 
 #: lib/meddie_web/live/ask_meddie_live/index.ex:97
-#: lib/meddie_web/live/ask_meddie_live/show.ex:825
+#: lib/meddie_web/live/ask_meddie_live/show.ex:856
 #, elixir-autogen, elixir-format
 msgid "General"
 msgstr "Ogólne"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:213
+#: lib/meddie_web/live/ask_meddie_live/show.ex:168
 #, elixir-autogen, elixir-format
 msgid "Meddie is typing..."
 msgstr "Meddie pisze..."
@@ -837,12 +837,12 @@ msgstr "Nowa konwersacja"
 msgid "No conversations yet."
 msgstr "Brak konwersacji."
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:188
+#: lib/meddie_web/live/ask_meddie_live/show.ex:201
 #, elixir-autogen, elixir-format
 msgid "No person"
 msgstr "Bez osoby"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:765
+#: lib/meddie_web/live/ask_meddie_live/show.ex:786
 #, elixir-autogen, elixir-format
 msgid "Saved to"
 msgstr "Zapisano w"
@@ -852,7 +852,7 @@ msgstr "Zapisano w"
 msgid "Saved to %{field}: %{text}"
 msgstr "Zapisano w %{field}: %{text}"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:498
+#: lib/meddie_web/live/ask_meddie_live/show.ex:518
 #, elixir-autogen, elixir-format
 msgid "Something went wrong. Please try again."
 msgstr "Coś poszło nie tak. Spróbuj ponownie."
@@ -867,7 +867,7 @@ msgstr "Rozpocznij konwersację z Meddie"
 msgid "Start a new chat to ask Meddie about your health data."
 msgstr "Rozpocznij nowy czat, aby zapytać Meddie o swoje dane zdrowotne."
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:797
+#: lib/meddie_web/live/ask_meddie_live/show.ex:828
 #, elixir-autogen, elixir-format
 msgid "Summarize my latest results"
 msgstr "Podsumuj moje ostatnie wyniki"
@@ -877,7 +877,7 @@ msgstr "Podsumuj moje ostatnie wyniki"
 msgid "Undo"
 msgstr "Cofnij"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:321
+#: lib/meddie_web/live/ask_meddie_live/show.ex:341
 #, elixir-autogen, elixir-format
 msgid "You've reached the daily message limit. Try again tomorrow."
 msgstr "Osiągnięto dzienny limit wiadomości. Spróbuj ponownie jutro."
@@ -1028,7 +1028,7 @@ msgstr "Nadwaga"
 msgid "Underweight"
 msgstr "Niedowaga"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:766
+#: lib/meddie_web/live/ask_meddie_live/show.ex:787
 #, elixir-autogen, elixir-format
 msgid "Removed from"
 msgstr "Usunięto z"
@@ -1038,22 +1038,22 @@ msgstr "Usunięto z"
 msgid "Removed from %{field}: %{text}"
 msgstr "Usunięto z %{field}: %{text}"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:803
+#: lib/meddie_web/live/ask_meddie_live/show.ex:834
 #, elixir-autogen, elixir-format
 msgid "Any interactions between my supplements and medications?"
 msgstr "Czy moje suplementy i leki mogą na siebie wpływać?"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:796
+#: lib/meddie_web/live/ask_meddie_live/show.ex:827
 #, elixir-autogen, elixir-format
 msgid "How am I doing overall?"
 msgstr "Jak ogólnie wygląda moje zdrowie?"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:806
+#: lib/meddie_web/live/ask_meddie_live/show.ex:837
 #, elixir-autogen, elixir-format
 msgid "What should I monitor given my health history?"
 msgstr "Na co zwracać uwagę biorąc pod uwagę moją historię zdrowia?"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:809
+#: lib/meddie_web/live/ask_meddie_live/show.ex:840
 #, elixir-autogen, elixir-format
 msgid "What should I pay attention to?"
 msgstr "Na co powinienem zwrócić uwagę?"
@@ -1074,17 +1074,17 @@ msgstr "Musisz się zalogować, aby uzyskać dostęp do tej strony."
 msgid "You must re-authenticate to access this page."
 msgstr "Musisz się ponownie uwierzytelnić, aby uzyskać dostęp do tej strony."
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:205
+#: lib/meddie_web/live/ask_meddie_live/show.ex:238
 #, elixir-autogen, elixir-format
 msgid "Attach file"
 msgstr "Załącz plik"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:356
+#: lib/meddie_web/live/ask_meddie_live/show.ex:376
 #, elixir-autogen, elixir-format
 msgid "Could not save document."
 msgstr "Nie udało się zapisać dokumentu."
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:350
+#: lib/meddie_web/live/ask_meddie_live/show.ex:370
 #, elixir-autogen, elixir-format
 msgid "Document saved and queued for parsing."
 msgstr "Dokument zapisany i oczekuje na przetworzenie."
@@ -1094,7 +1094,7 @@ msgstr "Dokument zapisany i oczekuje na przetworzenie."
 msgid "File"
 msgstr "Plik"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:781
+#: lib/meddie_web/live/ask_meddie_live/show.ex:812
 #, elixir-autogen, elixir-format
 msgid "File type not supported"
 msgstr "Typ pliku nie jest obsługiwany"
@@ -1104,7 +1104,7 @@ msgstr "Typ pliku nie jest obsługiwany"
 msgid "No thanks"
 msgstr "Nie, dziękuję"
 
-#: lib/meddie_web/live/ask_meddie_live/show.ex:782
+#: lib/meddie_web/live/ask_meddie_live/show.ex:813
 #, elixir-autogen, elixir-format
 msgid "Only one file at a time"
 msgstr "Tylko jeden plik na raz"
@@ -1113,3 +1113,8 @@ msgstr "Tylko jeden plik na raz"
 #, elixir-autogen, elixir-format
 msgid "Save this file to %{name}'s documents?"
 msgstr "Zapisać ten plik w dokumentach %{name}?"
+
+#: lib/meddie_web/live/ask_meddie_live/show.ex:192
+#, elixir-autogen, elixir-format
+msgid "Select person"
+msgstr "Wybierz osobę"

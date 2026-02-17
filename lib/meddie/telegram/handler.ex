@@ -12,7 +12,7 @@ defmodule Meddie.Telegram.Handler do
   alias Meddie.Conversations.Chat
   alias Meddie.Documents
   alias Meddie.People
-  alias Meddie.Telegram.{Client, Links}
+  alias Meddie.Telegram.{Client, Formatter, Links}
 
   @daily_message_limit 200
 
@@ -34,7 +34,7 @@ defmodule Meddie.Telegram.Handler do
             Client.send_message(token, chat_id,
               "I don't recognize your Telegram account. " <>
                 "Please ask your Space admin to link your Telegram ID in Settings.\n\n" <>
-                "Your Telegram ID: `#{telegram_user_id}`"
+                "Your Telegram ID: <code>#{telegram_user_id}</code>"
             )
         end
 
@@ -97,7 +97,7 @@ defmodule Meddie.Telegram.Handler do
 
   defp handle_start(space, token, chat_id) do
     Client.send_message(token, chat_id,
-      "Welcome to Meddie! You're connected to *#{space.name}*.\n\n" <>
+      "Welcome to Meddie! You're connected to <b>#{space.name}</b>.\n\n" <>
         "Send me a message to ask about health data, or use:\n" <>
         "/new — Start a new conversation\n" <>
         "/help — Show available commands"
@@ -115,7 +115,7 @@ defmodule Meddie.Telegram.Handler do
 
   defp handle_help(token, chat_id) do
     Client.send_message(token, chat_id,
-      "*Available commands:*\n\n" <>
+      "<b>Available commands:</b>\n\n" <>
         "/start — Welcome message\n" <>
         "/new — Start a new conversation\n" <>
         "/help — Show this help\n\n" <>
@@ -151,9 +151,6 @@ defmodule Meddie.Telegram.Handler do
     # Save user message
     {:ok, _user_msg} = Conversations.create_message(conversation, %{"role" => "user", "content" => text})
 
-    # Send typing indicator
-    Client.send_chat_action(token, chat_id)
-
     # Build AI context with memory
     memory_facts = Meddie.Memory.search_for_prompt(scope, text)
     system_prompt = Chat.build_system_prompt(scope, person, memory_facts)
@@ -167,8 +164,8 @@ defmodule Meddie.Telegram.Handler do
 
     ai_messages = previous_messages ++ ai_messages
 
-    # Call AI (non-streaming)
-    case Meddie.AI.chat(ai_messages, system_prompt) do
+    # Call AI (non-streaming) with persistent typing indicator
+    case with_typing_indicator(token, chat_id, fn -> Meddie.AI.chat(ai_messages, system_prompt) end) do
       {:ok, response_text} ->
         # Parse profile updates + memory saves
         {display_text, profile_updates_data, memory_saves_data} = Chat.parse_response_metadata(response_text)
@@ -182,15 +179,15 @@ defmodule Meddie.Telegram.Handler do
         # Apply memory saves (semantic facts)
         Chat.apply_memory_saves(scope, memory_saves_data)
 
-        # Send response (split if needed)
+        # Send response (split markdown, then convert each chunk to Telegram HTML)
         chunks = Chat.split_message(display_text)
         Enum.each(chunks, fn chunk ->
-          Client.send_message(token, chat_id, chunk)
+          Client.send_message(token, chat_id, Formatter.to_telegram_html(chunk))
         end)
 
         # Send memory update notifications
         Enum.each(system_messages, fn sys_msg ->
-          Client.send_message(token, chat_id, "_#{sys_msg.content}_")
+          Client.send_message(token, chat_id, "<i>#{sys_msg.content}</i>")
         end)
 
         # Update conversation timestamp
@@ -274,9 +271,6 @@ defmodule Meddie.Telegram.Handler do
         "attachment_name" => filename
       })
 
-    # Send typing indicator
-    Client.send_chat_action(token, chat_id)
-
     # Build AI context
     memory_facts = Meddie.Memory.search_for_prompt(scope, msg_content)
     system_prompt = Chat.build_system_prompt(scope, person, memory_facts)
@@ -290,8 +284,8 @@ defmodule Meddie.Telegram.Handler do
 
     ai_messages = previous_messages ++ ai_messages
 
-    # Call AI (non-streaming)
-    case Meddie.AI.chat(ai_messages, system_prompt) do
+    # Call AI (non-streaming) with persistent typing indicator
+    case with_typing_indicator(token, chat_id, fn -> Meddie.AI.chat(ai_messages, system_prompt) end) do
       {:ok, response_text} ->
         {display_text, profile_updates_data, memory_saves_data} = Chat.parse_response_metadata(response_text)
 
@@ -301,12 +295,12 @@ defmodule Meddie.Telegram.Handler do
         system_messages = Chat.apply_profile_updates(scope, conversation, person, assistant_msg, profile_updates_data)
         Chat.apply_memory_saves(scope, memory_saves_data)
 
-        # Send response
+        # Send response (split markdown, then convert each chunk to Telegram HTML)
         chunks = Chat.split_message(display_text)
-        Enum.each(chunks, fn chunk -> Client.send_message(token, chat_id, chunk) end)
+        Enum.each(chunks, fn chunk -> Client.send_message(token, chat_id, Formatter.to_telegram_html(chunk)) end)
 
         Enum.each(system_messages, fn sys_msg ->
-          Client.send_message(token, chat_id, "_#{sys_msg.content}_")
+          Client.send_message(token, chat_id, "<i>#{sys_msg.content}</i>")
         end)
 
         # Offer to save as document (only if person is known)
@@ -438,6 +432,30 @@ defmodule Meddie.Telegram.Handler do
       error ->
         error
     end
+  end
+
+  # Sends "typing..." every 4 seconds while the given function runs.
+  # Telegram's typing indicator expires after ~5 seconds, so this keeps
+  # it visible for the entire duration of long AI calls.
+  defp with_typing_indicator(token, chat_id, fun) do
+    Client.send_chat_action(token, chat_id)
+
+    pid =
+      spawn(fn ->
+        typing_loop(token, chat_id)
+      end)
+
+    try do
+      fun.()
+    after
+      Process.exit(pid, :kill)
+    end
+  end
+
+  defp typing_loop(token, chat_id) do
+    Process.sleep(4_000)
+    Client.send_chat_action(token, chat_id)
+    typing_loop(token, chat_id)
   end
 
   defp maybe_resolve_person(conversation, text, people, scope) do

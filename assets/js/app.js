@@ -28,12 +28,13 @@ import MarkdownEditor from "./hooks/markdown_editor"
 import PdfViewer from "./hooks/pdf_viewer"
 import TrendChart from "./hooks/trend_chart"
 import ChatStream from "./hooks/chat_stream"
+import AutoGrowTextarea from "./hooks/auto_grow_textarea"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, MarkdownEditor, PdfViewer, TrendChart, ChatStream},
+  hooks: {...colocatedHooks, MarkdownEditor, PdfViewer, TrendChart, ChatStream, AutoGrowTextarea},
 })
 
 // Show progress bar on live navigation and form submits
