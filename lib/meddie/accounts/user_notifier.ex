@@ -3,7 +3,7 @@ defmodule Meddie.Accounts.UserNotifier do
 
   alias Meddie.Mailer
 
-  @from {"Meddie", "meddie@resend.dev"}
+  @from {"Meddie", "meddie@meddie.pl"}
 
   defp deliver(recipient, subject, body) do
     email =
