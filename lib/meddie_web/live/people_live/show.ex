@@ -897,7 +897,7 @@ defmodule MeddieWeb.PeopleLive.Show do
       latest_date =
         latest.document.document_date || DateTime.to_date(latest.document.inserted_at)
 
-      stale? = Date.diff(Date.utc_today(), latest_date) > 180
+      stale? = Date.diff(Date.utc_today(), latest_date) > 730
 
       %{
         name: name,
