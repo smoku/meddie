@@ -28,17 +28,20 @@ defmodule Meddie.Documents do
   Supports `:limit` and `:offset` options for pagination.
   """
   def list_documents(%Scope{space: space}, person_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
+    query =
+      from(d in Document,
+        where: d.space_id == ^space.id and d.person_id == ^person_id,
+        order_by: [desc_nulls_first: d.document_date, desc: d.inserted_at],
+        preload: [:biomarkers]
+      )
 
-    from(d in Document,
-      where: d.space_id == ^space.id and d.person_id == ^person_id,
-      order_by: [desc_nulls_first: d.document_date, desc: d.inserted_at],
-      limit: ^limit,
-      offset: ^offset,
-      preload: [:biomarkers]
-    )
-    |> Repo.all()
+    query =
+      case Keyword.get(opts, :limit) do
+        nil -> query
+        limit -> from(q in query, limit: ^limit)
+      end
+
+    Repo.all(query)
   end
 
   @doc """

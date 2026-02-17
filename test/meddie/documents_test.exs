@@ -37,15 +37,11 @@ defmodule Meddie.DocumentsTest do
       assert docs == []
     end
 
-    test "supports pagination via :limit and :offset", %{scope: scope, person: person} do
+    test "supports :limit option", %{scope: scope, person: person} do
       for _ <- 1..5, do: document_fixture(scope, person)
 
-      page1 = Documents.list_documents(scope, person.id, limit: 2, offset: 0)
-      page2 = Documents.list_documents(scope, person.id, limit: 2, offset: 2)
-
-      assert length(page1) == 2
-      assert length(page2) == 2
-      assert Enum.map(page1, & &1.id) -- Enum.map(page2, & &1.id) == Enum.map(page1, & &1.id)
+      assert length(Documents.list_documents(scope, person.id, limit: 2)) == 2
+      assert length(Documents.list_documents(scope, person.id)) == 5
     end
   end
 
