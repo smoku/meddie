@@ -77,7 +77,7 @@ if config_env() == :prod do
 
   # AI providers for production
   config :meddie, :ai,
-    parsing_provider: Meddie.AI.Providers.OpenAI,
+    parsing_provider: Meddie.AI.Providers.Anthropic,
     chat_provider: Meddie.AI.Providers.Anthropic,
     openai_api_key: System.get_env("OPENAI_API_KEY"),
     anthropic_api_key: System.get_env("ANTHROPIC_API_KEY")
