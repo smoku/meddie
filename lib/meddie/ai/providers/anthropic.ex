@@ -11,7 +11,8 @@ defmodule Meddie.AI.Providers.Anthropic do
   @vision_model "claude-sonnet-4-5-20250929"
   @chat_model "claude-opus-4-6"
   @fast_model "claude-haiku-4-5-20251001"
-  @timeout 180_000
+  @connect_timeout 60_000
+  @receive_timeout 300_000
 
   @impl true
   def parse_document(images, person_context) do
@@ -51,7 +52,8 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           receive_timeout: @timeout
+           connect_timeout: @connect_timeout,
+           receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: response}} ->
         parse_response(response)
@@ -82,7 +84,8 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           receive_timeout: @timeout,
+           connect_timeout: @connect_timeout,
+           receive_timeout: @receive_timeout,
            into: fn {:data, data}, {req, resp} ->
              for line <- String.split(data, "\n", trim: true),
                  String.starts_with?(line, "data: "),
@@ -117,7 +120,8 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           receive_timeout: @timeout
+           connect_timeout: @connect_timeout,
+           receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
         {:ok, text}
@@ -153,7 +157,8 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           receive_timeout: @timeout
+           connect_timeout: @connect_timeout,
+           receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
         text = strip_code_fences(text)
@@ -190,7 +195,8 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           receive_timeout: @timeout
+           connect_timeout: @connect_timeout,
+           receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => title} | _]}}} ->
         {:ok, String.trim(title)}
@@ -219,7 +225,8 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           receive_timeout: @timeout
+           connect_timeout: @connect_timeout,
+           receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => content} | _]}}} ->
         {:ok, String.trim(content)}
