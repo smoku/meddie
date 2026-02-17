@@ -52,7 +52,7 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           connect_timeout: @connect_timeout,
+           connect_options: [timeout: @connect_timeout],
            receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: response}} ->
@@ -84,7 +84,7 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           connect_timeout: @connect_timeout,
+           connect_options: [timeout: @connect_timeout],
            receive_timeout: @receive_timeout,
            into: fn {:data, data}, {req, resp} ->
              for line <- String.split(data, "\n", trim: true),
@@ -120,7 +120,7 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           connect_timeout: @connect_timeout,
+           connect_options: [timeout: @connect_timeout],
            receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
@@ -141,7 +141,11 @@ defmodule Meddie.AI.Providers.Anthropic do
     body = %{
       "model" => @fast_model,
       "system" =>
-        "You resolve which person a message is about. Return JSON: {\"person_number\": N} where N is the 1-indexed number, or {\"person_number\": null} if unclear.",
+        "You resolve which person a message is about from a numbered list. " <>
+          "First-person language (\"my\", \"mine\", \"moje\", \"moi\", \"ich\") refers to the person marked \"THIS IS THE CURRENT USER\". " <>
+          "If the message mentions someone by name or relation, pick that person. " <>
+          "Return JSON: {\"person_number\": N} where N is the 1-indexed number. " <>
+          "Only return {\"person_number\": null} if you truly cannot determine which person.",
       "messages" => [
         %{
           "role" => "user",
@@ -157,18 +161,25 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           connect_timeout: @connect_timeout,
+           connect_options: [timeout: @connect_timeout],
            receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
         text = strip_code_fences(text)
+        json = extract_json_object(text)
+        Logger.debug("[AI] resolve_person raw response: #{text}")
 
-        case Jason.decode(text) do
+        case Jason.decode(json) do
           {:ok, %{"person_number" => n}} -> {:ok, n}
           _ -> {:ok, nil}
         end
 
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("Anthropic resolve_person error: status=#{status} body=#{inspect(body)}")
+        {:error, "Anthropic API error: #{status}"}
+
       {:error, reason} ->
+        Logger.error("Anthropic resolve_person failed: #{inspect(reason)}")
         {:error, "Anthropic resolve_person failed: #{inspect(reason)}"}
     end
   end
@@ -195,13 +206,18 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           connect_timeout: @connect_timeout,
+           connect_options: [timeout: @connect_timeout],
            receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => title} | _]}}} ->
         {:ok, String.trim(title)}
 
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("Anthropic generate_title error: status=#{status} body=#{inspect(body)}")
+        {:error, "Anthropic API error: #{status}"}
+
       {:error, reason} ->
+        Logger.error("Anthropic generate_title failed: #{inspect(reason)}")
         {:error, "Anthropic generate_title failed: #{inspect(reason)}"}
     end
   end
@@ -225,7 +241,7 @@ defmodule Meddie.AI.Providers.Anthropic do
              {"x-api-key", api_key()},
              {"anthropic-version", "2023-06-01"}
            ],
-           connect_timeout: @connect_timeout,
+           connect_options: [timeout: @connect_timeout],
            receive_timeout: @receive_timeout
          ) do
       {:ok, %{status: 200, body: %{"content" => [%{"text" => content} | _]}}} ->
@@ -255,6 +271,13 @@ defmodule Meddie.AI.Providers.Anthropic do
 
   defp parse_response(response) do
     {:error, "Unexpected Anthropic response format: #{inspect(response)}"}
+  end
+
+  defp extract_json_object(text) do
+    case Regex.run(~r/\{[^}]*\}/, text) do
+      [json] -> json
+      _ -> text
+    end
   end
 
   defp strip_code_fences(text) do

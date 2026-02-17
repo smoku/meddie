@@ -125,7 +125,11 @@ defmodule Meddie.AI.Providers.OpenAI do
         %{
           "role" => "system",
           "content" =>
-            "You resolve which person a message is about. Return JSON: {\"person_number\": N} where N is the 1-indexed number, or {\"person_number\": null} if unclear."
+            "You resolve which person a message is about from a numbered list. " <>
+              "First-person language (\"my\", \"mine\", \"moje\", \"moi\", \"ich\") refers to the person marked \"THIS IS THE CURRENT USER\". " <>
+              "If the message mentions someone by name or relation, pick that person. " <>
+              "Return JSON: {\"person_number\": N} where N is the 1-indexed number. " <>
+              "Only return {\"person_number\": null} if you truly cannot determine which person."
         },
         %{
           "role" => "user",
@@ -147,7 +151,12 @@ defmodule Meddie.AI.Providers.OpenAI do
           _ -> {:ok, nil}
         end
 
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("OpenAI resolve_person error: status=#{status} body=#{inspect(body)}")
+        {:error, "OpenAI API error: #{status}"}
+
       {:error, reason} ->
+        Logger.error("OpenAI resolve_person failed: #{inspect(reason)}")
         {:error, "OpenAI resolve_person failed: #{inspect(reason)}"}
     end
   end
@@ -179,7 +188,12 @@ defmodule Meddie.AI.Providers.OpenAI do
       {:ok, %{status: 200, body: %{"choices" => [%{"message" => %{"content" => title}} | _]}}} ->
         {:ok, String.trim(title)}
 
+      {:ok, %{status: status, body: body}} ->
+        Logger.error("OpenAI generate_title error: status=#{status} body=#{inspect(body)}")
+        {:error, "OpenAI API error: #{status}"}
+
       {:error, reason} ->
+        Logger.error("OpenAI generate_title failed: #{inspect(reason)}")
         {:error, "OpenAI generate_title failed: #{inspect(reason)}"}
     end
   end
