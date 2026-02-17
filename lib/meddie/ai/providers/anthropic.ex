@@ -1,6 +1,6 @@
 defmodule Meddie.AI.Providers.Anthropic do
   @moduledoc """
-  Anthropic provider implementation using Claude for vision and chat.
+  Anthropic provider: Sonnet for document parsing, Opus for chat.
   """
 
   @behaviour Meddie.AI.Provider
@@ -8,7 +8,8 @@ defmodule Meddie.AI.Providers.Anthropic do
   require Logger
 
   @api_url "https://api.anthropic.com/v1/messages"
-  @model "claude-sonnet-4-5-20250929"
+  @vision_model "claude-sonnet-4-5-20250929"
+  @chat_model "claude-opus-4-6"
   @fast_model "claude-haiku-4-5-20251001"
   @timeout 180_000
 
@@ -36,7 +37,7 @@ defmodule Meddie.AI.Providers.Anthropic do
     content = content ++ [%{"type" => "text", "text" => "Parse this medical document."}]
 
     body = %{
-      "model" => @model,
+      "model" => @vision_model,
       "system" => system_prompt,
       "messages" => [
         %{"role" => "user", "content" => content}
@@ -68,7 +69,7 @@ defmodule Meddie.AI.Providers.Anthropic do
   @impl true
   def chat_stream(messages, system_prompt, callback) do
     body = %{
-      "model" => @model,
+      "model" => @chat_model,
       "system" => system_prompt,
       "messages" =>
         Enum.map(messages, fn msg ->
@@ -107,7 +108,7 @@ defmodule Meddie.AI.Providers.Anthropic do
   @impl true
   def chat(messages, system_prompt) do
     body = %{
-      "model" => @model,
+      "model" => @chat_model,
       "system" => system_prompt,
       "messages" =>
         Enum.map(messages, fn msg ->
