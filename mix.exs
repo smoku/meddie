@@ -72,6 +72,7 @@ defmodule Meddie.MixProject do
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
       {:hackney, "~> 1.20"},
+      {:resend, "~> 0.4"},
       {:pgvector, "~> 0.3"},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false}
     ]
