@@ -40,6 +40,7 @@ defmodule MeddieWeb.PlatformLive.Index do
                   <th>{gettext("Email")}</th>
                   <th>{gettext("Invited by")}</th>
                   <th>{gettext("Expires")}</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -47,6 +48,15 @@ defmodule MeddieWeb.PlatformLive.Index do
                   <td>{inv.email}</td>
                   <td>{inv.invited_by.name || inv.invited_by.email}</td>
                   <td>{Calendar.strftime(inv.expires_at, "%Y-%m-%d")}</td>
+                  <td>
+                    <button
+                      phx-click="resend_invitation"
+                      phx-value-id={inv.id}
+                      class="btn btn-ghost btn-xs"
+                    >
+                      {gettext("Resend")}
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -124,6 +134,19 @@ defmodule MeddieWeb.PlatformLive.Index do
           end
 
         {:noreply, put_flash(socket, :error, message)}
+    end
+  end
+
+  def handle_event("resend_invitation", %{"id" => id}, socket) do
+    invitation = Meddie.Repo.get!(Meddie.Invitations.Invitation, id)
+
+    case Invitations.resend_invitation(invitation) do
+      {:ok, _} ->
+        {:noreply,
+         put_flash(socket, :info, gettext("Invitation resent to %{email}.", email: invitation.email))}
+
+      {:error, :invalid} ->
+        {:noreply, put_flash(socket, :error, gettext("This invitation is no longer valid."))}
     end
   end
 

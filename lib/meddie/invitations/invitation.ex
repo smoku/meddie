@@ -10,6 +10,7 @@ defmodule Meddie.Invitations.Invitation do
   schema "invitations" do
     field :email, :string
     field :token, :string
+    field :role, :string, default: "member"
     field :accepted_at, :utc_datetime
     field :expires_at, :utc_datetime
 
@@ -21,9 +22,10 @@ defmodule Meddie.Invitations.Invitation do
 
   def changeset(invitation, attrs) do
     invitation
-    |> cast(attrs, [:email, :space_id, :invited_by_id, :token, :expires_at, :accepted_at])
+    |> cast(attrs, [:email, :space_id, :invited_by_id, :token, :role, :expires_at, :accepted_at])
     |> validate_required([:email, :invited_by_id, :token, :expires_at])
     |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+$/)
+    |> validate_inclusion(:role, ~w(admin member))
     |> unique_constraint(:token)
     |> foreign_key_constraint(:space_id)
     |> foreign_key_constraint(:invited_by_id)

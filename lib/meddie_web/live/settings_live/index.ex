@@ -106,10 +106,65 @@ defmodule MeddieWeb.SettingsLive.Index do
                       class="input input-bordered input-sm w-64"
                       required
                     />
+                    <select name="invite[role]" class="select select-bordered select-sm">
+                      <option value="member" selected>{gettext("member")}</option>
+                      <option value="admin">{gettext("admin")}</option>
+                    </select>
                     <button type="submit" class="btn btn-primary btn-sm">
                       {gettext("Send invitation")}
                     </button>
                   </.form>
+                </div>
+
+                <%!-- Pending invitations --%>
+                <div :if={@pending_invitations != []} class="mt-6">
+                  <h4 class="font-semibold text-sm mb-2">{gettext("Pending Invitations")}</h4>
+                  <div class="overflow-x-auto">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>{gettext("Email")}</th>
+                          <th>{gettext("Role")}</th>
+                          <th>{gettext("Invited by")}</th>
+                          <th>{gettext("Expires")}</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr :for={inv <- @pending_invitations}>
+                          <td>{inv.email}</td>
+                          <td>
+                            <span class={[
+                              "badge badge-sm",
+                              inv.role == "admin" && "badge-primary",
+                              inv.role == "member" && "badge-ghost"
+                            ]}>
+                              {display_role(inv.role)}
+                            </span>
+                          </td>
+                          <td>{inv.invited_by.name || inv.invited_by.email}</td>
+                          <td>{Calendar.strftime(inv.expires_at, "%Y-%m-%d")}</td>
+                          <td class="flex gap-1">
+                            <button
+                              phx-click="resend_invitation"
+                              phx-value-id={inv.id}
+                              class="btn btn-ghost btn-xs"
+                            >
+                              {gettext("Resend")}
+                            </button>
+                            <button
+                              phx-click="delete_invitation"
+                              phx-value-id={inv.id}
+                              data-confirm={gettext("Delete this invitation?")}
+                              class="btn btn-ghost btn-xs text-error"
+                            >
+                              {gettext("Delete")}
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -252,6 +307,7 @@ defmodule MeddieWeb.SettingsLive.Index do
     is_admin = role == "admin"
 
     members = if is_admin, do: Spaces.list_space_members(scope), else: []
+    pending_invitations = if is_admin, do: Invitations.list_pending_space_invitations(scope), else: []
     telegram_links = if is_admin, do: Telegram.Links.list_links(scope.space.id), else: []
 
     {:ok,
@@ -260,6 +316,7 @@ defmodule MeddieWeb.SettingsLive.Index do
        page_title: gettext("Settings"),
        is_admin: is_admin,
        members: members,
+       pending_invitations: pending_invitations,
        telegram_links: telegram_links,
        tab: "members"
      )
@@ -292,13 +349,21 @@ defmodule MeddieWeb.SettingsLive.Index do
     end
   end
 
-  def handle_event("invite_to_space", %{"invite" => %{"email" => email}}, socket) do
-    case Invitations.create_space_invitation(socket.assigns.current_scope, email) do
+  def handle_event("invite_to_space", %{"invite" => %{"email" => email} = params}, socket) do
+    role = Map.get(params, "role", "member")
+    scope = socket.assigns.current_scope
+
+    case Invitations.create_space_invitation(scope, email, role) do
       {:ok, _} ->
+        pending_invitations = Invitations.list_pending_space_invitations(scope)
+
         {:noreply,
          socket
          |> put_flash(:info, gettext("Invitation sent to %{email}.", email: email))
-         |> assign(invite_form: to_form(%{"email" => ""}, as: "invite"))}
+         |> assign(
+           invite_form: to_form(%{"email" => ""}, as: "invite"),
+           pending_invitations: pending_invitations
+         )}
 
       {:error, :already_member} ->
         {:noreply,
@@ -312,6 +377,37 @@ defmodule MeddieWeb.SettingsLive.Index do
           end
 
         {:noreply, put_flash(socket, :error, message)}
+    end
+  end
+
+  def handle_event("resend_invitation", %{"id" => id}, socket) do
+    invitation = Meddie.Repo.get!(Meddie.Invitations.Invitation, id)
+
+    case Invitations.resend_invitation(invitation) do
+      {:ok, _} ->
+        {:noreply,
+         put_flash(socket, :info, gettext("Invitation resent to %{email}.", email: invitation.email))}
+
+      {:error, :invalid} ->
+        {:noreply, put_flash(socket, :error, gettext("This invitation is no longer valid."))}
+    end
+  end
+
+  def handle_event("delete_invitation", %{"id" => id}, socket) do
+    invitation = Meddie.Repo.get!(Meddie.Invitations.Invitation, id)
+
+    case Invitations.delete_invitation(invitation) do
+      {:ok, _} ->
+        pending_invitations =
+          Invitations.list_pending_space_invitations(socket.assigns.current_scope)
+
+        {:noreply,
+         socket
+         |> put_flash(:info, gettext("Invitation deleted."))
+         |> assign(pending_invitations: pending_invitations)}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, gettext("Could not delete invitation."))}
     end
   end
 
