@@ -44,3 +44,7 @@ npm-debug.log
 # macOS
 .DS_Store
 
+# Database dumps (e.g. from Fly migration). Keep out of git.
+*.sql
+*.dump
+

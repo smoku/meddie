@@ -7,8 +7,10 @@ defmodule Meddie.Storage.S3 do
 
   @impl true
   def put(path, data, content_type) do
+    opts = [content_type: content_type] ++ storage_class_opt()
+
     bucket()
-    |> ExAws.S3.put_object(path, data, content_type: content_type)
+    |> ExAws.S3.put_object(path, data, opts)
     |> ExAws.request()
     |> case do
       {:ok, _} -> :ok
@@ -46,5 +48,12 @@ defmodule Meddie.Storage.S3 do
 
   defp bucket do
     Application.get_env(:meddie, :storage_bucket, "meddie-documents")
+  end
+
+  defp storage_class_opt do
+    case Application.get_env(:meddie, :storage_class) do
+      nil -> []
+      class -> [storage_class: class]
+    end
   end
 end

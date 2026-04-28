@@ -142,7 +142,7 @@ Split view showing the original document alongside parsed results.
 **Left panel (Original)**:
 - PDF.js viewer for PDFs (scrollable, zoomable)
 - `<img>` tag for images
-- Loaded via signed Tigris URL
+- Loaded via presigned S3 URL
 
 **Right panel (Results)**:
 - **For lab results** (`document_type: lab_results`):

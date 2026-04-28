@@ -2,7 +2,7 @@
 
 ## Description
 
-Users upload medical documents (PDFs or photos) for a specific person, which are automatically parsed by an AI vision model. Lab results get biomarkers extracted; other medical documents (MRI descriptions, glucose monitor reports, prescriptions) get an AI-generated summary. Documents are stored in Tigris (S3-compatible) and managed through a chronological list with live status updates.
+Users upload medical documents (PDFs or photos) for a specific person, which are automatically parsed by an AI vision model. Lab results get biomarkers extracted; other medical documents (MRI descriptions, glucose monitor reports, prescriptions) get an AI-generated summary. Documents are stored in S3-compatible object storage and managed through a chronological list with live status updates.
 
 This feature covers the full document lifecycle: upload, AI parsing, document management (list, view, retry, delete), and original document preview.
 
@@ -18,7 +18,7 @@ This feature covers the full document lifecycle: upload, AI parsing, document ma
    - Computes a SHA-256 hash of the file content
    - Checks for an existing document with the same hash for this person — if found, skips the upload and shows an info flash ("This document has already been uploaded.")
    - Generates a UUID for the document
-   - Uploads the file to Tigris under the path `documents/{space_id}/{person_id}/{document_id}/{original_filename}`
+   - Uploads the file to object storage under the path `documents/{space_id}/{person_id}/{document_id}/{original_filename}`
    - Creates a `documents` record with status `pending`, the selected `person_id`, and the `content_hash`
    - Enqueues an Oban job for parsing
 6. **Confirmation**: The user sees the document appear in the document list with a "Parsing..." status indicator.
@@ -28,7 +28,7 @@ This feature covers the full document lifecycle: upload, AI parsing, document ma
 1. **Job processing**: An Oban worker (`Meddie.Workers.ParseDocument`) picks up the job from the `document_parsing` queue.
 2. **Document status**: Updated to `parsing`. The LiveView UI reflects this change in real-time via PubSub broadcast.
 3. **Image preparation**:
-   - For images (JPG/PNG): The file is fetched from Tigris and sent directly to the vision model as a base64-encoded image.
+   - For images (JPG/PNG): The file is fetched from object storage and sent directly to the vision model as a base64-encoded image.
    - For PDFs: Each page is rendered to an image using `poppler-utils` (`pdftoppm`). Each page image is sent to the vision model individually.
 4. **Person context**: The person's health profile (from F2) is included in the AI prompt as additional context for better interpretation.
 5. **AI vision call**: The image is sent to the configured vision model (OpenAI or Anthropic) with the parsing prompt (see AI Integration below).
@@ -49,11 +49,11 @@ This feature covers the full document lifecycle: upload, AI parsing, document ma
 5. **Live updates**: When a document transitions from `parsing` to `parsed`, the LiveView updates the row in real-time without a page refresh.
 6. **Click to view**: Clicking a parsed document navigates to its detail view (biomarker results for lab results, summary for medical reports).
 7. **Retry failed**: Failed documents have a "Retry" button that re-enqueues the Oban parsing job.
-8. **Delete**: Each document has a delete action (with confirmation) that removes the document record, associated biomarkers, and the file from Tigris.
+8. **Delete**: Each document has a delete action (with confirmation) that removes the document record, associated biomarkers, and the file from object storage.
 
 ### Document Preview
 
-- **PDFs**: Embedded PDF.js viewer loaded via a LiveView JS hook. The file is accessed via a signed Tigris URL.
+- **PDFs**: Embedded PDF.js viewer loaded via a LiveView JS hook. The file is accessed via a signed (presigned) S3 URL.
 - **Images**: Displayed with an `<img>` tag via signed URL.
 - **Layout**: The document detail view shows original document and parsed results side by side (or as "Results" / "Original" tabs on smaller screens).
 - **Signed URLs**: Generated server-side with a 15-minute expiry. Refreshed on page load.
@@ -110,7 +110,7 @@ This feature covers the full document lifecycle: upload, AI parsing, document ma
 
 ## Background Jobs (Oban)
 
-Oban is used for document parsing jobs. It stores jobs in PostgreSQL — no Redis required, works on Fly.io.
+Oban is used for document parsing jobs. It stores jobs in PostgreSQL — no Redis required.
 
 **Configuration:**
 ```elixir
@@ -130,7 +130,7 @@ use Oban.Worker,
 
 **Job flow:**
 1. Job is enqueued with `%{document_id: uuid}` after upload completes
-2. Worker fetches document record, downloads file from Tigris
+2. Worker fetches document record, downloads file from object storage
 3. For PDFs: renders pages to images via `poppler-utils`
 4. Sends each page to AI vision model with person context
 5. Aggregates results, deduplicates biomarkers across pages
@@ -140,13 +140,14 @@ use Oban.Worker,
 
 **On failure**: Worker returns `{:error, reason}`, Oban retries with backoff. On final failure, an `after_error` callback updates the document status to `failed`.
 
-## File Storage (Tigris)
+## File Storage
 
-- **Bucket**: `meddie-documents`
+- **Bucket**: `meddie-documents` (private, S3-compatible).
+- **Storage class**: configurable via the `STORAGE_CLASS` env var; if unset, the bucket's default class is used.
 - **Path format**: `documents/{space_id}/{person_id}/{document_id}/{filename}`
-- **Access**: Private. Files are accessed via signed URLs generated server-side with 15-minute expiry.
-- **Library**: Use `ex_aws_s3` configured with Tigris endpoint.
-- **Cleanup**: When a document is deleted, the file is also removed from Tigris.
+- **Access**: Private. Files are accessed via presigned URLs generated server-side with 15-minute expiry.
+- **Library**: `ex_aws_s3` configured with an S3-compatible endpoint.
+- **Cleanup**: When a document is deleted, the file is also removed from object storage.
 
 ## AI Integration
 

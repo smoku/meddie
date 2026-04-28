@@ -57,16 +57,17 @@ if config_env() == :prod do
 
   config :meddie, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  # File storage: S3/Tigris for production
+  # File storage: S3-compatible object storage
   config :meddie, :storage_impl, Meddie.Storage.S3
   config :meddie, :storage_bucket, System.get_env("BUCKET_NAME") || "meddie-documents"
+  config :meddie, :storage_class, System.get_env("STORAGE_CLASS")
 
   config :ex_aws,
-    access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
-    secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
-    region: "auto"
+    access_key_id: System.get_env("S3_ACCESS_KEY_ID"),
+    secret_access_key: System.get_env("S3_SECRET_ACCESS_KEY"),
+    region: System.get_env("S3_REGION") || "auto"
 
-  if s3_endpoint = System.get_env("AWS_ENDPOINT_URL_S3") do
+  if s3_endpoint = System.get_env("S3_ENDPOINT") do
     s3_host = URI.parse(s3_endpoint).host
 
     config :ex_aws, :s3,

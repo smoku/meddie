@@ -118,7 +118,7 @@ Users can send photos or PDF files to the bot for analysis.
     - Person must be known
     - If auto-resolved → proceed
     - If ambiguous → ask "Who is this for?" (inline keyboard with person names)
-    - Download file from Telegram → upload to Tigris → create Document record
+    - Download file from Telegram → upload to object storage → create Document record
     - Trigger Oban parsing job (reuses F3 pipeline)
     - Bot sends: "Document uploaded. Parsing..." → "Done! Found 12 biomarkers."
 3b. If No:

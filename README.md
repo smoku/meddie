@@ -12,9 +12,8 @@ Open-source web app that uses AI vision models to parse medical documents. Uploa
 | Background Jobs | Oban |
 | AI | OpenAI + Anthropic (swappable via behaviour) |
 | Database | PostgreSQL |
-| File Storage | Tigris (S3-compatible) |
+| File Storage | S3-compatible object storage |
 | Styling | Tailwind v4 + DaisyUI |
-| Deployment | Fly.io |
 
 ## Features
 
